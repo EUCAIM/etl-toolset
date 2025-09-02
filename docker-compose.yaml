@@ -1,0 +1,118 @@
+services:
+  backend:
+    image: node:18
+    container_name: WM_backend
+    environment:
+    - DB_HOST = 'postgres'
+    - DB_NAME = "eucaim-nifi-test2"
+    - DB_USER = "postgres"
+    - DB_PASSWORD = "postgres"
+    - DB_PORT = 5432
+    - MQTT_HOST =  "mqtt"
+    - MQTT_PORT = 1883
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    volumes:
+      - ./Backend:/app
+    command: sh -c "npm install && npm start"
+  frontend:
+    image: node:18
+    working_dir: /app
+    container_name: WM_frontend
+    environment:
+      - VITE_BACKEND_IP=${LOCAL_IP}
+    volumes:
+      - ./Frontend:/app
+    ports:
+      - "8080:5173"
+    command: sh -c "npm install && npm run dev -- --host"
+  nifi:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    image: apache/nifi:2.3.0
+    container_name: nifi
+    healthcheck:
+      test: ["CMD", "curl", "-fkL", "https://nifi:8443/nifi/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    ports:
+      - "8443:8443"
+    environment:
+      - SINGLE_USER_CREDENTIALS_USERNAME=${NIFI_USER}
+      - SINGLE_USER_CREDENTIALS_PASSWORD=${NIFI_PASSWORD}
+      - NIFI_WEB_PROXY_HOST=nifi:8443,${LOCAL_IP}:8443
+      - NIFI_WEB_HTTPS_PORT=8443
+      - NIFI_WEB_PROXY_CONTEXT_PATH=/
+    volumes:
+      - ./nifi_data/nifi_data:/opt/nifi/nifi-current/data
+      - ./nifi_data/nifi_database_repository:/opt/nifi/nifi-current/database_repository
+      - ./nifi_data/nifi_flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+      - ./nifi_data/nifi_content_repository:/opt/nifi/nifi-current/content_repository
+      - ./nifi_data/nifi_provenance_repository:/opt/nifi/nifi-current/provenance_repository
+      - ./input_data:/input_data
+      - ./output_data:/output_data
+      - ./staging_data:/staging_data
+      - ./flows/:/flows
+      - ./TDC_Output:/TDC_Output
+      - ./postgresql-42.7.4.jar:/postgresql-42.7.4.jar
+      - ./init.sh:/opt/nifi/init.sh
+      - ./truststore.jks:/truststore.jks
+      - ./keystore.jks:/keystore.jks
+    entrypoint: ["sh","-c", "chmod +x /opt/nifi/init.sh ; /opt/nifi/init.sh & exec /opt/nifi/scripts/start.sh"]
+  mqtt:
+    depends_on:
+      nifi:
+        condition: service_healthy
+    image: eclipse-mosquitto:latest
+    container_name: mqtt
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto_config:/mosquitto/config
+    restart: unless-stopped
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: eucaim-nifi-test2
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "pg_isready -U postgres -d eucaim-nifi-test2 && psql -U postgres -d eucaim-nifi-test2 -tAc \"SELECT status FROM init_complete WHERE status = true LIMIT 1;\" | grep -q t"
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 35
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres_data:/var/lib/postgresql/data
+  TDC:
+    image: bahia_tdc
+    build: ./TDC
+    container_name: TDC
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./TDC_Output:/app/results
+  nifiRegistry:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    image: apache/nifi-registry:latest
+    container_name: nifi_registry
+    ports:
+      - "18080:18080"
+    restart: unless-stopped
+    volumes:
+     - ./registry/flow-storage:/opt/nifi-registry/nifi-registry-current/flow_storage
+     - ./registry/database:/opt/nifi-registry/nifi-registry-current/database
