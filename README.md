@@ -1,19 +1,19 @@
-## Instrucciones instalación ##
+## Install instructions ##
 
-1. Descomprimir zip del apartado releases
-2. Ejecutar el script
-	- 2.1 En Linux startup.sh
-	- 2.2 En windows startup.ps1
+1. Unzip file from releases
+2. Run script
+	- 2.1 For Linux startup.sh
+	- 2.2 For windows startup.ps1
 	
-## Requisitos de instalación ##
+## Install requirements ##
 -  Docker
 -  Docker compose
 
 
-## Directorio de entrada del dataset ##
+## Dataset input folder ##
 
 - `input_data\clinical_data`
 
-## Directorio de salida del dataset ##
+## Dataset output folders ##
 - `output_data\clinical_data`
 - `output_data\mapping_logs` 
