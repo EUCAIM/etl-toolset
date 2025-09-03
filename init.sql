@@ -819,13 +819,13 @@ CREATE TABLE IF NOT EXISTS LookupHistologyMorphologyCode (
 );
 
 INSERT INTO LookupHistologyMorphologyCode (originalValue, parsedValue)
-VALUES ('lung - squamous cell carcinoma', 'Squamous cell carcinoma, NOS, of lung, NOS');
+VALUES ('lung squamous cell carcinoma', 'Squamous cell carcinoma, NOS, of lung, NOS');
 
 INSERT INTO LookupHistologyMorphologyCode (originalValue, parsedValue)
 VALUES ('breast cancer', 'Neoplasm of breast');
 
 INSERT INTO LookupHistologyMorphologyCode (originalValue, parsedValue)
-VALUES ('thyroid cancer', 'Neoplasm');
+VALUES ('thyroid cancer', 'Thyroid cancer');
 
 
 CREATE TABLE IF NOT EXISTS LookupTumorOrganCode (
@@ -940,6 +940,10 @@ VALUES (nextval('eucaim_concept_id_seq'), 'CLIN1000081', 'https://cancerimage.eu
 
 
 INSERT INTO concept (concept_id, concept_code, concept_uri, concept_name)
+VALUES (nextval('eucaim_concept_id_seq'), 'CLIN1059392', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1059392', 'Thyroid cancer');
+
+
+INSERT INTO concept (concept_id, concept_code, concept_uri, concept_name)
 VALUES (nextval('eucaim_concept_id_seq'), 'BP1000420', 'https://cancerimage.eu/ontology/EUCAIM#BP1000420', 'Frontal brain region');
 
 INSERT INTO concept (concept_id, concept_code, concept_uri, concept_name)
@@ -998,6 +1002,9 @@ VALUES (nextval('eucaim_concept_id_seq'), 'CLIN1049762', 'https://cancerimage.eu
 INSERT INTO concept (concept_id, concept_code, concept_uri, concept_name)
 VALUES (nextval('eucaim_concept_id_seq'), 'IMG1000026', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000026', 'Computed tomography');
 
+
+INSERT INTO concept (concept_id, concept_code, concept_uri, concept_name)
+VALUES (nextval('eucaim_concept_id_seq'), 'IMG1000079', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000079', 'Scintigraphy');
 
 
 CREATE TABLE jobs (id VARCHAR(250) PRIMARY KEY, filename VARCHAR(250), step  NUMERIC);
