@@ -3,13 +3,13 @@ services:
     image: node:18
     container_name: WM_backend
     environment:
-    - DB_HOST = 'postgres'
-    - DB_NAME = "eucaim-nifi-test2"
-    - DB_USER = "postgres"
-    - DB_PASSWORD = "postgres"
-    - DB_PORT = 5432
-    - MQTT_HOST =  "mqtt"
-    - MQTT_PORT = 1883
+    - DB_HOST=postgres
+    - DB_NAME=eucaim-nifi-test2
+    - DB_USER=postgres
+    - DB_PASSWORD=postgres
+    - DB_PORT=5432
+    - MQTT_HOST=mqtt
+    - MQTT_PORT=1883
     ports:
       - "3000:3000"
     working_dir: /app
