@@ -1,6 +1,6 @@
 ## Installation Instructions
 
-1. Download and unzip the file from the [Releases](https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL) section.
+1. Download and unzip the file from the [Releases](https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL/releases) section.
 2. Run the startup script:
    - **Linux:** `startup.sh`
    - **Windows:** `startup.ps1`
