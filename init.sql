@@ -798,7 +798,7 @@ CREATE TABLE IF NOT EXISTS LookupProcedureCode (
     parsedValue VARCHAR(200)
 );
 
-INSERT INTO LookupImagingProcedureCode (originalValue, parsedValue)
+INSERT INTO LookupProcedureCode (originalValue, parsedValue)
 VALUES ('Endobronchial Ultrasound-Guided Fine Needle Aspiration (EBUS-FNA)', 'Fine needle biopsy');
 
 
