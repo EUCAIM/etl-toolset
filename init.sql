@@ -798,7 +798,7 @@ CREATE TABLE IF NOT EXISTS LookupProcedureCode (
     parsedValue VARCHAR(200)
 );
 
-INSERT INTO LookupImagingProcedureCode (originalValue, parsedValue)
+INSERT INTO LookupProcedureCode (originalValue, parsedValue)
 VALUES ('Endobronchial Ultrasound-Guided Fine Needle Aspiration (EBUS-FNA)', 'Fine needle biopsy');
 
 
@@ -826,6 +826,12 @@ VALUES ('breast cancer', 'Neoplasm of breast');
 
 INSERT INTO LookupHistologyMorphologyCode (originalValue, parsedValue)
 VALUES ('thyroid cancer', 'Thyroid cancer');
+
+INSERT INTO LookupHistologyMorphologyCode (originalValue, parsedValue)
+VALUES ('lung adenocarcinoma', 'Adenocarcinoma, NOS, of lung, NOS');
+
+INSERT INTO LookupHistologyMorphologyCode (originalValue, parsedValue)
+VALUES ('lung small cell carcinoma', 'Small cell carcinoma of lung, NOS');
 
 
 CREATE TABLE IF NOT EXISTS LookupTumorOrganCode (
@@ -1002,9 +1008,11 @@ VALUES (nextval('eucaim_concept_id_seq'), 'CLIN1049762', 'https://cancerimage.eu
 INSERT INTO concept (concept_id, concept_code, concept_uri, concept_name)
 VALUES (nextval('eucaim_concept_id_seq'), 'IMG1000026', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000026', 'Computed tomography');
 
-
 INSERT INTO concept (concept_id, concept_code, concept_uri, concept_name)
 VALUES (nextval('eucaim_concept_id_seq'), 'IMG1000079', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000079', 'Scintigraphy');
+
+INSERT INTO concept (concept_id, concept_code, concept_uri, concept_name)
+VALUES (nextval('eucaim_concept_id_seq'), 'IMG1000146', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000146', 'Axial scan mode');
 
 
 CREATE TABLE jobs (id VARCHAR(250) PRIMARY KEY, filename VARCHAR(250), step  NUMERIC);
