@@ -12,6 +12,7 @@ $dirs = @(
     "staging_data\input_as_csv\image_metadata",
     "output_data\clinical_data",
     "output_data\image_metadata",
+	"output_data\mapping_logs",
     "registry\database",
     "registry\flow-storage",
     "TDC_Output"
