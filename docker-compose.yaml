@@ -1,32 +1,4 @@
 services:
-  backend:
-    image: node:18
-    container_name: WM_backend
-    environment:
-    - DB_HOST=postgres
-    - DB_NAME=eucaim-nifi-test2
-    - DB_USER=postgres
-    - DB_PASSWORD=postgres
-    - DB_PORT=5432
-    - MQTT_HOST=mqtt
-    - MQTT_PORT=1883
-    ports:
-      - "3000:3000"
-    working_dir: /app
-    volumes:
-      - ./Backend:/app
-    command: sh -c "npm install && npm start"
-  frontend:
-    image: node:18
-    working_dir: /app
-    container_name: WM_frontend
-    environment:
-      - VITE_BACKEND_IP=${LOCAL_IP}
-    volumes:
-      - ./Frontend:/app
-    ports:
-      - "8080:5173"
-    command: sh -c "npm install && npm run dev -- --host"
   nifi:
     depends_on:
       postgres:
@@ -63,17 +35,6 @@ services:
       - ./truststore.jks:/truststore.jks
       - ./keystore.jks:/keystore.jks
     entrypoint: ["sh","-c", "chmod +x /opt/nifi/init.sh ; /opt/nifi/init.sh & exec /opt/nifi/scripts/start.sh"]
-  mqtt:
-    depends_on:
-      nifi:
-        condition: service_healthy
-    image: eclipse-mosquitto:latest
-    container_name: mqtt
-    ports:
-      - "1883:1883"
-    volumes:
-      - ./mosquitto_config:/mosquitto/config
-    restart: unless-stopped
   postgres:
     image: postgres:latest
     container_name: postgres_db
