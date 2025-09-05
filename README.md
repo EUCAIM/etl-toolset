@@ -15,6 +15,13 @@
 -  Docker
 -  Docker compose
 
+## Dataset requirements ##
+
+- CSV input files **must be comma (,)** separated
+- CSV input files **must use dot (.)** as a decimal separator
+
+> **Note:**
+> The dataset is expected to have the same header as the template sample file(s) provided to EUCAIM for building and adjusting the mapping.
 
 ## Dataset input folder ##
 
