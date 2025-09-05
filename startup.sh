@@ -12,4 +12,5 @@ docker compose down -t 1
 
 docker compose up -d
 
-echo "ETL webinterface available at http://localhost:8080"
+#echo "ETL webinterface available at http://localhost:8080"
+echo "ETL is running, copy input files into the input_data subfolder"

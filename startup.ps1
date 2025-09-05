@@ -42,4 +42,5 @@ docker compose down -t 1
 # Run Docker Compose
 docker compose up -d
 
-Write-Host "ETL webinterface available at http://localhost:8080"
+#Write-Host "ETL webinterface available at http://localhost:8080"
+Write-Host "ETL is running, copy input files into the input_data subfolder"
