@@ -12,6 +12,7 @@ $dirs = @(
     "staging_data\input_as_csv\image_metadata",
     "output_data\clinical_data",
     "output_data\image_metadata",
+	"output_data\mapping_logs",
     "registry\database",
     "registry\flow-storage",
     "TDC_Output"
@@ -42,4 +43,5 @@ docker compose down -t 1
 # Run Docker Compose
 docker compose up -d
 
-Write-Host "ETL webinterface available at http://localhost:8080"
+#Write-Host "ETL webinterface available at http://localhost:8080"
+Write-Host "ETL is running, copy input files into the input_data subfolder"
