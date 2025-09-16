@@ -40,3 +40,23 @@ The generated output files, containing the dataset converted into the EUCAIM CDM
 
 Additional output to support the review of the mapping process is written here:
 - `output_data\mapping_logs` 
+
+
+---
+
+
+## FAQ (frequently Asked Questions)
+
+### 1. After the input file is copied into `input_data\clinical_data`, nothing happens and the file remains there, seemingly not being processed
+
+If this happens, most likely the setup script **init.sh** is not being properly executed.  
+In some instances, due to permission issues, this file cannot run inside the NiFi Docker container.  
+
+To check if this is the case, try:
+
+```bash
+docker logs nifi | grep init
+sh: 1: /opt/nifi/init.sh: Permission denied
+```
+
+If you see the "Permission denied" message, the solution is to ensure that the file has valid read and execution permissions for the user running the startup script of the ETL.
