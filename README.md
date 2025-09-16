@@ -42,6 +42,8 @@ Additional output to support the review of the mapping process is written here:
 - `output_data\mapping_logs` 
 
 
+---
+
 
 ## FAQ (frequently Asked Questions)
 
@@ -55,5 +57,6 @@ To check if this is the case, try:
 ```bash
 docker logs nifi | grep init
 sh: 1: /opt/nifi/init.sh: Permission denied
+```
 
 If you see the "Permission denied" message, the solution is to ensure that the file has valid read and execution permissions for the user running the startup script of the ETL.
