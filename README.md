@@ -40,3 +40,39 @@ The generated output files, containing the dataset converted into the EUCAIM CDM
 
 Additional output to support the review of the mapping process is written here:
 - `output_data\mapping_logs` 
+
+## License ##
+
+Except as otherwise noted this software is licensed under the
+[Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+---
+
+
+## FAQ (frequently Asked Questions)
+
+### 1. After the input file is copied into `input_data\clinical_data`, nothing happens and the file remains there, seemingly not being processed
+
+If this happens, most likely the setup script **init.sh** is not being properly executed.  
+In some instances, due to permission issues, this file cannot run inside the NiFi Docker container.  
+
+To check if this is the case, try:
+
+```bash
+docker logs nifi | grep init
+sh: 1: /opt/nifi/init.sh: Permission denied
+```
+
+If you see the "Permission denied" message, the solution is to ensure that the file has valid read and execution permissions for the user running the startup script of the ETL.
