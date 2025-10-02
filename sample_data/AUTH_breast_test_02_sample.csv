@@ -1,0 +1,42 @@
+Patient Number,Age at diagnosis,Gender,Ethnicity,Current state,Population,Date of radiology detection,Imaging procedure,Max tumor diameter,Tumor site : Region,Tumor site : Laterality,Topography : Organ,Mass Shape,Mass Margin,Calcifications,Associated Features,Breast composition,Pathological lymph-nodes,Distant metastases,Location,Left Breast BIRADS classification,Right  Breast BIRADS classification,Date of pathology confirmation / diagnosis date,Pathology confirmation,Pathology,Histological subtype
+,,0: male 1: Female,"1White,
+2:Roma,
+3:Any other white background, 
+4:African,
+5:Any other black background, 
+6:Chinese,
+7:Indian/Pakistani/Bangladeshi,
+8:Any other Asian background, 
+9:Arabic,
+10:Mixed,
+11:Other","0: survival 1: relapse 2: death from cancer complications, 3: death from other cause, 4: residual disease, 5: healthy","0: Patient with lesion not being a malignant tumor, 1: Patient with benign lesion,  2: Patient with malignant lesion",Date when the tumor or the lesion was first detected by an imaging study,MG,in cm,"AN: Nipple and Areola, CPB: Central portion of breast, UOQ: Upper-outer quadrant of breast, UIQ:Upper-inner quadrant of breast, LOQ: Lower-outer quadrant of breast, LIQ:Lower-inner quadrant of breast, OLB: Overlapping lesion of breast","0=right breast, 1= left breast, 2 = both breasts",breast,"1:oval, 2:round, 3:irregular","1:circumscribed, 2:angular, 3:microlobulated, 4:indistinct,  5:spiculated","0: no calcifications, 1:in mass, 2:outside mass, 3:intraductal 4:benign ","1:skin thickness, 2:skin retraction, 3:retraction of the nipple, 4:architectural distortion, 5:duct changes, 6:edema, 7:absent vascularity, 8:internal vascularity, 9:vessels in rim","1: fatty,2: scattered fibroglandular, 3: heterogeneously dense, 4: extremely dense:",0: no 1: yes,0: no 1: yes,1: bone 2: lung 3: brain 4: liver 5: other,"BI-RADS 0-6, 
+BI-RADS 0: incomplete
+need additional imaging evaluation 
+BI-RADS 1: negative
+symmetrical and no masses, architectural distortion, or suspicious calcifications
+BI-RADS 2: benign
+0% probability of malignancy
+BI-RADS 3: probably benign
+<2% probability of malignancy
+BI-RADS 4: suspicious for malignancy
+2-94% probability of malignancy
+BI-RADS 5: highly suggestive of malignancy
+>95% probability of malignancy
+BI-RADS 6: known biopsy-proven malignancy ","BI-RADS 0-6, 
+BI-RADS 0: incomplete
+need additional imaging evaluation 
+BI-RADS 1: negative
+symmetrical and no masses, architectural distortion, or suspicious calcifications
+BI-RADS 2: benign
+0% probability of malignancy
+BI-RADS 3: probably benign
+<2% probability of malignancy
+BI-RADS 4: suspicious for malignancy
+2-94% probability of malignancy
+BI-RADS 5: highly suggestive of malignancy
+>95% probability of malignancy
+BI-RADS 6: known biopsy-proven malignancy ",months from diagnosis,"0: histological surgery, 1: biopsy",breast cancer,"IDC: Invasive Ductal Carcinoma, ILC: Invasive Lobular Carcinoma, IPLC: Invasive Pleomorphic Lobular Carcinoma, IMC: Invasive Mixed Carcinoma, IUC: Invasive  Unidentifiable Carcinoma, IBC: Inflammatory Breast Carcinoma, MPT: Malignant Phyllodes Tumour, SPC: Solid Papillary Carcinoma, HBOCS:Hereditary breast and ovarian cancer syndrome, UMN:  Malignant neoplasms unspecified, DCIS: DUCTAL CARCINOMA IN SITU, LNH:Lymphomas Non-Hodgkin, Preneoplastic lesions (B3 lesionS)"
+1000-000001,57,1,1,0,1,0,MG,0.4,,2,breast,,,2,,3,0,0,,4,3,,,breast cancer,
+1000-000002,67,1,1,0,0,0,MG,,,,breast,,,,,1,0,,,1,1,,,breast cancer,
+1000-000003,58,1,1,0,1,0,MG,0.6,UOQ,1,breast,1,3,0,,2,0,0,,1,2,,,breast cancer,
+1000-000004,52,1,1,0,0,0,MG,,,,breast,,,0,,2,0,0,,1,1,,,breast cancer,
