@@ -1,0 +1,23 @@
+NOTICE
+This product includes software developed by Bahía Software S.L.U.
+and is licensed under the Apache License, Version 2.0.
+
+This project makes use of the following third-party components:
+
+- Apache NiFi
+  Licensed under the Apache License, Version 2.0
+  https://nifi.apache.org/
+
+- Apache NiFi Registry
+  Licensed under the Apache License, Version 2.0
+  https://nifi.apache.org/registry.html
+
+- PostgreSQL
+  Licensed under the PostgreSQL License
+  https://www.postgresql.org/about/licence/
+
+- TDC 
+  Licensed under the MIT License
+  https://github.com/vpz4/TDC
+
+All product names, logos, and brands are property of their respective owners.
