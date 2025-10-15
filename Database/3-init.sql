@@ -1,4 +1,11 @@
--- Step 3 ETL aux tables 
+----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS LookupPrimaryCancerConditionCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
 
 CREATE TABLE IF NOT EXISTS LookupRadiotherapyCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -8,6 +15,19 @@ CREATE TABLE IF NOT EXISTS LookupRadiotherapyCode (
 
 INSERT INTO LookupRadiotherapyCode (originalValue, parsedValue)
 VALUES ('external radiotherapy', 'External beam radiation therapy procedure');
+
+CREATE TABLE IF NOT EXISTS LookupRadiotherapyModality (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+
+CREATE TABLE IF NOT EXISTS LookupRadiotherapyTechnique (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
 
 
 CREATE TABLE IF NOT EXISTS LookupProcedureCode (
@@ -19,6 +39,14 @@ CREATE TABLE IF NOT EXISTS LookupProcedureCode (
 INSERT INTO LookupProcedureCode (originalValue, parsedValue)
 VALUES ('Endobronchial Ultrasound-Guided Fine Needle Aspiration (EBUS-FNA)', 'Fine needle biopsy');
 
+INSERT INTO LookupProcedureCode (originalValue, parsedValue)
+VALUES ('RID10321', 'Computed tomography');
+
+INSERT INTO LookupProcedureCode (originalValue, parsedValue)
+VALUES ('10318', 'Magnetic resonance imaging');
+
+INSERT INTO LookupProcedureCode (originalValue, parsedValue)
+VALUES ('RID39574', 'PET-CT');
 
 CREATE TABLE IF NOT EXISTS LookupImagingProcedureCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -28,6 +56,15 @@ CREATE TABLE IF NOT EXISTS LookupImagingProcedureCode (
 
 INSERT INTO LookupImagingProcedureCode (originalValue, parsedValue)
 VALUES ('CT', 'Computed tomography');
+
+INSERT INTO LookupImagingProcedureCode (originalValue, parsedValue)
+VALUES ('RID10321', 'Computed tomography');
+
+INSERT INTO LookupImagingProcedureCode (originalValue, parsedValue)
+VALUES ('10318', 'Magnetic resonance imaging');
+
+INSERT INTO LookupImagingProcedureCode (originalValue, parsedValue)
+VALUES ('RID39574', 'PET-CT');
 
 
 CREATE TABLE IF NOT EXISTS LookupHistologyMorphologyCode (
@@ -51,6 +88,25 @@ VALUES ('lung adenocarcinoma', 'Adenocarcinoma, NOS, of lung, NOS');
 INSERT INTO LookupHistologyMorphologyCode (originalValue, parsedValue)
 VALUES ('lung small cell carcinoma', 'Small cell carcinoma of lung, NOS');
 
+CREATE TABLE IF NOT EXISTS LookupPatientDiagnosticCategory (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+INSERT INTO LookupPatientDiagnosticCategory (originalValue, parsedValue)
+VALUES ('Patient with Cancer', 'Patient with Cancer');
+
+CREATE TABLE IF NOT EXISTS LookupSurgicalProcedureCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO LookupSurgicalProcedureCode (originalValue, parsedValue)
+VALUES ('409063005', 'Excision of malignant neoplasm');
+
+INSERT INTO LookupSurgicalProcedureCode (originalValue, parsedValue)
+VALUES ('387713004', 'Excision of malignant neoplasm');
 
 CREATE TABLE IF NOT EXISTS LookupTumorOrganCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -67,6 +123,15 @@ VALUES ('breast', 'Breast');
 INSERT INTO LookupTumorOrganCode (originalValue, parsedValue)
 VALUES ('Thyroid BED', 'Head and neck');
 
+
+CREATE TABLE IF NOT EXISTS LookupTumorSizeDimensionUnit (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO LookupTumorSizeDimensionUnit (originalValue, parsedValue)
+VALUES ('cm', 'centimeter');
 
 CREATE TABLE IF NOT EXISTS LookupTumorLocationCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -130,16 +195,6 @@ VALUES ('Class V', 'ASA physical status class 5');
 
 INSERT INTO LookupHealthStatusValueCode (originalValue, parsedValue)
 VALUES ('Class VI', 'ASA physical status class 6');
-
-
-CREATE TABLE IF NOT EXISTS LookupHeaderRowsToRemove (
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    originalValue VARCHAR(50),
-    parsedValue VARCHAR(3)
-);
-
-INSERT INTO LookupHeaderRowsToRemove (originalValue, parsedValue)
-VALUES ('perproglio', '0');
 
 
 ----------------------------------------------------
