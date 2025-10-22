@@ -58,9 +58,9 @@ class SequenceLookupService implements LookupService<Map<String, Object>> {
                 if (rs.next()) {
                     log.info("CodeableConceptsLookupService.lookup - Parsing one result")
                     def code = rs.getString("concept_code")
-                    result["${property}__code"] = code
+                    result["${property}"] = code
                 } else {
-                    result["${property}__code"] = "NOT FOUND"
+                    result["${property}"] = "NOT FOUND"
                 }
 
                 rs.close()

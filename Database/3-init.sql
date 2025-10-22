@@ -196,5 +196,37 @@ VALUES ('Class V', 'ASA physical status class 5');
 INSERT INTO LookupHealthStatusValueCode (originalValue, parsedValue)
 VALUES ('Class VI', 'ASA physical status class 6');
 
+CREATE TABLE IF NOT EXISTS LookupFamilyMemberHistoryConditionCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
+VALUES ('Breast cancer', 'Carcinoma of breast');
+
+INSERT INTO LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
+VALUES ('Prostate cancer', 'Carcinoma of prostate');
+
+CREATE TABLE IF NOT EXISTS LookupTumorMarkerTestCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO LookupTumorMarkerTestCode (originalValue, parsedValue)
+VALUES ('PSA', 'Prostate specific antigen measurement');
+
+CREATE TABLE LookupHeaderRowsToRemove (
+     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+     originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO LookupHeaderRowsToRemove (originalValue, parsedValue)
+VALUES ('perproglio', '0');
+
+INSERT INTO LookupHeaderRowsToRemove (originalValue, parsedValue)
+VALUES ('aaaadcw3slp2bbsux2urluqaae', '0');
 
 ----------------------------------------------------

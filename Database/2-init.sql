@@ -20,6 +20,7 @@ DROP TABLE IF EXISTS CancerPatient;
 DROP TABLE IF EXISTS Organization;
 DROP TABLE IF EXISTS ValueAsCodeableConcept;
 DROP TABLE IF EXISTS Dataset;
+DROP TABLE IF EXISTS FamilyMemberHistory;
 
 
 -------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ CREATE TABLE IF NOT EXISTS ValueAsCodeableConcept (
 CREATE TABLE IF NOT EXISTS MappedCodeableConceptsResults (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     datasetId VARCHAR(50),
-    propertyNameOriginal VARCHAR(100),
+    propertyNameOriginal VARCHAR(200),
     propertyNameEUCAIM VARCHAR(100),
     originalValue VARCHAR(50),
     parsedValue VARCHAR(50),
@@ -146,7 +147,7 @@ CREATE TABLE IF NOT EXISTS TumorMarkerTest (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     PatientIdentifier VARCHAR(150),
     DatasetIdentifier VARCHAR(150),
-    PrimaryCancerIdentifier VARCHAR(50),
+    PrimaryCancerIdentifier VARCHAR(150),
     Category INTEGER,
     CategoryEUCAIM VARCHAR(50),
     CategoryOriginal VARCHAR(50),
@@ -155,7 +156,7 @@ CREATE TABLE IF NOT EXISTS TumorMarkerTest (
     TumorMarkerOriginal VARCHAR(50),
     ValueAsNumber REAL,
     ValueAsConcept INTEGER,
-    ValueAsConceptUnit INTEGER,
+    ValueAsConceptUnit VARCHAR(50),
     DateOfMarker VARCHAR(15),
     processed BOOLEAN DEFAULT FALSE
 );
@@ -174,6 +175,26 @@ CREATE TABLE IF NOT EXISTS HistologicGrade (
     GradeOriginal VARCHAR(50),
     Value INTEGER,
     processed BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS FamilyMemberHistory (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    PatientIdentifier VARCHAR(150),
+    DatasetIdentifier VARCHAR(150),
+    FamiliMemberIdentifier VARCHAR(150),
+    Subject VARCHAR(50),
+    SubjectEUCAIM VARCHAR(50),
+    SubjectOriginal VARCHAR(50),
+    Relationship VARCHAR(50),
+    RelationshipEUCAIM VARCHAR(50),
+    RelationshipOriginal VARCHAR(50),
+    ConditionCode VARCHAR(50),
+    ConditionCodeEUCAIM VARCHAR(50),
+    ConditionCodeOriginal VARCHAR(50),
+    OnsetAge INTEGER,
+    OnsetAgeUnit VARCHAR(50),
+    OnsetAgeUnitEUCAIM VARCHAR(50),
+    OnsetAgeUnitOriginal VARCHAR(50)
 );
 
 
@@ -395,6 +416,10 @@ UNIQUE (patientidentifier, datasetidentifier, identifier);
 ALTER TABLE tumormarkertest
 ADD CONSTRAINT unique_tumormarkertest
 UNIQUE (patientidentifier, datasetidentifier, primarycanceridentifier, tumormarkeroriginal, dateofmarker);
+
+ALTER TABLE familymemberhistory
+ADD CONSTRAINT unique_familymemberhistory
+UNIQUE (patientidentifier, datasetidentifier, FamiliMemberIdentifier);
 
 ALTER TABLE histologicgrade
 ADD CONSTRAINT unique_histologicgrade

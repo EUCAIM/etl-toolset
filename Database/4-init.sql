@@ -114,3 +114,9 @@ VALUES(nextval('eucaim_concept_id_seq'), 'COM1001087', 'https://cancerimage.eu/o
 
 INSERT INTO concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_concept_id_seq'), 'COM1001950', 'https://cancerimage.eu/ontology/EUCAIM#COM1001950', 'Gy');
+
+INSERT INTO concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_concept_id_seq'), 'COM1001035', 'https://cancerimage.eu/ontology/EUCAIM#COM1001035', 'Father');
+
+INSERT INTO concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_concept_id_seq'), 'COM1001036', 'https://cancerimage.eu/ontology/EUCAIM#COM1001036', 'Mother');
