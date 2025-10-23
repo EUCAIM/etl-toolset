@@ -442,6 +442,7 @@ CREATE TABLE IF NOT EXISTS LookupFamilyMemberHistoryConditionCode (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
+
 INSERT INTO LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
 VALUES ('Breast cancer', 'Carcinoma of breast');
 
