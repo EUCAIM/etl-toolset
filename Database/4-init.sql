@@ -99,3 +99,24 @@ VALUES (nextval('eucaim_concept_id_seq'), 'IMG1000079', 'https://cancerimage.eu/
 
 INSERT INTO concept (concept_id, concept_code, concept_uri, concept_name)
 VALUES (nextval('eucaim_concept_id_seq'), 'IMG1000146', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000146', 'Axial scan mode');
+
+INSERT INTO concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_concept_id_seq'), 'IMG1005453', 'https://cancerimage.eu/ontology/EUCAIM#IMG1005453', 'Imaging (Procedure)');
+
+INSERT INTO concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_concept_id_seq'), 'COM1001954', 'https://cancerimage.eu/ontology/EUCAIM#COM1001954', 'centimeter');
+
+INSERT INTO concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_concept_id_seq'), 'IMG1000038', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000038', 'Magnetic resonance imaging');
+
+INSERT INTO concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_concept_id_seq'), 'COM1001087', 'https://cancerimage.eu/ontology/EUCAIM#COM1001087', 'Patient with Cancer');
+
+INSERT INTO concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_concept_id_seq'), 'COM1001950', 'https://cancerimage.eu/ontology/EUCAIM#COM1001950', 'Gy');
+
+INSERT INTO concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_concept_id_seq'), 'COM1001035', 'https://cancerimage.eu/ontology/EUCAIM#COM1001035', 'Father');
+
+INSERT INTO concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_concept_id_seq'), 'COM1001036', 'https://cancerimage.eu/ontology/EUCAIM#COM1001036', 'Mother');
