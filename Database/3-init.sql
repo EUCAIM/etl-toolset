@@ -440,8 +440,6 @@ CREATE TABLE IF NOT EXISTS LookupFamilyMemberHistoryConditionCode (
 
 );
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
 
 INSERT INTO LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
 VALUES ('Breast cancer', 'Carcinoma of breast');
@@ -470,35 +468,8 @@ VALUES ('PSA', 'Prostate specific antigen measurement');
 
 CREATE TABLE IF NOT EXISTS LookupImagingModality (
 
-
-INSERT INTO LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
-
-VALUES ('Prostate cancer', 'Carcinoma of prostate');
-
-
-
-CREATE TABLE IF NOT EXISTS LookupTumorMarkerTestCode (
-
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
     originalValue VARCHAR(200),
-
-    parsedValue VARCHAR(200)
-
-);
-
-
-
-INSERT INTO LookupTumorMarkerTestCode (originalValue, parsedValue)
-
-VALUES ('PSA', 'Prostate specific antigen measurement');
-
-
-
-CREATE TABLE LookupHeaderRowsToRemove (
-
-     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-     originalValue VARCHAR(200),
     parsedValue VARCHAR(200)
 
 );
@@ -1111,10 +1082,6 @@ INSERT INTO LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Philip
 INSERT INTO LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Philips Healthcare', 'PHILIPS');
 
 INSERT INTO LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Toshiba Medical', 'TOSHIBA');
-
-INSERT INTO LookupHeaderRowsToRemove (originalValue, parsedValue)
-
-VALUES ('aaaadcw3slp2bbsux2urluqaae', '0');
 
 
 
