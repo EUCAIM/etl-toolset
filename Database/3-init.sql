@@ -441,6 +441,7 @@ CREATE TABLE IF NOT EXISTS LookupFamilyMemberHistoryConditionCode (
 );
 
 
+
 INSERT INTO LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
 VALUES ('Breast cancer', 'Carcinoma of breast');
 
