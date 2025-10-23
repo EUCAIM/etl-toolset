@@ -94,7 +94,7 @@ services:
       timeout: 5s
       retries: 35
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./Database/:/docker-entrypoint-initdb.d/
       - ./postgres_data:/var/lib/postgresql/data
   TDC:
     image: bahia_tdc
