@@ -7,6 +7,7 @@ $dirs = @(
     "nifi_data\nifi_flowfile_repository",
     "nifi_data\nifi_provenance_repository",
     "input_data\clinical_data",
+    "input_data\image_metadata",
     "staging_data\curated_as_csv\clinical_data",
     "staging_data\input_as_csv\clinical_data",
     "staging_data\input_as_csv\image_metadata",
