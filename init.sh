@@ -96,8 +96,42 @@ startProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authoriz
 transmittingProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"disconnectedNodeAcknowledged\":false,\"state\":\"TRANSMITTING\"}" https://nifi:8443/nifi-api/flow/process-groups/$processGroupID/run-status)
 echo "**** Flow insertion outcome ->  $transmittingProcessGroup"
 
-
-
-
 ((index+=450))
+done
+
+
+#Force enable of StagingDBCPConnectionPool service for each "loop03" processGroup
+echo "Querying..."
+response=$(curl -s -k -X GET \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $token" \
+  "https://nifi:8443/nifi-api/process-groups/root/process-groups")
+echo
+echo "Existing process groups:"
+echo "$response" | jq -r '.processGroups[] | "\(.component.id)\t\(.component.name)"'
+
+processGroupIDs=$(echo "$response" | jq -r '.processGroups[] | "\(.component.id)\t\(.component.name)"'   | grep "Clinical_data_loop03_" | awk '{print $1}')
+
+for processGroupID in $processGroupIDs; do
+  echo "Procesando Process Group ID: $processGroupID"
+
+  # Habilitar el grupo
+  curl -s -X PUT -H 'Content-Type: application/json' \
+       -H "Authorization: Bearer $token" -k \
+       -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\"}" \
+       "https://nifi:8443/nifi-api/flow/process-groups/$processGroupID"
+
+  # Habilitar sus controller services
+  curl -s -X PUT -H 'Content-Type: application/json' \
+       -H "Authorization: Bearer $token" -k \
+       -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\"}" \
+       "https://nifi:8443/nifi-api/flow/process-groups/$processGroupID/controller-services"
+
+  # Arrancar el grupo
+  curl -s -X PUT -H 'Content-Type: application/json' \
+       -H "Authorization: Bearer $token" -k \
+       -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"RUNNING\"}" \
+       "https://nifi:8443/nifi-api/flow/process-groups/$processGroupID"
+
+  echo "✅ Process Group $processGroupID activado correctamente"
 done
