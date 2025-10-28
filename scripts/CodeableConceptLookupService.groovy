@@ -43,7 +43,7 @@ class SequenceLookupService implements LookupService<Map<String, Object>> {
 
                 def sql = """
                     SELECT c.concept_code
-                    FROM concept c
+                    FROM eucaim_hyperontology_codes.concept c
                     WHERE c.concept_name = ?
                 """
 
