@@ -465,6 +465,63 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTestCode (
 INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestCode (originalValue, parsedValue)
 VALUES ('PSA', 'Prostate specific antigen measurement');
 
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.lookupmedicalhistorycategory (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupMedicalHistoryCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupRadiotherapyAdverseEvent (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupRadiotherapyResponse (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorGradeCodeService (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('8140', 'Adenocarcinoma, NOS, of prostate gland');
+
 
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupImagingModality (
