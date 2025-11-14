@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
     datasetId VARCHAR(50),
     propertyNameOriginal VARCHAR(200),
     propertyNameEUCAIM VARCHAR(100),
-    originalValue VARCHAR(50),
-    parsedValue VARCHAR(50),
+    originalValue VARCHAR(150),
+    parsedValue VARCHAR(150),
     codeInEUCAIM VARCHAR(50),
     codeCandidatesInEUCAIM VARCHAR(50),
     mappingTimestamp VARCHAR(50),
@@ -333,7 +333,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
 );
 
 
-CREATE TABLE IF NOT EXISTS ImageModality (
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageModality (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     ImageStudyUID VARCHAR(70),
     ImageSeriesUID VARCHAR(70),

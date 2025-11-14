@@ -120,3 +120,9 @@ VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001035'
 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001036', 'https://cancerimage.eu/ontology/EUCAIM#COM1001036', 'Mother');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1005507', 'https://cancerimage.eu/ontology/EUCAIM#IMG1005507', 'MRI of prostate');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1016659', 'https://cancerimage.eu/ontology/EUCAIM#IMG1016659', 'Bilateral');
