@@ -1,0 +1,69 @@
+nifi:
+  image:
+    repository: apache/nifi
+    tag: "2.3.0"
+  service:
+    type: ClusterIP
+    port: 8443
+  credentials:
+    username: nifi_user
+    password: nifi_password
+  volumes:
+    data: nifi-data
+    database: nifi-database
+    flowfile: nifi-flowfile
+    content: nifi-content
+    provenance: nifi-provenance
+    input: input-data
+    output: output-data
+    staging: staging-data
+    flows: flows
+    tdc: TDC_Output
+    scripts: scripts
+    keystore: keystore.jks
+    truststore: truststore.jks
+  localIp: "127.0.0.1"  # update as needed
+nifiRegistry:
+  image:
+    repository: apache/nifi-registry
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 18080
+
+  persistence:
+    enabled: true
+    flowStorage:
+      size: 1Gi
+    database:
+      size: 1Gi
+
+  resources: {}
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+postgresql:
+  user: postgres
+  password: postgres
+  database: eucaim-nifi-test2
+  persistence:
+    size: 8Gi
+tdc:
+  image:
+    repository: bahia_tdc
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  service:
+    port: 5000
+    type: ClusterIP
+
+  containerPort: 5000
+
+  volume:
+    enabled: true
+    mountPath: /app/results
+    hostPath: ./TDC_Output

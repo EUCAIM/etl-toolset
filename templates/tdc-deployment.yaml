@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nifi.name" . }}-tdc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "nifi.name" . }}-tdc
+  template:
+    metadata:
+      labels:
+        app: {{ include "nifi.name" . }}-tdc
+    spec:
+      containers:
+      - name: tdc
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+        volumeMounts:
+        - name: tdc-output
+          mountPath: {{ .Values.volume.mountPath }}
+      volumes:
+      - name: tdc-output
+        hostPath:
+          path: {{ .Values.volume.hostPath }}
+          type: DirectoryOrCreate

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nifi-registry.name" . }}-registry
+  labels:
+    app: {{ include "nifi-registry.name" . }}-registry
+spec:
+  type: {{ .Values.nifiRegistry.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.nifiRegistry.service.port }}
+      targetPort: 18080
+  selector:
+    app: {{ include "nifi-registry.name" . }}-registry
+    

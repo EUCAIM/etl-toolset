@@ -43,7 +43,7 @@ class SequenceLookupService implements LookupService<Map<String, Object>> {
 
                 def sql = """
                     SELECT c.concept_code
-                    FROM eucaim_hyperontology_codes.concept c
+                    FROM concept c
                     WHERE c.concept_name = ?
                 """
 
@@ -58,9 +58,9 @@ class SequenceLookupService implements LookupService<Map<String, Object>> {
                 if (rs.next()) {
                     log.info("CodeableConceptsLookupService.lookup - Parsing one result")
                     def code = rs.getString("concept_code")
-                    result["${property}"] = code
+                    result["${property}__code"] = code
                 } else {
-                    result["${property}"] = "NOT FOUND"
+                    result["${property}__code"] = "NOT FOUND"
                 }
 
                 rs.close()

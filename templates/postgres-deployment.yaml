@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nifi.name" . }}-postgres
+  labels:
+    app: {{ include "nifi.name" . }}
+    component: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "nifi.name" . }}
+      component: postgres
+  template:
+    metadata:
+      labels:
+        app: {{ include "nifi.name" . }}
+        component: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresql.database | quote }}
+            - name: POSTGRES_USER
+              value: {{ .Values.postgresql.user | quote }}
+            - name: POSTGRES_PASSWORD
+            - name:  POSTGRES_HOST_AUTH_METHOD
+              value: "trust"
+              

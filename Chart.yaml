@@ -1,0 +1,6 @@
+apiVersion: v2
+name: nifi
+description: A Helm chart for deploying Apache NiFi, PostgreSQL, NiFi Registry, and TDC
+type: application
+version: 0.1.0
+appVersion: "2.3.0"

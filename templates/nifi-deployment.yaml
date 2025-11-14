@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nifi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nifi
+  template:
+    metadata:
+      labels:
+        app: nifi
+    spec:
+      containers:
+        - name: nifi
+          image: "{{ .Values.nifi.image.repository }}:{{ .Values.nifi.image.tag }}"
+          ports:
+            - containerPort: 8443
+          env:
+            - name: SINGLE_USER_CREDENTIALS_USERNAME
+              value: "eucaim"
+            - name: SINGLE_USER_CREDENTIALS_PASSWORD
+              value: "eucaim123456789"
+            - name: NIFI_WEB_PROXY_HOST
+              value: "localhost:8443,192.168.49.2:8443,{{ .Values.nifi.localIp }}:8443"
+            - name: NIFI_WEB_HTTPS_PORT
+              value: "8443"
+            - name: NIFI_WEB_PROXY_CONTEXT_PATH
+              value: "/"
+            - name: NIFI_WEB_HTTPS_HOST
+              value: "localhost"
+          volumeMounts:
+            - name: nifi-data
+              mountPath: /opt/nifi/nifi-current/data
+            - name: nifi-database
+              mountPath: /opt/nifi/nifi-current/database_repository
+            - name: nifi-flowfile
+              mountPath: /opt/nifi/nifi-current/flowfile_repository
+            - name: nifi-content
+              mountPath: /opt/nifi/nifi-current/content_repository
+            - name: nifi-provenance
+              mountPath: /opt/nifi/nifi-current/provenance_repository
+            - name: keystores
+              mountPath: /flows.zip
+              subPath: flows.zip
+            - name: init-script
+              mountPath: /opt/nifi/init.sh
+              subPath: init.sh
+            - name: keystores
+              mountPath: /keystore.jks
+              subPath: keystore.jks
+            - name: keystores
+              mountPath: /truststore.jks
+              subPath: truststore.jks
+            - name: keystores
+              mountPath: /scripts.zip
+              subPath: scripts.zip
+            - name: flows-temp
+              mountPath: /flows
+            - name: scripts-temp
+              mountPath: /scripts
+          command: ["sh", "-c", "chmod +x /opt/nifi/init.sh ; /opt/nifi/init.sh & exec /opt/nifi/scripts/start.sh"]
+          
+      volumes:
+        - name: nifi-data
+          persistentVolumeClaim:
+            claimName: nifi-data
+        - name: nifi-database
+          persistentVolumeClaim:
+            claimName: nifi-database
+        - name: nifi-flowfile
+          persistentVolumeClaim:
+            claimName: nifi-flowfile
+        - name: nifi-content
+          persistentVolumeClaim:
+            claimName: nifi-content
+        - name: nifi-provenance
+          persistentVolumeClaim:
+            claimName: nifi-provenance
+        - name: init-script
+          configMap:
+            name: nifi-init
+            defaultMode: 0755   # make it executable
+        - name: keystores
+          secret:
+            secretName: nifi-keystores
+        - name: scripts-temp
+          emptyDir: {}
+        - name: flows-temp
+          emptyDir: {}
+        
