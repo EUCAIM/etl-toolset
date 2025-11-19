@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "nifi.name" . }}-tdc
+  labels:
+    app: {{ include "nifi.name" . }}
+    component: tdc
 spec:
   replicas: 1
   selector:
@@ -18,11 +21,3 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.containerPort }}
-        volumeMounts:
-        - name: tdc-output
-          mountPath: {{ .Values.volume.mountPath }}
-      volumes:
-      - name: tdc-output
-        hostPath:
-          path: {{ .Values.volume.hostPath }}
-          type: DirectoryOrCreate

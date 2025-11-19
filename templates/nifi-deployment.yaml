@@ -30,63 +30,16 @@ spec:
               value: "/"
             - name: NIFI_WEB_HTTPS_HOST
               value: "localhost"
-          volumeMounts:
-            - name: nifi-data
-              mountPath: /opt/nifi/nifi-current/data
-            - name: nifi-database
-              mountPath: /opt/nifi/nifi-current/database_repository
-            - name: nifi-flowfile
-              mountPath: /opt/nifi/nifi-current/flowfile_repository
-            - name: nifi-content
-              mountPath: /opt/nifi/nifi-current/content_repository
-            - name: nifi-provenance
-              mountPath: /opt/nifi/nifi-current/provenance_repository
-            - name: keystores
-              mountPath: /flows.zip
-              subPath: flows.zip
-            - name: init-script
-              mountPath: /opt/nifi/init.sh
-              subPath: init.sh
-            - name: keystores
-              mountPath: /keystore.jks
-              subPath: keystore.jks
-            - name: keystores
-              mountPath: /truststore.jks
-              subPath: truststore.jks
-            - name: keystores
-              mountPath: /scripts.zip
-              subPath: scripts.zip
-            - name: flows-temp
-              mountPath: /flows
-            - name: scripts-temp
-              mountPath: /scripts
           command: ["sh", "-c", "chmod +x /opt/nifi/init.sh ; /opt/nifi/init.sh & exec /opt/nifi/scripts/start.sh"]
-          
-      volumes:
-        - name: nifi-data
-          persistentVolumeClaim:
-            claimName: nifi-data
-        - name: nifi-database
-          persistentVolumeClaim:
-            claimName: nifi-database
-        - name: nifi-flowfile
-          persistentVolumeClaim:
-            claimName: nifi-flowfile
-        - name: nifi-content
-          persistentVolumeClaim:
-            claimName: nifi-content
-        - name: nifi-provenance
-          persistentVolumeClaim:
-            claimName: nifi-provenance
-        - name: init-script
-          configMap:
-            name: nifi-init
-            defaultMode: 0755   # make it executable
-        - name: keystores
-          secret:
-            secretName: nifi-keystores
-        - name: scripts-temp
-          emptyDir: {}
-        - name: flows-temp
-          emptyDir: {}
         
+annotations: 
+    chaimeleon.eu/toolName: "{{ .Chart.Name }}"
+    chaimeleon.eu/toolVersion: "{{ .Chart.Version }}"
+    
+    chaimeleon.eu/datasetsIDs: "{{ .Values.datasets_list }}"
+    chaimeleon.eu/datasetsMountPoint: "{{ include "platform.datasets.mount_point" . }}"
+    
+    chaimeleon.eu/persistentHomeMountPoint: "{{ include "platform.persistent_home.mount_point" . }}"
+    chaimeleon.eu/persistentSharedFolderMountPoint: "{{ include "platform.persistent_shared_folder.mount_point" . }}"
+    
+    chaimeleon.eu/createGuacamoleConnection: "true"

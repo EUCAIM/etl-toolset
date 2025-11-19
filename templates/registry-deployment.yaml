@@ -24,15 +24,14 @@ spec:
           imagePullPolicy: {{ .Values.nifiRegistry.image.pullPolicy }}
           ports:
             - containerPort: 18080
-          volumeMounts:
-            - name: flow-storage
-              mountPath: /opt/nifi-registry/nifi-registry-current/flow_storage
-            - name: database
-              mountPath: /opt/nifi-registry/nifi-registry-current/database
-      volumes:
-        - name: flow-storage
-          persistentVolumeClaim:
-            claimName: {{ include "nifi-registry.name" . }}-flow-storage
-        - name: database
-          persistentVolumeClaim:
-            claimName: {{ include "nifi-registry.name" . }}-database
+annotations: 
+    chaimeleon.eu/toolName: "{{ .Chart.Name }}"
+    chaimeleon.eu/toolVersion: "{{ .Chart.Version }}"
+    
+    chaimeleon.eu/datasetsIDs: "{{ .Values.datasets_list }}"
+    chaimeleon.eu/datasetsMountPoint: "{{ include "platform.datasets.mount_point" . }}"
+    
+    chaimeleon.eu/persistentHomeMountPoint: "{{ include "platform.persistent_home.mount_point" . }}"
+    chaimeleon.eu/persistentSharedFolderMountPoint: "{{ include "platform.persistent_shared_folder.mount_point" . }}"
+    
+    chaimeleon.eu/createGuacamoleConnection: "true"
