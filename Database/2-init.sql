@@ -302,12 +302,14 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.SurgicalProcedure (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	PrimaryCancerIdentifier VARCHAR(50),
+	PatientIdentifier VARCHAR(50),
+	DatasetIdentifier VARCHAR(150),
     DateOfMedication DATE,
     OffsetFromDiagnosis DECIMAL(5,2),
     OffsetUnitEUCAIM VARCHAR(50),
     OffsetUnitOriginal VARCHAR(50),
-	PatientIdentifier VARCHAR(50),
-    MedicationCode INTEGER,
+    MedicationCode VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -492,5 +494,9 @@ UNIQUE (PrimaryCancerIdentifier, datasetidentifier, codeEUCAIM);
 ALTER TABLE eucaim_cdm_ingestion.TumorObservation
 ADD CONSTRAINT unique_histologicgrade
 UNIQUE (PrimaryCancerIdentifier, datasetidentifier, codeEUCAIM);
+
+ALTER TABLE eucaim_cdm_ingestion.TumorObservation
+ADD CONSTRAINT unique_histologicgrade
+UNIQUE (PrimaryCancerIdentifier, datasetidentifier, PatientIdentifier);
 
 ----------------------------------------------------
