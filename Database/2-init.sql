@@ -381,7 +381,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
 );
 
 
-CREATE TABLE IF NOT EXISTS ImageModality (
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageModality (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     ImageStudyUID VARCHAR(70),
     ImageSeriesUID VARCHAR(70),
