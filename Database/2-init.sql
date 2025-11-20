@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
 
 -- eucaim_cdm_ingestion.Organization
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Organization (
-    Identifier VARCHAR(50) PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Identifier VARCHAR(50),
     Name VARCHAR(255)
 );
 
@@ -41,6 +42,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Organization (
 -- Cancer Patient, unique identifier. 
 -- Min data, age does not go here, BirthDate is NOT required
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     Identifier VARCHAR(150) NOT NULL,
     DatasetIdentifier VARCHAR(150) NOT NULL,
     BirthDate DATE,
@@ -55,12 +57,12 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
     Deceased boolean DEFAULT false,
     LastContactDate DATE,
     CauseOfDeath INTEGER,
-    processed BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (Identifier, DatasetIdentifier)
+    processed BOOLEAN DEFAULT FALSE
 );
 
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Dataset (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     Identifier VARCHAR(150) PRIMARY KEY,
     Title VARCHAR(150),
     Description VARCHAR(500),
