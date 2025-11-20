@@ -52,8 +52,7 @@ postgresql:
   persistence:
     size: 8Gi
 tdc:
-  image:
-    repository: bahia_tdc
+  image: ingestion-tools/tdc-app
     tag: "latest"
     pullPolicy: IfNotPresent
 
