@@ -1,4 +1,5 @@
 -- Step 2 Eucaim CDM Schema definition 
+
 CREATE SCHEMA eucaim_cdm_ingestion;
 
 
@@ -270,6 +271,98 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorMarkerTest (
     DateOfMarker VARCHAR(15),
 
     processed BOOLEAN DEFAULT FALSE
+
+);
+
+
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Tumor (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+	DatasetIdentifier VARCHAR(150),
+
+    PrimaryCancerIdentifier VARCHAR(150),
+
+	isIndex BOOLEAN,
+
+	morphologyOriginal VARCHAR(150),
+
+	morphologyEUCAIM VARCHAR(150),
+
+	volume INTEGER,
+
+	sizeMethod INTEGER,
+
+	sizeMaximumDimension INTEGER,
+
+	sizeOhterDimension INTEGER,
+
+	sizeDimensionUnit VARCHAR (15),
+
+    BodySiteEUCAIM VARCHAR(50),
+
+    BodySiteOriginal VARCHAR(50),
+
+    BodySiteLocationQualifierEUCAIM VARCHAR(50),
+
+    BodySiteLocationQualifierOriginal VARCHAR(50),
+
+    BodySiteLateralityQualifierEUCAIM VARCHAR(50),
+
+    BodySiteLateralityQualifierOriginal VARCHAR(50),
+
+	HistologicGradeEUCAIM VARCHAR(50),
+
+    HistologicGradeOriginal VARCHAR(50),
+
+    HistologicGradeValue INTEGER
+
+	  
+
+);
+
+
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.RiskAssessment (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+	DatasetIdentifier VARCHAR(150),
+
+    PrimaryCancerIdentifier VARCHAR(150),
+
+	codeOriginal VARCHAR(150),
+
+	codeEUCAIM VARCHAR(150),
+
+	valueUnit VARCHAR (15),
+
+    valueAsConcept VARCHAR(50),
+
+    ValueAsNumber Integer	  
+
+);
+
+
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorObservation (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+	DatasetIdentifier VARCHAR(150),
+
+    PrimaryCancerIdentifier VARCHAR(150),
+
+	codeOriginal VARCHAR(150),
+
+	codeEUCAIM VARCHAR(150),
+
+	valueUnit VARCHAR (15),
+
+    valueAsConcept VARCHAR(50),
+
+    ValueAsNumber Integer	  
 
 );
 
@@ -864,6 +957,30 @@ ALTER TABLE eucaim_cdm_ingestion.Episode
 ADD CONSTRAINT unique_episode
 
 UNIQUE (patientidentifier, datasetidentifier, typeoriginal, episodenumber, startdate);
+
+
+
+ALTER TABLE eucaim_cdm_ingestion.Tumor
+
+ADD CONSTRAINT unique_tumor
+
+UNIQUE (PrimaryCancerIdentifier, datasetidentifier, BodySiteOriginal);
+
+
+
+ALTER TABLE eucaim_cdm_ingestion.RiskAssessment
+
+ADD CONSTRAINT unique_riskassessment
+
+UNIQUE (PrimaryCancerIdentifier, datasetidentifier, codeEUCAIM);
+
+
+
+ALTER TABLE eucaim_cdm_ingestion.TumorObservation
+
+ADD CONSTRAINT unique_tumorobservation
+
+UNIQUE (PrimaryCancerIdentifier, datasetidentifier, codeEUCAIM);
 
 
 
