@@ -59,11 +59,11 @@ services:
       - ./flows/:/flows
       - ./TDC_Output:/TDC_Output
       - ./postgresql-42.7.4.jar:/postgresql-42.7.4.jar
-      - ./init.sh:/opt/nifi/init.sh
       - ./truststore.jks:/truststore.jks
       - ./keystore.jks:/keystore.jks
       - ./scripts/:/scripts
-    entrypoint: ["sh","-c", "chmod +x /opt/nifi/init.sh ; /opt/nifi/init.sh & exec /opt/nifi/scripts/start.sh"]
+      - ./init.sh:/scripts/init.sh
+    entrypoint: ["sh","-c","tr -d '\r' < /scripts/init.sh > /tmp/init.sh ; chmod +x /tmp/init.sh ; /tmp/init.sh & exec /opt/nifi/scripts/start.sh"]
   mqtt:
     depends_on:
       nifi:
