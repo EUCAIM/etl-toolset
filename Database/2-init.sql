@@ -9,6 +9,7 @@ CREATE SCHEMA eucaim_cdm_ingestion;
 
 
 -- Values of type CodeableConcept, each one will containt atleast the TextValue and hopefully a coded value
+-- Not used!!
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ValueAsCodeableConcept (
 
@@ -64,8 +65,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
 
 
 
--- eucaim_cdm_ingestion.Organization
-
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Organization (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -79,10 +78,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Organization (
 
 
 
-
--- Cancer Patient, unique identifier. 
-
--- Min data, age does not go here, BirthDate is NOT required
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
 
@@ -140,11 +135,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Dataset (
 
 
 
-
-
--- Primary Cancer Condition of a Patient
-
--- Has either age of diagnosis in years or date of diagnosis
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.PrimaryCancerCondition (
 
@@ -445,13 +435,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.FamilyMemberHistory (
 
 
 
-
--- Procedure
-
--- Has either elapsed interval after baseline, in monts, or date of procedure
-
--- Probably it will be easier to cover at least ProcedureCategoryCode, meant to be a broader concept (i.e. Biopsy) than ProcedureCode (i.e. MRI-US fusion guided prostate biopsy)
-
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedProcedure (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -515,6 +498,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImagingProcedure (
     ImagingProcedureEUCAIM VARCHAR(50),
 
     ImagingProcedureOriginal VARCHAR(150),
+
+    ImagingTimepoint INTEGER,
 
     Episode INTEGER,
 
@@ -626,10 +611,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
 
 
 
--- Cancer Stage, linked via Procedure, not directly to Patient
-
--- Optional link to Condition ?
-
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerStage (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -706,6 +687,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageStudy (
 
     ImageStudyUID VARCHAR(70),
 
+    ImagingTimepoint INTEGER,
+
     OffsetFromDiagnosis DECIMAL(5,2),
 
     OffsetUnit INTEGER,
@@ -764,7 +747,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
 
 
 
-CREATE TABLE IF NOT EXISTS ImageModality (
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageModality (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
