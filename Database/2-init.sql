@@ -38,6 +38,12 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
 
 
 
+-- eucaim_cdm_ingestion.Organization
+
+-- Cancer Patient, unique identifier. 
+
+-- Min data, age does not go here, BirthDate is NOT required
+
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
 
     Identifier VARCHAR(150) NOT NULL,
@@ -86,6 +92,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Dataset (
 
 
 
+
+
+-- Primary Cancer Condition of a Patient
+
+-- Has either age of diagnosis in years or date of diagnosis
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.PrimaryCancerCondition (
 
@@ -155,7 +166,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HealthStatus (
 
     HealthStatusOriginal VARCHAR(50),
 
-    ValueAsNumber REAL,
+    ValueAsNumber DECIMAL(5,2),
 
     ValueAsConcept INTEGER,
 
@@ -191,9 +202,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorMarkerTest (
 
     TumorMarkerOriginal VARCHAR(50),
 
-    ValueAsNumber REAL,
+    ValueAsNumber DECIMAL(5,2),
 
-    ValueAsConcept INTEGER,
+    ValueAsConcept VARCHAR(50),
 
     ValueAsConceptUnit VARCHAR(50),
 
@@ -219,13 +230,13 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Tumor (
 
 	morphologyEUCAIM VARCHAR(150),
 
-	volume INTEGER,
+	volume DECIMAL(5,2),
 
-	sizeMethod INTEGER,
+	sizeMethod VARCHAR (50),
 
-	sizeMaximumDimension INTEGER,
+	sizeMaximumDimension DECIMAL(5,2),
 
-	sizeOhterDimension INTEGER,
+	sizeOhterDimension DECIMAL(5,2),
 
 	sizeDimensionUnit VARCHAR (15),
 
@@ -245,7 +256,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Tumor (
 
     HistologicGradeOriginal VARCHAR(50),
 
-    HistologicGradeValue INTEGER,
+
 
     processed BOOLEAN DEFAULT FALSE
 );
@@ -362,6 +373,13 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.FamilyMemberHistory (
 
 
 
+
+
+-- Procedure
+
+-- Has either elapsed interval after baseline, in monts, or date of procedure
+
+-- Probably it will be easier to cover at least ProcedureCategoryCode, meant to be a broader concept (i.e. Biopsy) than ProcedureCode (i.e. MRI-US fusion guided prostate biopsy)
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedProcedure (
 
@@ -509,6 +527,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
+    DatasetIdentifier VARCHAR(150),
+
     DateOfMedication DATE,
 
     OffsetFromDiagnosis DECIMAL(5,2),
@@ -531,6 +551,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
 
 
 
+-- Cancer Stage, linked via Procedure, not directly to Patient
+
+-- Optional link to Condition ?
+
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerStage (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -544,6 +568,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerStage (
 	CancerStageCodeEUCAIM VARCHAR(50),
 
     CancerStageCodeOriginal VARCHAR(50),
+
+	CancerStageValue VARCHAR(50),
 
     processed BOOLEAN DEFAULT FALSE
 
@@ -840,6 +866,22 @@ ALTER TABLE eucaim_cdm_ingestion.Tumor
 ADD CONSTRAINT unique_tumor
 
 UNIQUE (PrimaryCancerIdentifier, datasetidentifier, BodySiteOriginal);
+
+
+
+ALTER TABLE eucaim_cdm_ingestion.CancerStage
+
+ADD CONSTRAINT unique_cancerstage
+
+UNIQUE (PrimaryCancerConditionId, procedureid, datasetidentifier);
+
+
+
+ALTER TABLE eucaim_cdm_ingestion.CancerRelatedMedication
+
+ADD CONSTRAINT unique_cancerrelatedmedication
+
+UNIQUE (PatientIdentifier, datasetidentifier, MedicationCode);
 
 
 
