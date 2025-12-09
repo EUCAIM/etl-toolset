@@ -38,15 +38,13 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
 
 
 
-
+-- eucaim_cdm_ingestion.Organization
 
 -- Cancer Patient, unique identifier. 
 
 -- Min data, age does not go here, BirthDate is NOT required
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
-
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     Identifier VARCHAR(150) NOT NULL,
 
@@ -870,7 +868,7 @@ ALTER TABLE eucaim_cdm_ingestion.CancerStage
 
 ADD CONSTRAINT unique_cancerstage
 
-UNIQUE (PrimaryCancerConditionIdentifier, PatientIdentifier, datasetidentifier);
+UNIQUE (PrimaryCancerConditionId, procedureid, datasetidentifier);
 
 
 
@@ -878,7 +876,7 @@ ALTER TABLE eucaim_cdm_ingestion.CancerRelatedMedication
 
 ADD CONSTRAINT unique_cancerrelatedmedication
 
-UNIQUE (PatientIdentifier, datasetidentifier, MedicationCodeEUCAIM);
+UNIQUE (PatientIdentifier, datasetidentifier, MedicationCode);
 
 
 
