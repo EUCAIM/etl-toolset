@@ -82,8 +82,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Dataset (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
     Identifier VARCHAR(150) PRIMARY KEY,
 
     Title VARCHAR(150),
@@ -877,7 +875,7 @@ ALTER TABLE eucaim_cdm_ingestion.CancerStage
 
 ADD CONSTRAINT unique_cancerstage
 
-UNIQUE (PrimaryCancerConditionId, procedureid, datasetidentifier);
+UNIQUE (PrimaryCancerConditionIdentifier, PatientIdentifier, datasetidentifier);
 
 
 
@@ -885,7 +883,7 @@ ALTER TABLE eucaim_cdm_ingestion.CancerRelatedMedication
 
 ADD CONSTRAINT unique_cancerrelatedmedication
 
-UNIQUE (PatientIdentifier, datasetidentifier, MedicationCode);
+UNIQUE (PatientIdentifier, datasetidentifier, MedicationCodeEUCAIM);
 
 
 
