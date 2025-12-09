@@ -70,8 +70,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
 
     CauseOfDeath INTEGER,
 
-    processed BOOLEAN DEFAULT FALSE
+    processed BOOLEAN DEFAULT FALSE,
 
+    PRIMARY KEY (Identifier, DatasetIdentifier)
 );
 
 
