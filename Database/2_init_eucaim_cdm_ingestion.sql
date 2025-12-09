@@ -614,6 +614,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageStudy (
 
     ImagingTimepoint INTEGER,
 
+    PatientIdentifier VARCHAR(150),
+
+    DatasetIdentifier VARCHAR(150),
+
     OffsetFromDiagnosis DECIMAL(5,2),
 
     OffsetUnit INTEGER,

@@ -175,6 +175,11 @@ VALUES ('RID39574', 'PET-CT');
 
 
 
+INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValue)
+
+VALUES ('MG', 'Mammography');
+
+
 
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupHistologyMorphologyCode (
