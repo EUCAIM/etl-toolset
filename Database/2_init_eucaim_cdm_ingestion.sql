@@ -611,9 +611,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Episode (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageStudy (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
-    ImageStudyUID VARCHAR(70),
+    ImageStudyUID VARCHAR(70) PRIMARY KEY,
 
     ImagingTimepoint INTEGER,
 
@@ -634,8 +632,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageStudy (
 
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
-
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     ImageStudyUID VARCHAR(70),
 
@@ -661,8 +657,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
 
     ModalityParameterValueUniOriginal VARCHAR(50),
 
-    processed BOOLEAN DEFAULT FALSE
+    processed BOOLEAN DEFAULT FALSE,
 
+    PRIMARY KEY (ImageStudyUID, ImageSeriesUID)
 );
 
 
@@ -670,8 +667,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
 
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageModality (
-
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     ImageStudyUID VARCHAR(70),
 
@@ -700,8 +695,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageModality (
 
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
-
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     ImageSeriesIdentifier INTEGER,
 
@@ -733,7 +726,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
 
     ConvolutionKernel VARCHAR(30),
 
-    processed BOOLEAN DEFAULT FALSE
+    processed BOOLEAN DEFAULT FALSE, 
+
+    PRIMARY KEY (ImageSeriesIdentifier, ImageStudyUID, ImageSeriesUID)
 
 );
 
@@ -835,7 +830,7 @@ ALTER TABLE eucaim_cdm_ingestion.ImageStudy
 
 ADD CONSTRAINT unique_imagestudy
 
-UNIQUE (imagingprocedureidentifier, imagestudyuid);
+UNIQUE (imagestudyuid);
 
 
 
