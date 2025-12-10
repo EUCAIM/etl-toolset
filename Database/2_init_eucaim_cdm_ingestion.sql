@@ -610,6 +610,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Episode (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageStudy (
 
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
+
     ImageStudyUID VARCHAR(70) PRIMARY KEY,
 
     ImagingTimepoint INTEGER,
@@ -635,6 +637,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageStudy (
 
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
     ImageStudyUID VARCHAR(70),
 
@@ -671,6 +675,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageModality (
 
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
+
     ImageStudyUID VARCHAR(70),
 
     ImageSeriesUID VARCHAR(70),
@@ -698,6 +704,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageModality (
 
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
     ImageSeriesIdentifier INTEGER,
 
