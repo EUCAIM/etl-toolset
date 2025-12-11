@@ -624,7 +624,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageStudy (
 
     OffsetUnit INTEGER,
 
-    ImagingProcedureIdentifier VARCHAR(50),
+    ImagingProcedureIdentifier VARCHAR(250),
 
     ImageStudyCategoryCode INTEGER,
 
