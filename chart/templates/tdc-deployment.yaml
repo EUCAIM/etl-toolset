@@ -16,8 +16,8 @@ spec:
         app: {{ include "nifi.name" . }}-tdc
     spec:
       containers:
-      - name: tdc
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
+        - name: tdc
+          image: "{{ .Values.tdc.image.repository }}:{{ .Values.tdc.image.tag }}"
+          imagePullPolicy: {{ .Values.tdc.image.pullPolicy }}
+          ports:
         - containerPort: {{ .Values.containerPort }}

@@ -1,6 +1,6 @@
 nifi:
   image:
-    repository: apache/nifi
+    repository: harbor.eucaim-node.i3m.upv.es:5000/dockerhub/apache/nifi
     tag: "2.3.0"
   service:
     type: ClusterIP
@@ -25,7 +25,7 @@ nifi:
   localIp: "127.0.0.1"  # update as needed
 nifiRegistry:
   image:
-    repository: apache/nifi-registry
+    repository: harbor.eucaim-node.i3m.upv.es:5000/dockerhub/apache/nifi-registry
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -46,14 +46,18 @@ nifiRegistry:
   affinity: {}
 
 postgresql:
+  image:
+    repository: harbor.eucaim-node.i3m.upv.es:5000/library/etl/postgres-etl
+    tag: "15-0"
   user: postgres
   password: postgres
   database: eucaim-nifi-test2
   persistence:
     size: 8Gi
 tdc:
-  image: ingestion-tools/tdc-app
-    tag: "latest"
+  image: 
+    repository: harbor.eucaim-node.i3m.upv.es:5000/library/etl/tdc-app
+    tag: "1.0-slim"
     pullPolicy: IfNotPresent
 
   service:

@@ -1,7 +1,7 @@
 FROM python:3.9-slim
 WORKDIR /app
 COPY ./requirements.txt /app
-RUN pip install -r requirements.txt
+RUN pip install --prefer-binary --no-cache-dir -r requirements.txt
 COPY . .
 ENV FLASK_APP=app.py
 EXPOSE 5000

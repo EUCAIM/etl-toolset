@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:15
+          image: {{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
@@ -31,4 +31,4 @@ spec:
             - name: POSTGRES_PASSWORD
             - name:  POSTGRES_HOST_AUTH_METHOD
               value: "trust"
-              
+
