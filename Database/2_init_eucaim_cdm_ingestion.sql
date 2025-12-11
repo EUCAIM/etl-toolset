@@ -551,11 +551,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
 
 
 
-
--- Cancer Stage, linked via Procedure, not directly to Patient
-
--- Optional link to Condition ?
-
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerStage (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -881,7 +876,7 @@ ALTER TABLE eucaim_cdm_ingestion.CancerStage
 
 ADD CONSTRAINT unique_cancerstage
 
-UNIQUE (PrimaryCancerConditionId, procedureid, datasetidentifier);
+UNIQUE (PatientIdentifier, datasetidentifier, PrimaryCancerConditionIdentifier);
 
 
 
@@ -889,7 +884,7 @@ ALTER TABLE eucaim_cdm_ingestion.CancerRelatedMedication
 
 ADD CONSTRAINT unique_cancerrelatedmedication
 
-UNIQUE (PatientIdentifier, datasetidentifier, MedicationCode);
+UNIQUE (PatientIdentifier, datasetidentifier, MedicationCodeEUCAIM);
 
 
 
