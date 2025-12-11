@@ -2,13 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "nifi.name" . }}-tdc
-   labels:
-    app: {{ include "nifi.name" . }}
 spec:
-  type: {{ .Values.service.type }}
-  ports:
-  - port: {{ .Values.service.port }}
-    targetPort: {{ .Values.containerPort }}
   selector:
     app: {{ include "nifi.name" . }}
     component: tdc
+  type: ClusterIP
+  ports:
+    - name: https
+      protocol: TCP
+      port: {{ .Values.tdc.service.port }}
+      targetPort: {{ .Values.tdc.containerPort }}

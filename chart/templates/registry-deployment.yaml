@@ -1,37 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "nifi-registry.name" . }}-registry
-  labels:
-    app: {{ include "nifi-registry.name" . }}-registry
+  name: {{ include "nifi.name" . }}-registry
+  annotations: 
+    chaimeleon.eu/toolName: "{{ .Chart.Name }}"
+    chaimeleon.eu/toolVersion: "{{ .Chart.Version }}"
+    chaimeleon.eu/persistentHomeMountPoint: "/mnt/persistent-home"
+    chaimeleon.eu/persistentSharedFolderMountPoint: "/mnt/persistent-shared-folder"
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "nifi-registry.name" . }}-registry
+      app: {{ include "nifi.name" . }}
+      component: registry
   template:
     metadata:
       labels:
-        app: {{ include "nifi-registry.name" . }}-registry
+        app: {{ include "nifi.name" . }}
+        component: registry
     env:
     - name: NIFI_REGISTRY_WEB_PROXY_HOST
       value: "localhost:18080"
     spec:
-      hostname: {{ include "nifi-registry.name" . }}-registry
+      hostname: {{ include "nifi.name" . }}-registry
       containers:
         - name: nifi-registry
           image: "{{ .Values.nifiRegistry.image.repository }}:{{ .Values.nifiRegistry.image.tag }}"
           imagePullPolicy: {{ .Values.nifiRegistry.image.pullPolicy }}
+          command: 
+          - "sh"
+          - "-c"
+          - >-
+            mkdir -p /mnt/persistent-home/ETL-files/registry/flow-storage
+            && mkdir -p /mnt/persistent-home/ETL-files/registry/database
+            && ln -s /mnt/persistent-home/ETL-files/registry/flow-storage /opt/nifi-registry/nifi-registry-current/flow_storage
+            && ln -s /mnt/persistent-home/ETL-files/registry/database /opt/nifi-registry/nifi-registry-current/database
+            && ../scripts/start.sh
           ports:
             - containerPort: 18080
-annotations: 
-    chaimeleon.eu/toolName: "{{ .Chart.Name }}"
-    chaimeleon.eu/toolVersion: "{{ .Chart.Version }}"
-    
-    chaimeleon.eu/datasetsIDs: "{{ .Values.datasets_list }}"
-    chaimeleon.eu/datasetsMountPoint: "{{ include "platform.datasets.mount_point" . }}"
-    
-    chaimeleon.eu/persistentHomeMountPoint: "{{ include "platform.persistent_home.mount_point" . }}"
-    chaimeleon.eu/persistentSharedFolderMountPoint: "{{ include "platform.persistent_shared_folder.mount_point" . }}"
-    
-    chaimeleon.eu/createGuacamoleConnection: "true"

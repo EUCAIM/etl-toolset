@@ -2,22 +2,33 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "nifi.name" . }}-tdc
-  labels:
-    app: {{ include "nifi.name" . }}
-    component: tdc
+  annotations: 
+    chaimeleon.eu/toolName: "{{ .Chart.Name }}"
+    chaimeleon.eu/toolVersion: "{{ .Chart.Version }}"
+    chaimeleon.eu/persistentHomeMountPoint: "/mnt/persistent-home"
+    chaimeleon.eu/persistentSharedFolderMountPoint: "/mnt/persistent-shared-folder"
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "nifi.name" . }}-tdc
+      app: {{ include "nifi.name" . }}
+      component: tdc
   template:
     metadata:
       labels:
-        app: {{ include "nifi.name" . }}-tdc
+        app: {{ include "nifi.name" . }}
+        component: tdc
     spec:
       containers:
         - name: tdc
           image: "{{ .Values.tdc.image.repository }}:{{ .Values.tdc.image.tag }}"
           imagePullPolicy: {{ .Values.tdc.image.pullPolicy }}
           ports:
-        - containerPort: {{ .Values.containerPort }}
+            - containerPort: {{ .Values.tdc.containerPort }}
+          command: 
+          - "sh"
+          - "-c"
+          - >-
+            mkdir -p /mnt/persistent-home/ETL-files/TDC_Output
+            && ln -s /mnt/persistent-home/ETL-files/TDC_Output /app/results
+            && flask run --host 0.0.0.0 --port {{ .Values.tdc.containerPort }}

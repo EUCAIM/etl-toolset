@@ -1,16 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nifi
+  name: {{ include "nifi.name" . }}-nifi
+  annotations: 
+    chaimeleon.eu/toolName: "{{ .Chart.Name }}"
+    chaimeleon.eu/toolVersion: "{{ .Chart.Version }}"
+    chaimeleon.eu/persistentHomeMountPoint: "/mnt/persistent-home"
+    chaimeleon.eu/persistentSharedFolderMountPoint: "/mnt/persistent-shared-folder"
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nifi
+      app: {{ include "nifi.name" . }}
+      component: nifi
   template:
     metadata:
       labels:
-        app: nifi
+        app: {{ include "nifi.name" . }}
+        component: nifi
     spec:
       containers:
         - name: nifi
@@ -23,23 +30,46 @@ spec:
             - name: SINGLE_USER_CREDENTIALS_PASSWORD
               value: "eucaim123456789"
             - name: NIFI_WEB_PROXY_HOST
-              value: "localhost:8443,192.168.49.2:8443,{{ .Values.nifi.localIp }}:8443"
+              value: "{{ include "nifi.name" . }}-nifi:8443,{{ .Values.nifi.localIp }}:8443"
             - name: NIFI_WEB_HTTPS_PORT
               value: "8443"
             - name: NIFI_WEB_PROXY_CONTEXT_PATH
               value: "/"
-            - name: NIFI_WEB_HTTPS_HOST
-              value: "localhost"
-          command: ["sh", "-c", "chmod +x /opt/nifi/init.sh ; /opt/nifi/init.sh & exec /opt/nifi/scripts/start.sh"]
-        
-annotations: 
-    chaimeleon.eu/toolName: "{{ .Chart.Name }}"
-    chaimeleon.eu/toolVersion: "{{ .Chart.Version }}"
-    
-    chaimeleon.eu/datasetsIDs: "{{ .Values.datasets_list }}"
-    chaimeleon.eu/datasetsMountPoint: "{{ include "platform.datasets.mount_point" . }}"
-    
-    chaimeleon.eu/persistentHomeMountPoint: "{{ include "platform.persistent_home.mount_point" . }}"
-    chaimeleon.eu/persistentSharedFolderMountPoint: "{{ include "platform.persistent_shared_folder.mount_point" . }}"
-    
-    chaimeleon.eu/createGuacamoleConnection: "true"
+            #- name: NIFI_WEB_HTTPS_HOST
+            #  value: "localhost"
+          command: 
+          - "sh"
+          - "-c"
+          - >-
+            mkdir -p /mnt/persistent-home/ETL-files/nifi_data/nifi_data
+            && mkdir -p /mnt/persistent-home/ETL-files/nifi_data/nifi_database_repository
+            && mkdir -p /mnt/persistent-home/ETL-files/nifi_data/nifi_flowfile_repository
+            && mkdir -p /mnt/persistent-home/ETL-files/nifi_data/nifi_content_repository
+            && mkdir -p /mnt/persistent-home/ETL-files/nifi_data/nifi_provenance_repository
+            && mkdir -p /mnt/persistent-home/ETL-files/input_data
+            && mkdir -p /mnt/persistent-home/ETL-files/output_data
+            && mkdir -p /mnt/persistent-home/ETL-files/staging_data/curated_as_csv/clinical_data
+            && mkdir -p /mnt/persistent-home/ETL-files/staging_data/input_as_csv/clinical_data
+            && mkdir -p /mnt/persistent-home/ETL-files/staging_data/input_as_csv/image_metadata
+            && mkdir -p /mnt/persistent-home/ETL-files/flows
+            && mkdir -p /mnt/persistent-home/ETL-files/scripts
+            && mkdir -p /mnt/persistent-home/ETL-files/TDC_Output
+            && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_data                  /opt/nifi/nifi-current/data
+            && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_database_repository   /opt/nifi/nifi-current/database_repository
+            && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_flowfile_repository   /opt/nifi/nifi-current/flowfile_repository
+            && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_content_repository    /opt/nifi/nifi-current/content_repository
+            && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_provenance_repository /opt/nifi/nifi-current/provenance_repository
+            && ln -s /mnt/persistent-home/ETL-files/input_data    /opt/nifi/input_data
+            && ln -s /mnt/persistent-home/ETL-files/output_data   /opt/nifi/output_data
+            && ln -s /mnt/persistent-home/ETL-files/staging_data  /opt/nifi/staging_data
+            && ln -s /mnt/persistent-home/ETL-files/flows         /opt/nifi/flows
+            && ln -s /mnt/persistent-home/ETL-files/scripts       /opt/nifi/scripts
+            && ln -s /mnt/persistent-home/ETL-files/TDC_Output    /opt/nifi/TDC_Output
+            && ln -s /mnt/persistent-home/ETL-files/postgresql-42.7.4.jar /opt/nifi/postgresql-42.7.4.jar
+            && ln -s /mnt/persistent-home/ETL-files/truststore.jks        /opt/nifi/truststore.jks
+            && ln -s /mnt/persistent-home/ETL-files/keystore.jks          /opt/nifi/keystore.jks
+            && ln -s /mnt/persistent-home/ETL-files/init.sh               /opt/nifi/init.sh
+            && chmod +x /opt/nifi/init.sh 
+            && /opt/nifi/init.sh 
+            && exec /opt/nifi/scripts/start.sh
+            

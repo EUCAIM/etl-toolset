@@ -1,3 +1,6 @@
+
+datasetsList: ""
+
 nifi:
   image:
     repository: harbor.eucaim-node.i3m.upv.es:5000/dockerhub/apache/nifi

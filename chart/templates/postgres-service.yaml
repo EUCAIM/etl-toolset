@@ -1,16 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
-  labels:
-    app: {{ include "nifi.name" . }}
+  name: {{ include "nifi.name" . }}-postgres
 spec:
-  type: ClusterIP
-  ports:
-    - port: 5432
-      targetPort: 5432
-      protocol: TCP
-      name: postgres
   selector:
     app: {{ include "nifi.name" . }}
     component: postgres
+  type: ClusterIP
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432

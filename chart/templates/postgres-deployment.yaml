@@ -2,6 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "nifi.name" . }}-postgres
+  annotations: 
+    chaimeleon.eu/toolName: "{{ .Chart.Name }}"
+    chaimeleon.eu/toolVersion: "{{ .Chart.Version }}"
+    chaimeleon.eu/persistentHomeMountPoint: "/mnt/persistent-home"
+    chaimeleon.eu/persistentSharedFolderMountPoint: "/mnt/persistent-shared-folder"
   labels:
     app: {{ include "nifi.name" . }}
     component: postgres
@@ -31,4 +36,12 @@ spec:
             - name: POSTGRES_PASSWORD
             - name:  POSTGRES_HOST_AUTH_METHOD
               value: "trust"
+            - name:  PGDATA
+              value: "/mnt/persistent-home/ETL-files/postgresql_data/data"
+          command: 
+          - "sh"
+          - "-c"
+          - >-
+            mkdir -p $PGDATA
+            && docker-entrypoint.sh postgres
 
