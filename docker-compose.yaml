@@ -29,7 +29,7 @@ services:
     command: sh -c "npm install && npm run dev -- --host"
   nifi:
     depends_on:
-      postgres:
+      nifi-postgres:
         condition: service_healthy
     image: apache/nifi:2.3.0
     container_name: nifi
@@ -107,7 +107,7 @@ services:
       - ./TDC_Output:/app/results
   nifiRegistry:
     depends_on:
-      postgres:
+      nifi-postgres:
         condition: service_healthy
     image: apache/nifi-registry:latest
     container_name: nifi_registry
