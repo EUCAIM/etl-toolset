@@ -53,15 +53,15 @@ services:
       - ./nifi_data/nifi_flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
       - ./nifi_data/nifi_content_repository:/opt/nifi/nifi-current/content_repository
       - ./nifi_data/nifi_provenance_repository:/opt/nifi/nifi-current/provenance_repository
-      - ./input_data:/input_data
-      - ./output_data:/output_data
-      - ./staging_data:/staging_data
+      - ./input_data:/mnt/persistent-home/ETL-files/input_data
+      - ./output_data:/mnt/persistent-home/ETL-files/output_data
+      - ./staging_data:/mnt/persistent-home/ETL-files/staging_data
       - ./flows/:/flows
-      - ./TDC_Output:/TDC_Output
-      - ./postgresql-42.7.4.jar:/postgresql-42.7.4.jar
+      - ./TDC_Output:/mnt/persistent-home/ETL-files/TDC_Output
+      - ./postgresql-42.7.4.jar:/mnt/persistent-home/ETL-files/postgresql-42.7.4.jar
       - ./truststore.jks:/truststore.jks
       - ./keystore.jks:/keystore.jks
-      - ./scripts/:/scripts
+      - ./scripts/:/mnt/persistent-home/ETL-files/scripts
       - ./init.sh:/scripts/init.sh
     entrypoint: ["sh","-c","tr -d '\r' < /scripts/init.sh > /tmp/init.sh ; chmod +x /tmp/init.sh ; /tmp/init.sh & exec /opt/nifi/scripts/start.sh"]
   mqtt:
@@ -75,9 +75,9 @@ services:
     volumes:
       - ./mosquitto_config:/mosquitto/config
     restart: unless-stopped
-  postgres:
+  nifi-postgres:
     image: postgres:latest
-    container_name: postgres_db
+    container_name: nifi-postgres
     restart: unless-stopped
     ports:
       - "5432:5432"
@@ -96,10 +96,10 @@ services:
     volumes:
       - ./Database/:/docker-entrypoint-initdb.d/
       - ./postgres_data:/var/lib/postgresql/data
-  TDC:
+  nifi-tdc:
     image: bahia_tdc
     build: ./TDC
-    container_name: TDC
+    container_name: nifi-tdc
     restart: unless-stopped
     ports:
       - "5000:5000"
