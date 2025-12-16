@@ -1,20 +1,20 @@
 {
     "flowContents": {
-        "identifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e",
-        "instanceIdentifier": "c2ae6d1c-0199-1000-92d3-c5d9608da034",
-        "name": "Dicom_metadata_loop01_ingest",
+        "identifier": "bb74ae83-019a-1000-563d-f1c1f74d284c",
+        "instanceIdentifier": "ec8d4acf-7998-3eed-09fc-81463079d5f5",
+        "name": "Dicom_timepoints_loop01_ingest",
         "comments": "",
         "position": {
-            "x": 2700,
-            "y": 0
+            "x": 2248,
+            "y": -288
         },
         "processGroups": [],
         "remoteProcessGroups": [],
         "processors": [
             {
                 "identifier": "7c102210-b0bb-372f-91c7-ee624dc372ea",
-                "instanceIdentifier": "e2307cad-11ae-3c28-9ad7-65e547bec3e3",
-                "name": "WriteDicomMetadataToStaging",
+                "instanceIdentifier": "91c34184-7fdc-375c-5c8e-14ba6fb37b7d",
+                "name": "WriteDicomTimepointsToStaging",
                 "comments": "",
                 "position": {
                     "x": -2630.335205078125,
@@ -33,7 +33,7 @@
                     "Permissions": null,
                     "Maximum File Count": null,
                     "Last Modified Time": null,
-                    "Directory": "#{staging_base_path}/input_as_csv/image_metadata",
+                    "Directory": "#{staging_base_path}/input_as_csv/image_timepoints",
                     "Conflict Resolution Strategy": "replace"
                 },
                 "propertyDescriptors": {
@@ -115,11 +115,11 @@
                 "backoffMechanism": "PENALIZE_FLOWFILE",
                 "maxBackoffPeriod": "10 mins",
                 "componentType": "PROCESSOR",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             },
             {
                 "identifier": "c34f84ab-0199-1000-4d20-b5f95b45a8a2",
-                "instanceIdentifier": "f43cbe4d-b3aa-3132-f421-d9880970a354",
+                "instanceIdentifier": "7406f5bf-e8ea-350b-c052-7cd86923dc88",
                 "name": "UpdateAttribute",
                 "comments": "",
                 "position": {
@@ -192,12 +192,12 @@
                 "backoffMechanism": "PENALIZE_FLOWFILE",
                 "maxBackoffPeriod": "10 mins",
                 "componentType": "PROCESSOR",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             },
             {
                 "identifier": "3f7d6d55-9396-36e5-9359-14e8d0186668",
-                "instanceIdentifier": "f809aada-cd8a-3911-8dc9-8ec3b29fab0f",
-                "name": "LoadDicomMetadataCSVfromInput",
+                "instanceIdentifier": "21596548-c4c2-3a0e-9bce-ea9784ffd279",
+                "name": "LoadDicomTimepointsCSVfromInput",
                 "comments": "",
                 "position": {
                     "x": -3952,
@@ -213,7 +213,7 @@
                     "Keep Source File": "false",
                     "Minimum File Age": "0 sec",
                     "Polling Interval": "0 sec",
-                    "Input Directory": "#{input_base_path}/image_metadata",
+                    "Input Directory": "#{input_base_path}/image_timepoints",
                     "Maximum File Age": null,
                     "Batch Size": "10",
                     "Maximum File Size": null,
@@ -327,11 +327,11 @@
                 "backoffMechanism": "PENALIZE_FLOWFILE",
                 "maxBackoffPeriod": "10 mins",
                 "componentType": "PROCESSOR",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             },
             {
                 "identifier": "ef675b1f-d0f8-36b5-b01d-5f78514d66ec",
-                "instanceIdentifier": "2efc71aa-87be-3c81-0039-2451267c577a",
+                "instanceIdentifier": "01d47d72-e354-39a7-9822-efeed6d7a99c",
                 "name": "ConvertCSVtoJSON",
                 "comments": "",
                 "position": {
@@ -392,11 +392,11 @@
                 "backoffMechanism": "PENALIZE_FLOWFILE",
                 "maxBackoffPeriod": "10 mins",
                 "componentType": "PROCESSOR",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             },
             {
                 "identifier": "1127426a-e93c-3015-ae1c-7d702ace7cb9",
-                "instanceIdentifier": "83f65c14-edfa-3b26-cd73-972fd6a6b491",
+                "instanceIdentifier": "cc2f1340-f9fd-39fa-6fb3-9d9b2c8b7f7b",
                 "name": "RenameOutputFileToJSON",
                 "comments": "",
                 "position": {
@@ -471,7 +471,7 @@
                 "backoffMechanism": "PENALIZE_FLOWFILE",
                 "maxBackoffPeriod": "10 mins",
                 "componentType": "PROCESSOR",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             }
         ],
         "inputPorts": [],
@@ -479,23 +479,23 @@
         "connections": [
             {
                 "identifier": "30ec26cf-6284-30da-a9d9-4aeb7bafd5f0",
-                "instanceIdentifier": "689401d8-6360-3d20-5b28-a60a7ce6a846",
+                "instanceIdentifier": "15124758-6a9b-3834-5f3e-d54476b3b4bf",
                 "name": "",
                 "source": {
                     "id": "ef675b1f-d0f8-36b5-b01d-5f78514d66ec",
                     "type": "PROCESSOR",
-                    "groupId": "d3c6e5a0-d52f-317b-85be-8340bd91618e",
+                    "groupId": "bb74ae83-019a-1000-563d-f1c1f74d284c",
                     "name": "ConvertCSVtoJSON",
                     "comments": "",
-                    "instanceIdentifier": "2efc71aa-87be-3c81-0039-2451267c577a"
+                    "instanceIdentifier": "01d47d72-e354-39a7-9822-efeed6d7a99c"
                 },
                 "destination": {
                     "id": "1127426a-e93c-3015-ae1c-7d702ace7cb9",
                     "type": "PROCESSOR",
-                    "groupId": "d3c6e5a0-d52f-317b-85be-8340bd91618e",
+                    "groupId": "bb74ae83-019a-1000-563d-f1c1f74d284c",
                     "name": "RenameOutputFileToJSON",
                     "comments": "",
-                    "instanceIdentifier": "83f65c14-edfa-3b26-cd73-972fd6a6b491"
+                    "instanceIdentifier": "cc2f1340-f9fd-39fa-6fb3-9d9b2c8b7f7b"
                 },
                 "labelIndex": 0,
                 "zIndex": 0,
@@ -511,27 +511,27 @@
                 "partitioningAttribute": "",
                 "loadBalanceCompression": "DO_NOT_COMPRESS",
                 "componentType": "CONNECTION",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             },
             {
                 "identifier": "07fad9eb-2b81-3bde-a820-284af8df304b",
-                "instanceIdentifier": "9050e83f-26b5-379c-ae64-342d39290eba",
+                "instanceIdentifier": "0fb8e4ae-221b-3136-dad9-27214eba81af",
                 "name": "",
                 "source": {
                     "id": "1127426a-e93c-3015-ae1c-7d702ace7cb9",
                     "type": "PROCESSOR",
-                    "groupId": "d3c6e5a0-d52f-317b-85be-8340bd91618e",
+                    "groupId": "bb74ae83-019a-1000-563d-f1c1f74d284c",
                     "name": "RenameOutputFileToJSON",
                     "comments": "",
-                    "instanceIdentifier": "83f65c14-edfa-3b26-cd73-972fd6a6b491"
+                    "instanceIdentifier": "cc2f1340-f9fd-39fa-6fb3-9d9b2c8b7f7b"
                 },
                 "destination": {
                     "id": "7c102210-b0bb-372f-91c7-ee624dc372ea",
                     "type": "PROCESSOR",
-                    "groupId": "d3c6e5a0-d52f-317b-85be-8340bd91618e",
-                    "name": "WriteDicomMetadataToStaging",
+                    "groupId": "bb74ae83-019a-1000-563d-f1c1f74d284c",
+                    "name": "WriteDicomTimepointsToStaging",
                     "comments": "",
-                    "instanceIdentifier": "e2307cad-11ae-3c28-9ad7-65e547bec3e3"
+                    "instanceIdentifier": "91c34184-7fdc-375c-5c8e-14ba6fb37b7d"
                 },
                 "labelIndex": 0,
                 "zIndex": 0,
@@ -547,27 +547,27 @@
                 "partitioningAttribute": "",
                 "loadBalanceCompression": "DO_NOT_COMPRESS",
                 "componentType": "CONNECTION",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             },
             {
                 "identifier": "24a6b285-e202-3f63-be3d-d4b4a7637b66",
-                "instanceIdentifier": "c3533285-0199-1000-201c-b42ca531c610",
+                "instanceIdentifier": "906be491-6961-3834-dfa2-021e548cba0b",
                 "name": "",
                 "source": {
                     "id": "c34f84ab-0199-1000-4d20-b5f95b45a8a2",
                     "type": "PROCESSOR",
-                    "groupId": "d3c6e5a0-d52f-317b-85be-8340bd91618e",
+                    "groupId": "bb74ae83-019a-1000-563d-f1c1f74d284c",
                     "name": "UpdateAttribute",
                     "comments": "",
-                    "instanceIdentifier": "f43cbe4d-b3aa-3132-f421-d9880970a354"
+                    "instanceIdentifier": "7406f5bf-e8ea-350b-c052-7cd86923dc88"
                 },
                 "destination": {
                     "id": "ef675b1f-d0f8-36b5-b01d-5f78514d66ec",
                     "type": "PROCESSOR",
-                    "groupId": "d3c6e5a0-d52f-317b-85be-8340bd91618e",
+                    "groupId": "bb74ae83-019a-1000-563d-f1c1f74d284c",
                     "name": "ConvertCSVtoJSON",
                     "comments": "",
-                    "instanceIdentifier": "2efc71aa-87be-3c81-0039-2451267c577a"
+                    "instanceIdentifier": "01d47d72-e354-39a7-9822-efeed6d7a99c"
                 },
                 "labelIndex": 0,
                 "zIndex": 0,
@@ -583,27 +583,27 @@
                 "partitioningAttribute": "",
                 "loadBalanceCompression": "DO_NOT_COMPRESS",
                 "componentType": "CONNECTION",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             },
             {
                 "identifier": "8974dedd-fabe-38b3-b567-f91525c02a84",
-                "instanceIdentifier": "c351fc3d-0199-1000-d411-74c30b1744c3",
+                "instanceIdentifier": "4bbb8da7-ab27-3d57-694e-1fe434bc9b11",
                 "name": "",
                 "source": {
                     "id": "3f7d6d55-9396-36e5-9359-14e8d0186668",
                     "type": "PROCESSOR",
-                    "groupId": "d3c6e5a0-d52f-317b-85be-8340bd91618e",
-                    "name": "LoadDicomMetadataCSVfromInput",
+                    "groupId": "bb74ae83-019a-1000-563d-f1c1f74d284c",
+                    "name": "LoadDicomTimepointsCSVfromInput",
                     "comments": "",
-                    "instanceIdentifier": "f809aada-cd8a-3911-8dc9-8ec3b29fab0f"
+                    "instanceIdentifier": "21596548-c4c2-3a0e-9bce-ea9784ffd279"
                 },
                 "destination": {
                     "id": "c34f84ab-0199-1000-4d20-b5f95b45a8a2",
                     "type": "PROCESSOR",
-                    "groupId": "d3c6e5a0-d52f-317b-85be-8340bd91618e",
+                    "groupId": "bb74ae83-019a-1000-563d-f1c1f74d284c",
                     "name": "UpdateAttribute",
                     "comments": "",
-                    "instanceIdentifier": "f43cbe4d-b3aa-3132-f421-d9880970a354"
+                    "instanceIdentifier": "7406f5bf-e8ea-350b-c052-7cd86923dc88"
                 },
                 "labelIndex": 0,
                 "zIndex": 0,
@@ -619,13 +619,13 @@
                 "partitioningAttribute": "",
                 "loadBalanceCompression": "DO_NOT_COMPRESS",
                 "componentType": "CONNECTION",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             }
         ],
         "labels": [
             {
                 "identifier": "d843b1c7-6dd5-3975-85cc-ceafac102a68",
-                "instanceIdentifier": "6d48c2e1-0957-380a-cccc-5d50731788f0",
+                "instanceIdentifier": "5f01c5ff-6022-3f65-a5f4-317aa25bfa0c",
                 "position": {
                     "x": -3544,
                     "y": 56
@@ -638,14 +638,14 @@
                     "font-size": "20px"
                 },
                 "componentType": "LABEL",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             }
         ],
         "funnels": [],
         "controllerServices": [
             {
                 "identifier": "17e7a1ff-9ba8-354b-9e9d-fa4cfbb4574d",
-                "instanceIdentifier": "74176376-1bf6-3348-8158-6d8a956acfa8",
+                "instanceIdentifier": "ff7d0427-f711-337c-f96a-8d99b553384f",
                 "name": "CSVRecordSetWriterClinicalData",
                 "comments": "",
                 "type": "org.apache.nifi.csv.CSVRecordSetWriter",
@@ -879,11 +879,11 @@
                 "scheduledState": "DISABLED",
                 "bulletinLevel": "WARN",
                 "componentType": "CONTROLLER_SERVICE",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             },
             {
                 "identifier": "67e84eda-819f-31c5-a7ae-3ec847760fc0",
-                "instanceIdentifier": "393b45c0-f27f-3219-274f-1c5a3ff52706",
+                "instanceIdentifier": "7b280b57-128c-3390-5b59-2df8a6161002",
                 "name": "JsonRecordSetWriter",
                 "comments": "",
                 "type": "org.apache.nifi.json.JsonRecordSetWriter",
@@ -1061,11 +1061,11 @@
                 "scheduledState": "DISABLED",
                 "bulletinLevel": "WARN",
                 "componentType": "CONTROLLER_SERVICE",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             },
             {
                 "identifier": "92a4a0ba-9ed7-31b5-9448-444980c3d608",
-                "instanceIdentifier": "b007fdb4-f7a7-3987-df6a-8482e832f6b9",
+                "instanceIdentifier": "8878eb32-0d95-37dc-6824-3b4d5c076b79",
                 "name": "CSVReaderDicomTags",
                 "comments": "",
                 "type": "org.apache.nifi.csv.CSVReader",
@@ -1283,7 +1283,7 @@
                 "scheduledState": "DISABLED",
                 "bulletinLevel": "WARN",
                 "componentType": "CONTROLLER_SERVICE",
-                "groupIdentifier": "d3c6e5a0-d52f-317b-85be-8340bd91618e"
+                "groupIdentifier": "bb74ae83-019a-1000-563d-f1c1f74d284c"
             }
         ],
         "parameterContextName": "ETL_v03_parameters",
