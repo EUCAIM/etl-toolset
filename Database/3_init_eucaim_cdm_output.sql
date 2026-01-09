@@ -89,8 +89,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.FamilyMemberHistory (
 
     PatientId INTEGER REFERENCES eucaim_cdm_output.CancerPatient(id) ON DELETE CASCADE,
 
-    FamilyMemberIdentifier VARCHAR(150),
-
     Subject VARCHAR(50),
 
     Relationship VARCHAR(50),
@@ -109,8 +107,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.RadiotherapyCourseSummary (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     PatientId INTEGER REFERENCES eucaim_cdm_output.CancerPatient(id) ON DELETE CASCADE,
-
-    ProcedureIdentifier VARCHAR(150),
 
     OffsetFromDiagnosis DECIMAL(5,2),
 
@@ -131,8 +127,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.SurgicalProcedure (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     PatientId INTEGER REFERENCES eucaim_cdm_output.CancerPatient(id) ON DELETE CASCADE,
-
-    ProcedureIdentifier VARCHAR(150),
 
     OffsetFromDiagnosis DECIMAL(5,2),
 

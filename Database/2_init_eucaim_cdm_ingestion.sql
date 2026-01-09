@@ -40,9 +40,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
 -- Dataset & CancerPatient
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Dataset (
 
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
+
     Identifier VARCHAR(150) PRIMARY KEY,
 
-    Title VARCHAR(150),
+    Title VARCHAR(150) NOT NULL,
 
     Description VARCHAR(500),
 
@@ -55,7 +57,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Dataset (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
 
-    Identifier VARCHAR(150) NOT NULL,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
+
+    Identifier VARCHAR(150) PRIMARY KEY,
 
     DatasetIdentifier VARCHAR(150) NOT NULL,
 
@@ -79,22 +83,18 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
 
     CauseOfDeath INTEGER,
 
-    processed BOOLEAN DEFAULT FALSE,
-
-    PRIMARY KEY (Identifier, DatasetIdentifier)
+    processed BOOLEAN DEFAULT FALSE
 );
 
 
 -- Entities related with CancerPatient directly: HealthStatus, TumorMarkerTest, FamilyMemberHistory
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HealthStatus (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-    Identifier VARCHAR(50),
+    Identifier VARCHAR(50) PRIMARY KEY,
 
-    PatientIdentifier VARCHAR(150),
-
-    DatasetIdentifier VARCHAR(150),
+    PatientIdentifier VARCHAR(150) NOT NULL,
 
     HealthStatusCode INTEGER,
 
@@ -116,6 +116,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HealthStatus (
 
     ValueAsConceptUnitOriginal VARCHAR(50),
 
+    Episode INTEGER,
+
+    EpisodeStartDate VARCHAR(15),
+
     processed BOOLEAN DEFAULT FALSE
 
 );
@@ -123,13 +127,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HealthStatus (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorMarkerTest (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY ,
 
-    PatientIdentifier VARCHAR(150),
+    Identifier VARCHAR(150) PRIMARY KEY,
 
-    DatasetIdentifier VARCHAR(150),
-
-    PrimaryCancerIdentifier VARCHAR(150),
+    PrimaryCancerIdentifier VARCHAR(150) NOT NULL,
 
     CategoryEUCAIM VARCHAR(50),
 
@@ -151,6 +153,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorMarkerTest (
 
     DateOfMarker VARCHAR(15),
 
+    Episode INTEGER,
+
+    EpisodeStartDate VARCHAR(15),
+
     processed BOOLEAN DEFAULT FALSE
 
 );
@@ -158,13 +164,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorMarkerTest (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.FamilyMemberHistory (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-    PatientIdentifier VARCHAR(150),
+    Identifier VARCHAR(150) PRIMARY KEY,
 
-    DatasetIdentifier VARCHAR(150),
-
-    FamilyMemberIdentifier VARCHAR(150),
+    PatientIdentifier VARCHAR(150) NOT NULL,
 
     SubjectEUCAIM VARCHAR(50),
 
@@ -190,9 +194,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.FamilyMemberHistory (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.RadiotherapyCourseSummary (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-    ProcedureIdentifier VARCHAR(150),
+    TreatmentIdentifier VARCHAR(150) PRIMARY KEY,
+
+    PatientIdentifier VARCHAR(150) NOT NULL,
 
     OffsetFromDiagnosis DECIMAL(5,2),
 
@@ -220,9 +226,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.RadiotherapyCourseSummary (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.SurgicalProcedure (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-    ProcedureIdentifier VARCHAR(150),
+    TreatmentIdentifier VARCHAR(150) PRIMARY KEY,
+
+    PatientIdentifier VARCHAR(150) NOT NULL,
 
     OffsetFromDiagnosis DECIMAL(5,2),
 
@@ -253,7 +261,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    DatasetIdentifier VARCHAR(150),
+    TreatmentIdentifier VARCHAR(150) PRIMARY KEY,
+
+    PatientIdentifier VARCHAR(150) NOT NULL,
 
     DateOfMedication DATE,
 
@@ -263,11 +273,13 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
 
     OffsetUnitOriginal VARCHAR(50),
 
-	PatientIdentifier VARCHAR(50),
-
     MedicationCodeEUCAIM VARCHAR(50),
 
     MedicationCodeOriginal VARCHAR(50),
+
+    Episode INTEGER,
+
+    EpisodeStartDate VARCHAR(15),
 
     processed BOOLEAN DEFAULT FALSE
 
@@ -277,9 +289,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
 -- PrimaryCancerCondition, HistologicGrade, CancerStage, Procedure, ImagingProcedure, Tumor
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.PrimaryCancerCondition (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-    Identifier VARCHAR(150),
+    Identifier VARCHAR(150) PRIMARY KEY,
+
+    PatientIdentifier VARCHAR(150) NOT NULL,
 
     AgeOfDiagnosis DECIMAL(5,2),
 
@@ -314,13 +328,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.PrimaryCancerCondition (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HistologicGrade (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-	PatientIdentifier VARCHAR(50),
+	Identifier VARCHAR(150) PRIMARY KEY,
 
-    DatasetIdentifier VARCHAR(150),
-
-	PrimaryCancerConditionIdentifier VARCHAR(50),
+	PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
 
     CategoryEUCAIM VARCHAR(50),
 
@@ -338,13 +350,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HistologicGrade (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerStage (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-    PatientIdentifier VARCHAR(150),
+    Identifier VARCHAR(150) PRIMARY KEY,
 
-    DatasetIdentifier VARCHAR(150),
-
-    PrimaryCancerConditionIdentifier VARCHAR(150),
+    PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
 
 	CancerStageCodeEUCAIM VARCHAR(50),
 
@@ -361,9 +371,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerStage (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedProcedure (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-    ProcedureIdentifier VARCHAR(150),
+    ProcedureIdentifier VARCHAR(150) PRIMARY KEY,
+
+    PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
 
     OffsetFromDiagnosis DECIMAL(5,2),
 
@@ -372,12 +384,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedProcedure (
     OffsetUnitOriginal VARCHAR(50),
 
     PerformedDate VARCHAR(15),
-
-	PatientIdentifier VARCHAR(150),
-
-    DatasetIdentifier VARCHAR(150),
-
-    PrimaryCancerConditionIdentifier VARCHAR(50),
 
     ProcedureEUCAIM VARCHAR(50),
 
@@ -398,9 +404,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedProcedure (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImagingProcedure (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-    ProcedureIdentifier VARCHAR(150),
+    ProcedureIdentifier VARCHAR(150) PRIMARY KEY,
+
+    PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
 
     OffsetFromDiagnosis DECIMAL(5,2),
 
@@ -409,12 +417,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImagingProcedure (
     OffsetUnitOriginal VARCHAR(50),
 
     PerformedDate VARCHAR(15),
-
-	PatientIdentifier VARCHAR(150),
-
-    DatasetIdentifier VARCHAR(150),
-
-    PrimaryCancerConditionIdentifier VARCHAR(50),
 
     ImagingProcedureEUCAIM VARCHAR(50),
 
@@ -436,15 +438,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImagingProcedure (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Tumor (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-    Identifier VARCHAR(150),
+    Identifier VARCHAR(150) PRIMARY KEY,
 
-	DatasetIdentifier VARCHAR(150),
-
-    PatientIdentifier VARCHAR(150),
-
-    PrimaryCancerConditionIdentifier VARCHAR(150),
+    PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
 
 	isIndex BOOLEAN,
 
@@ -480,6 +478,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Tumor (
 
     HistologicGradeOriginal VARCHAR(50),
 
+    Episode INTEGER,
+
+    EpisodeStartDate VARCHAR(15),
+
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -487,11 +489,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Tumor (
 -- Entities related with Tumor directly: RiskAssessment, TumorObservation
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.RiskAssessment (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-	DatasetIdentifier VARCHAR(150),
+	Identifier VARCHAR(150) PRIMARY KEY,
 
-    TumorIdentifier VARCHAR(150),    
+    TumorIdentifier VARCHAR(150) NOT NULL,    
 
 	codeOriginal VARCHAR(150),
 
@@ -510,11 +512,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.RiskAssessment (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorObservation (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-	DatasetIdentifier VARCHAR(150),
+	Identifier VARCHAR(150) PRIMARY KEY,
 
-    TumorIdentifier VARCHAR(150),
+    TumorIdentifier VARCHAR(150) NOT NULL,
 
 	codeOriginal VARCHAR(150),
 
@@ -530,18 +532,20 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorObservation (
 );
 
 
--- Episode & EpisodeEvent
+-- Episode
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Episode (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
-	PatientIdentifier VARCHAR(150),
+    Identifier VARCHAR(150) PRIMARY KEY,
 
-    DatasetIdentifier VARCHAR(150),
+	PatientIdentifier VARCHAR(150) NOT NULL,
+
+    DatasetIdentifier VARCHAR(150) NOT NULL,
 
     TypeEUCAIM VARCHAR(50),
 
-    TypeOriginal VARCHAR(50),
+    TypeOriginal VARCHAR(50) NOT NULL,
 
 	EpisodeNumber INTEGER,
 
@@ -590,7 +594,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
 
     ImageStudyUID VARCHAR(70),
 
-    ImageSeriesUID VARCHAR(70),
+    ImageSeriesUID VARCHAR(70) PRIMARY KEY,
 
     ImageSeriesNumber INTEGER,
 
@@ -638,167 +642,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
 
     processed BOOLEAN DEFAULT FALSE, 
 
-    PRIMARY KEY (Id)
+    PRIMARY KEY (ImageStudyUID, ImageSeriesUID)
 
 );
 
 
 
 ----------------------------------------------------
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.CancerPatient
-
-ADD CONSTRAINT unique_cancerpatient
-
-UNIQUE (identifier, datasetidentifier);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.Dataset
-
-ADD CONSTRAINT unique_dataset
-
-UNIQUE (identifier);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.PrimaryCancerCondition
-
-ADD CONSTRAINT unique_primarycancercondition
-
-UNIQUE (patientidentifier, datasetidentifier, identifier, episodestartdate);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.HealthStatus
-
-ADD CONSTRAINT unique_healthstatus
-
-UNIQUE (patientidentifier, datasetidentifier, identifier);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.TumorMarkerTest
-
-ADD CONSTRAINT unique_tumormarkertest
-
-UNIQUE (patientidentifier, datasetidentifier, primarycanceridentifier, tumormarkeroriginal, dateofmarker);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.FamilyMemberHistory
-
-ADD CONSTRAINT unique_familymemberhistory
-
-UNIQUE (patientidentifier, datasetidentifier, FamiliMemberIdentifier);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.HistologicGrade
-
-ADD CONSTRAINT unique_histologicgrade
-
-UNIQUE (patientidentifier, datasetidentifier, primarycanceridentifier);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.CancerRelatedProcedure
-
-ADD CONSTRAINT unique_cancerrelatedprocedure
-
-UNIQUE (patientidentifier, datasetidentifier, procedureidentifier);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.ImagingProcedure
-
-ADD CONSTRAINT unique_imagingprocedure
-
-UNIQUE (patientidentifier, datasetidentifier, procedureidentifier);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.RadiotherapyCourseSummary
-
-ADD CONSTRAINT unique_radiotherapycoursesummary
-
-UNIQUE (patientidentifier, datasetidentifier, procedureidentifier);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.SurgicalProcedure
-
-ADD CONSTRAINT unique_surgicalprocedure
-
-UNIQUE (patientidentifier, datasetidentifier, procedureidentifier);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.ImageStudy
-
-ADD CONSTRAINT unique_imagestudy
-
-UNIQUE (imagestudyuid);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.ImageSeries
-
-ADD CONSTRAINT unique_imageseries
-
-UNIQUE (imagestudyuid, imageseriesuid);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.Episode 
-
-ADD CONSTRAINT unique_episode
-
-UNIQUE (patientidentifier, datasetidentifier, typeoriginal, episodenumber, startdate);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.Tumor
-
-ADD CONSTRAINT unique_tumor
-
-UNIQUE (PrimaryCancerIdentifier, datasetidentifier, BodySiteOriginal);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.CancerStage
-
-ADD CONSTRAINT unique_cancerstage
-
-UNIQUE (PatientIdentifier, datasetidentifier, PrimaryCancerConditionIdentifier);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.CancerRelatedMedication
-
-ADD CONSTRAINT unique_cancerrelatedmedication
-
-UNIQUE (PatientIdentifier, datasetidentifier, MedicationCodeEUCAIM);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.RiskAssessment
-
-ADD CONSTRAINT unique_riskassessment
-
-UNIQUE (PrimaryCancerIdentifier, datasetidentifier, codeEUCAIM);
-
-
-
-ALTER TABLE eucaim_cdm_ingestion.TumorObservation
-
-ADD CONSTRAINT unique_tumorobservation
-
-UNIQUE (PrimaryCancerIdentifier, datasetidentifier, codeEUCAIM);
-
-
-
-----------------------------------------------------
-
