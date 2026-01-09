@@ -208,10 +208,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.RadiotherapyCourseSummary (
 
     PerformedDate VARCHAR(15),
 
-	PatientIdentifier VARCHAR(150),
-
-    DatasetIdentifier VARCHAR(150),
-
     Episode INTEGER,
 
     EpisodeStartDate VARCHAR(15),
@@ -240,10 +236,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.SurgicalProcedure (
 
     PerformedDate VARCHAR(15),
 
-	PatientIdentifier VARCHAR(150),
-
-    DatasetIdentifier VARCHAR(150),
-
     ProcedureEUCAIM VARCHAR(50),
 
     ProcedureOriginal VARCHAR(150),
@@ -259,7 +251,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.SurgicalProcedure (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
 
-    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
 
     TreatmentIdentifier VARCHAR(150) PRIMARY KEY,
 
@@ -303,9 +295,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.PrimaryCancerCondition (
 
     AssertedDate DATE,
 
-	PatientIdentifier VARCHAR(150),
-
-    DatasetIdentifier VARCHAR(150),
 
     PrimaryCancerConditionEUCAIM VARCHAR(50),
 
