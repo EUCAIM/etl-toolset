@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.CancerPatient (
 
     BirthSexCode VARCHAR(50),
 
-    Ethnicity INTEGER,
+    Ethnicity VARCHAR(50),
 
 	ManagingOrganization VARCHAR(50),
 

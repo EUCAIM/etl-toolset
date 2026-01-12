@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorMarkerTest (
 
     Identifier VARCHAR(150) PRIMARY KEY,
 
-    PrimaryCancerIdentifier VARCHAR(150) NOT NULL,
+    PatientIdentifier VARCHAR(150) NOT NULL,
 
     CategoryEUCAIM VARCHAR(50),
 
