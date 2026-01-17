@@ -390,7 +390,17 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.ImageSeries (
 
     Description VARCHAR(170),
 
-	Manufacturer VARCHAR(70)
+	Manufacturer VARCHAR(70),
+
+    SliceThickness DECIMAL(5,2),
+
+    ImageRows INTEGER,
+
+    ImageColumns INTEGER,
+    
+    PixelRowSpacing DECIMAL(6,4),
+
+    PixelColSpacing DECIMAL(6,4)
 
 );
 
