@@ -36,6 +36,16 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
 
 -------------------------------------------------------------------------------------------
 
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.DatasetIngestionControl (
+  DatasetIdentifier     TEXT PRIMARY KEY,
+
+  expectedRows          INTEGER,
+
+  processedRows         INTEGER DEFAULT 0,
+
+  status                VARCHAR(15)   -- LOADING | DONE | ERROR
+);
+
 
 -- Dataset & CancerPatient
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Dataset (
@@ -48,9 +58,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Dataset (
 
     Description VARCHAR(500),
 
-    processed BOOLEAN DEFAULT FALSE,
-
-    readyForTransformation BOOLEAN DEFAULT FALSE
+    processed BOOLEAN DEFAULT FALSE
 
 );
 
@@ -591,6 +599,16 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
 
 	Manufacturer VARCHAR(70),
 
+    SliceThickness DECIMAL(5,2),
+
+    ImageRows INTEGER,
+
+    ImageColumns INTEGER,
+    
+    PixelRowSpacing DECIMAL(6,4),
+
+    PixelColSpacing DECIMAL(6,4),
+
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -604,16 +622,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
     ImageStudyUID VARCHAR(70),
 
     ImageSeriesUID VARCHAR(70),
-
-    SliceThickness DECIMAL(5,2),
-
-    PixelRowSpacing DECIMAL(6,4),
-
-    PixelColSpacing DECIMAL(6,4),
-
-    ImageRows INTEGER,
-
-    ImageColumns INTEGER,
 
     KVP DECIMAL(5,1),
 
@@ -634,7 +642,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
     PRIMARY KEY (ImageStudyUID, ImageSeriesUID)
 
 );
-
 
 
 ----------------------------------------------------
