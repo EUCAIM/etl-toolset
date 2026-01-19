@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
 -------------------------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.DatasetIngestionControl (
-  DatasetIdentifier     TEXT PRIMARY KEY,
+  DatasetIdentifier     TEXT,
 
   expectedRows          INTEGER,
 
@@ -599,16 +599,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
 
 	Manufacturer VARCHAR(70),
 
-    SliceThickness DECIMAL(5,2),
-
-    ImageRows INTEGER,
-
-    ImageColumns INTEGER,
-    
-    PixelRowSpacing DECIMAL(6,4),
-
-    PixelColSpacing DECIMAL(6,4),
-
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -636,6 +626,16 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
     FilterType VARCHAR(30),
 
     ConvolutionKernel VARCHAR(30),
+
+    SliceThickness DECIMAL(5,2),
+
+    ImageRows INTEGER,
+
+    ImageColumns INTEGER,
+    
+    PixelRowSpacing DECIMAL(6,4),
+
+    PixelColSpacing DECIMAL(6,4),
 
     processed BOOLEAN DEFAULT FALSE, 
 
