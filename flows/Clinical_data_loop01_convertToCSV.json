@@ -4802,7 +4802,7 @@
                     "Max Total Connections": "8",
                     "dbcp-max-conn-lifetime": "-1",
                     "Validation-query": null,
-                    "Database Connection URL": "jdbc:postgresql://nifi-postgres:5432/eucaim-nifi-test2",
+                    "Database Connection URL": "jdbc:postgresql://nifi-postgres:5432/eucaim-etl-db",
                     "dbcp-time-between-eviction-runs": "-1",
                     "Database User": "postgres",
                     "kerberos-user-service": null,
