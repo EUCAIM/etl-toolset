@@ -4,7 +4,7 @@ services:
     container_name: WM_backend
     environment:
     - DB_HOST=postgres
-    - DB_NAME=eucaim-nifi-test2
+    - DB_NAME=eucaim-etl-db
     - DB_USER=postgres
     - DB_PASSWORD=postgres
     - DB_PORT=5432
@@ -82,13 +82,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: eucaim-nifi-test2
+      POSTGRES_DB: eucaim-etl-db
       POSTGRES_USER: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
     healthcheck:
       test: [
         "CMD-SHELL",
-        "pg_isready -U postgres -d eucaim-nifi-test2 && psql -U postgres -d eucaim-nifi-test2 -tAc \"SELECT status FROM init_complete WHERE status = true LIMIT 1;\" | grep -q t"
+        "pg_isready -U postgres -d eucaim-etl-db && psql -U postgres -d eucaim-etl-db -tAc \"SELECT status FROM init_complete WHERE status = true LIMIT 1;\" | grep -q t"
       ]
       interval: 10s
       timeout: 5s
