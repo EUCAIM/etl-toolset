@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.patient (
     patient_gender VARCHAR(50),
     patient_race VARCHAR(50),
     patient_ethnicity VARCHAR(50),
-	patient_managing_organization VARCHAR(50),
+	patient_managing_organization VARCHAR(150),
     patient_diagnostic_category VARCHAR(50),
     patient_deceased boolean DEFAULT false,
     patient_date_of_last_contact DATE,

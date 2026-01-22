@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
 
     Ethnicity VARCHAR(50),
 
-	ManagingOrganization VARCHAR(50),
+	ManagingOrganization VARCHAR(150),
 
     DiagnosticCategoryEucaim VARCHAR(50),
 
@@ -302,7 +302,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.PrimaryCancerCondition (
     AgeUnitOriginal VARCHAR(50),
 
     AssertedDate DATE,
-
 
     PrimaryCancerConditionEUCAIM VARCHAR(50),
 
