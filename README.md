@@ -21,7 +21,7 @@ The results are generated as a set of CSV files in the corresponding **output_da
 
 ## Dataset requirements ##
 
-- Please include as prefix for the files, the Dataset ID, **example 4fcdd34b95f8eed2a3d07291e4c2173e_bcancerA_sample.csv**. This Dataset ID can be found in [EUCAIM catalogue](https://catalogue.eucaim.cancerimage.eu)
+- Please **include as prefix for the files, the Dataset ID**. Example **4fcdd34b95f8eed2a3d07291e4c2173e_bcancerA_sample.csv**. This Dataset ID can be found in the [EUCAIM catalogue](https://catalogue.eucaim.cancerimage.eu)
 - CSV input files **must be comma (,)** separated
 - CSV input files **must use dot (.)** as a decimal separator
 
