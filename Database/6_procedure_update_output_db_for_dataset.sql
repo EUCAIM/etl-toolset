@@ -44,16 +44,9 @@ BEGIN
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
 	-- Update treatments, linked with CancerPatient via Treatment: SurgicalProcedure, MedicationAdministration, Radiotherapy
-	INSERT INTO eucaim_cdm_output.treatment(patient_id, treatment_type, TreatmentIdentifier)
-	SELECT ocp.patient_id, 'radiotherapy', ircs.treatmentidentifier 
-	FROM eucaim_cdm_ingestion.RadiotherapyCourseSummary ircs
-	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ircs.PatientIdentifier = icp.Identifier
-	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.Identifier
-	WHERE icp.DatasetIdentifier = p_dataset_id;
-
 	WITH inserted_treatment as (
 	INSERT INTO eucaim_cdm_output.treatment(patient_id, treatment_type, TreatmentIdentifier)
-		SELECT ocp.patient_id, 'radiotherapy', ircs.treatmentidentifier 
+		SELECT ocp.patient_id, 'GEN1000018', ircs.treatmentidentifier 
 		FROM eucaim_cdm_ingestion.RadiotherapyCourseSummary ircs
 		JOIN eucaim_cdm_ingestion.CancerPatient icp ON ircs.PatientIdentifier = icp.Identifier
 		JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.Identifier
@@ -66,7 +59,7 @@ BEGIN
 
 	WITH inserted_treatment as (
 	INSERT INTO eucaim_cdm_output.treatment(patient_id, treatment_type, TreatmentIdentifier)
-		SELECT ocp.patient_id, 'surgical', isp.treatmentidentifier 
+		SELECT ocp.patient_id, 'GEN1000016', isp.treatmentidentifier 
 		FROM eucaim_cdm_ingestion.SurgicalProcedure isp
 		JOIN eucaim_cdm_ingestion.CancerPatient icp ON isp.PatientIdentifier = icp.Identifier
 		JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.Identifier
