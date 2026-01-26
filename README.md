@@ -21,6 +21,7 @@ The results are generated as a set of CSV files in the corresponding **output_da
 
 ## Dataset requirements ##
 
+- Please **include as prefix for the files, the Dataset ID**. Example **4fcdd34b95f8eed2a3d07291e4c2173e_bcancerA_sample.csv**. This Dataset ID can be found in the [EUCAIM catalogue](https://catalogue.eucaim.cancerimage.eu)
 - CSV input files **must be comma (,)** separated
 - CSV input files **must use dot (.)** as a decimal separator
 
@@ -32,11 +33,22 @@ The results are generated as a set of CSV files in the corresponding **output_da
 The dataset file with clinical data must be placed in:
 - `input_data\clinical_data`
 
+The csv file with the extraction of DICOM tags must be placed in:
+- `input_data\image_metadata`
+
+The csv file declaring the imaging timepoints must be placed in:
+- `input_data\image_timepoints`
+
+Please push first at least once, the files for clinical data and DICOM metadata, before submitting the file with the imaging timepoints.
+
 
 ## Dataset output folders ##
 
 The generated output files, containing the dataset converted into the EUCAIM CDM, are written here:
 - `output_data\clinical_data`
+
+The generated output files, containing the DICOM metadata converted into the EUCAIM CDM, are written here:
+- `output_data\image_metadata`
 
 Additional output to support the review of the mapping process is written here:
 - `output_data\mapping_logs` 
