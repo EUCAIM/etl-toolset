@@ -85,15 +85,17 @@ for file in "$FOLDER"/*.json; do
     
     
     processGroupID=$(echo "$processGroup" | jq -r '.id')
-    
+
     # Get all controller services in this process group
     SERVICES=$(curl -s -k -H "Authorization: Bearer $token" \
     "https://nifi:8443/nifi-api/flow/process-groups/$processGroupID/controller-services")
     
-    # Find WCodeableConceptsLookupService instances
+       
+
+    # Find DBConnectionPool instances
     LOOKUP_SERVICES=$(echo "$SERVICES" | jq -r '.controllerServices[] | select(.component.name=="DBConnectionPool") | .component.id')
     for serviceId in $LOOKUP_SERVICES; do
-        echo "Found DBConnectionPool: $serviceId"
+        echo "----- Found DBConnectionPool: $serviceId"
         SERVICE_INFO=$(curl -s -k -H "Authorization: Bearer $token" \
         "https://nifi:8443/nifi-api/controller-services/$serviceId")
         
@@ -122,13 +124,53 @@ for file in "$FOLDER"/*.json; do
             
             sleep 2
         done
-    done    
+    done  
+
+
+    # Find ScriptedLookupService instances
+    LOOKUP_SERVICES=$(echo "$SERVICES" | jq -r '.controllerServices[] | select(.component.name=="ScriptedLookupService") | .component.id')
+    for serviceId in $LOOKUP_SERVICES; do
+        echo "----- Found ScriptedLookupService: $serviceId"
+        SERVICE_INFO=$(curl -s -k -H "Authorization: Bearer $token" \
+        "https://nifi:8443/nifi-api/controller-services/$serviceId")
+        
+        REVISION=$(echo "$SERVICE_INFO" | jq '.revision.version')
+        ENABLE_RESPONSE=$(curl -s -X PUT -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $token" -k \
+            -d "{\"revision\":{\"version\":$REVISION},\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\",\"uiOnly\":false}" \
+        "https://nifi:8443/nifi-api/controller-services/$serviceId/run-status")
+        echo "Service $serviceId enabling..."
+        
+        while true; do
+            STATUS=$(curl -s -k -H "Authorization: Bearer $token" \
+                "https://nifi:8443/nifi-api/controller-services/$serviceId" \
+            | jq -r '.status.runStatus')
+            
+            VALIDATION=$(curl -s -k -H "Authorization: Bearer $token" \
+                "https://nifi:8443/nifi-api/controller-services/$serviceId" \
+            | jq -r '.status.validationStatus')
+            
+            echo "Checking Status: $STATUS / Validation: $VALIDATION"
+            
+            if [[ "$STATUS" == "ENABLED" && "$VALIDATION" == "VALID" ]]; then
+                echo "Controller service fully enabled"
+                break
+            fi
+            
+            sleep 2
+        done
+    done 
+
+
     enableProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\"}" https://nifi:8443/nifi-api/flow/process-groups/$processGroupID)
     enableServices=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\"}" https://nifi:8443/nifi-api/flow/process-groups/$processGroupID/controller-services)
     startProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"RUNNING\"}" https://nifi:8443/nifi-api/flow/process-groups/$processGroupID)
     transmittingProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"disconnectedNodeAcknowledged\":false,\"state\":\"TRANSMITTING\"}" https://nifi:8443/nifi-api/flow/process-groups/$processGroupID/run-status)
+
+
     echo "**** Flow insertion outcome ->  $transmittingProcessGroup"
     
+
     ((index+=450))
 done
 echo "****eucaim startup script completed ****"
