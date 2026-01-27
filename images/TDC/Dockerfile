@@ -3,6 +3,7 @@ WORKDIR /app
 COPY ./requirements.txt /app
 RUN pip install --prefer-binary --no-cache-dir -r requirements.txt
 COPY . .
+RUN chmod o+rw /app /app/hosted /app/results
 ENV FLASK_APP=app.py
 EXPOSE 5000
 VOLUME ["/app/results"]
