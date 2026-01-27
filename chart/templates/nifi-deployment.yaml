@@ -70,6 +70,5 @@ spec:
             && ln -s /mnt/persistent-home/ETL-files/keystore.jks          /opt/nifi/keystore.jks
             && ln -s /mnt/persistent-home/ETL-files/init.sh               /opt/nifi/init.sh
             && chmod +x /opt/nifi/init.sh 
-            && /opt/nifi/init.sh 
-            && exec /opt/nifi/scripts/start.sh
+            && ( /opt/nifi/init.sh & exec /opt/nifi/scripts/start.sh )
             
