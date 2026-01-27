@@ -30,5 +30,6 @@ spec:
           - "-c"
           - >-
             mkdir -p /mnt/persistent-home/ETL-files/TDC_Output
+            && rm -rf /app/results
             && ln -s /mnt/persistent-home/ETL-files/TDC_Output /app/results
             && flask run --host 0.0.0.0 --port {{ .Values.tdc.containerPort }}
