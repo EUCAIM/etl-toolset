@@ -5,7 +5,7 @@ import org.apache.nifi.reporting.InitializationException
 import org.apache.nifi.dbcp.DBCPService
 import java.sql.*
 
-class SequenceLookupService implements LookupService<Map<String, Object>> {
+class CodeableConceptsLookupService implements LookupService<Map<String, Object>> {
 
     final String ID = UUID.randomUUID().toString()
     final static String dbcpServiceName = "dbcpService"
@@ -134,4 +134,4 @@ class SequenceLookupService implements LookupService<Map<String, Object>> {
     }
 }
 
-lookupService = new SequenceLookupService()
+lookupService = new CodeableConceptsLookupService()
