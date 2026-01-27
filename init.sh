@@ -91,9 +91,9 @@ for file in "$FOLDER"/*.json; do
     "https://nifi:8443/nifi-api/flow/process-groups/$processGroupID/controller-services")
     
     # Find WCodeableConceptsLookupService instances
-    LOOKUP_SERVICES=$(echo "$SERVICES" | jq -r '.controllerServices[] | select(.component.name=="AStagingDBCPConnectionPool") | .component.id')
+    LOOKUP_SERVICES=$(echo "$SERVICES" | jq -r '.controllerServices[] | select(.component.name=="DBConnectionPool") | .component.id')
     for serviceId in $LOOKUP_SERVICES; do
-        echo "Found AStagingDBCPConnectionPool: $serviceId"
+        echo "Found DBConnectionPool: $serviceId"
         SERVICE_INFO=$(curl -s -k -H "Authorization: Bearer $token" \
         "https://nifi:8443/nifi-api/controller-services/$serviceId")
         
