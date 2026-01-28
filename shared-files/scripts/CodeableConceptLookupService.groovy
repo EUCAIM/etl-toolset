@@ -1,22 +1,31 @@
 import org.apache.nifi.controller.ControllerServiceInitializationContext
+import org.apache.nifi.annotation.lifecycle.OnEnabled
+import org.apache.nifi.controller.ConfigurationContext
 import org.apache.nifi.reporting.InitializationException
 import org.apache.nifi.dbcp.DBCPService
 import java.sql.*
 
-class SequenceLookupService implements LookupService<Map<String, Object>> {
+class CodeableConceptsLookupService implements LookupService<Map<String, Object>> {
 
     final String ID = UUID.randomUUID().toString()
     final static String dbcpServiceName = "dbcpService"
 
-    public static final PropertyDescriptor DBCP_SERVICE = new PropertyDescriptor.Builder()
+   DBCPService dbcpService
+    ComponentLog log
+
+    static final PropertyDescriptor DBCP_SERVICE = new PropertyDescriptor.Builder()
             .name(dbcpServiceName)
-            .description("The Controller Service that is used to obtain connection to database")
-            .required(true)
             .identifiesControllerService(DBCPService)
+            .required(true)
             .build()
 
-    DBCPService dbcpService
-    ComponentLog log = null
+    @OnEnabled
+    void onEnabled(final ConfigurationContext context) {
+        dbcpService = context.getProperty(DBCP_SERVICE)
+                             .asControllerService(DBCPService)
+
+        log.info("DBCPService initialized: ${dbcpService != null}")
+    }
 
     @Override
     Optional<Map<String, Object>> lookup(Map<String, Object> coordinates) {
@@ -43,7 +52,7 @@ class SequenceLookupService implements LookupService<Map<String, Object>> {
 
                 def sql = """
                     SELECT c.concept_code
-                    FROM concept c
+                    FROM eucaim_hyperontology_codes.concept c
                     WHERE c.concept_name = ?
                 """
 
@@ -58,9 +67,9 @@ class SequenceLookupService implements LookupService<Map<String, Object>> {
                 if (rs.next()) {
                     log.info("CodeableConceptsLookupService.lookup - Parsing one result")
                     def code = rs.getString("concept_code")
-                    result["${property}__code"] = code
+                    result["${property}"] = code
                 } else {
-                    result["${property}__code"] = "NOT FOUND"
+                    result["${property}"] = "NOT FOUND"
                 }
 
                 rs.close()
@@ -115,19 +124,6 @@ class SequenceLookupService implements LookupService<Map<String, Object>> {
     String getIdentifier() {
        ID
     }
-
-    def onEnabled(configurationContext) {
-        log.info("CodeableConceptsLookupService.onEnabled")
-
-        dbcpService = configurationContext.getProperty(DBCP_SERVICE)?.asControllerService(DBCPService)
-
-        if (dbcpService == null) {
-         log.error("CodeableConceptsLookupService.onEnabled - Could not obtain dbcpService in onEnabled.")
-        } else {
-         log.info("CodeableConceptsLookupService.onEnabled - dbcpService has been set correctly.")
-        }
-    }
-
     def onDisabled() {
       log.info("CodeableConceptsLookupService.onDisabled")
       //conn?.close()
@@ -138,4 +134,4 @@ class SequenceLookupService implements LookupService<Map<String, Object>> {
     }
 }
 
-lookupService = new SequenceLookupService()
+lookupService = new CodeableConceptsLookupService()
