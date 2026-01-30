@@ -222,6 +222,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImagingProcedure (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
     ProcedureIdentifier VARCHAR(150) PRIMARY KEY,
     PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
+    Patientidentifier VARCHAR(150) NOT NULL,
     OffsetFromDiagnosis DECIMAL(5,2),
     OffsetUnitEUCAIM VARCHAR(50),
     OffsetUnitOriginal VARCHAR(50),
