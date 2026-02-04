@@ -629,6 +629,18 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageValue (
     parsedValue VARCHAR(200)
 );
 
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupLabTestResultCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupMedicationAdministrationCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
