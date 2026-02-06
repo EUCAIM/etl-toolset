@@ -64,7 +64,7 @@ registry=$(curl -X POST -k \
   }" \
   https://$nifiName:8443/nifi-api/controller/registry-clients)
 #Add flows to registry
-FOLDER="/flows"
+FOLDER="/mnt/persistent-home/ETL-files/flows"
 index=0
 for file in "$FOLDER"/*.json; do
     filename=$(basename "$file")
