@@ -9,6 +9,16 @@ index-url=http://devpi-service.package-repos-proxy:3141/root/pypi/+simple/
 trusted-host=devpi-service.package-repos-proxy
 " > $HOME/.config/pip/pip.conf
 
+mkdir -p /mnt/persistent-home/ETL-files/input_data/clinical_data
+mkdir -p /mnt/persistent-home/ETL-files/input_data/image_metadata
+mkdir -p /mnt/persistent-home/ETL-files/input_data/image_timepoints
+mkdir -p /mnt/persistent-home/ETL-files/output_data/clinical_data
+mkdir -p /mnt/persistent-home/ETL-files/staging_data/curated_as_csv/clinical_data
+mkdir -p /mnt/persistent-home/ETL-files/staging_data/input_as_csv/clinical_data
+mkdir -p /mnt/persistent-home/ETL-files/staging_data/input_as_csv/image_metadata
+mkdir -p /mnt/persistent-home/ETL-files/staging_data/input_as_csv/image_timepoints
+
+
 #install jq to parse json
 pip install jq --break-system-packages
 
@@ -64,7 +74,7 @@ registry=$(curl -X POST -k \
   }" \
   https://$nifiName:8443/nifi-api/controller/registry-clients)
 #Add flows to registry
-FOLDER="/flows"
+FOLDER="/mnt/persistent-home/ETL-files/flows"
 index=0
 for file in "$FOLDER"/*.json; do
     filename=$(basename "$file")
