@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.patient (
 );
 
 
--- Entities related with CancerPatient directly: Health Status Assessment, Tumor Marker Test, Family Member History
+-- Entities related with CancerPatient directly: Health Status Assessment, Tumor Marker Test, Family Member History, Lab Test Result
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.health_status_assessment (
     assessment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id INTEGER REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
@@ -59,6 +59,18 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.family_member_history (
     family_member_condition_present boolean,
     family_member_onset_age INTEGER,
     family_member_onset_age_unit VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.lab_test_result (
+    family_member_history_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    patient_id INTEGER REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
+    lab_test_code VARCHAR(100),
+    lab_test_value_as_concept VARCHAR(150),
+    lab_test_value_as_number DECIMAL(5,2),
+    lab_test_value_unit VARCHAR(50),
+    lab_test_date DATE,
+    lab_test_offset_from_diagnosis INTEGER,
+    lab_test_offset_unit VARCHAR(50)
 );
 
 

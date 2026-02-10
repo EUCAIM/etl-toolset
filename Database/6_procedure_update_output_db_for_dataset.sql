@@ -21,7 +21,7 @@ BEGIN
 	JOIN eucaim_cdm_output.dataset od ON icp.DatasetIdentifier = od.Identifier
     WHERE icp.DatasetIdentifier = p_dataset_id;
 
-	-- Update entities linked with CancerPatient directly: HealthStatus, TumorMarkerTest, FamilyMemberHistory
+	-- Update entities linked with CancerPatient directly: HealthStatus, TumorMarkerTest, FamilyMemberHistory, LabTestResult
 	INSERT INTO eucaim_cdm_output.health_status_assessment(patient_id, assessment_code, assesment_value_as_number, assesment_value_as_concept, assesment_value_unit)
 	SELECT ocp.patient_id, ihs.HealthStatusEUCAIM, ihs.ValueAsNumber, ihs.ValueAsConceptEUCAIM, ihs.ValueAsConceptUnitEUCAIM
 	FROM eucaim_cdm_ingestion.HealthStatus ihs
@@ -40,6 +40,13 @@ BEGIN
 	SELECT ocp.patient_id, RelationshipEUCAIM, ConditionCodeEUCAIM, OnsetAge, OnsetAgeUnitEUCAIM
 	FROM eucaim_cdm_ingestion.FamilyMemberHistory ifmh
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ifmh.PatientIdentifier = icp.Identifier
+	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.Identifier
+	WHERE icp.DatasetIdentifier = p_dataset_id;
+
+	INSERT INTO eucaim_cdm_output.lab_test_result(patient_id, lab_test_code, lab_test_value_as_concept, lab_test_value_as_number, lab_test_value_unit, lab_test_date, lab_test_offset_from_diagnosis, lab_test_offset_unit)
+	SELECT ocp.patient_id, codeEUCAIM, ValueAsConceptEUCAIM, ValueAsNumber, ValueUnitEUCAIM, DateOfTestResult, OffsetFromDiagnosis, OffsetUnitOriginal
+	FROM eucaim_cdm_ingestion.LabTestResult iltr
+	JOIN eucaim_cdm_ingestion.CancerPatient icp ON iltr.PatientIdentifier = icp.Identifier
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.Identifier
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
@@ -108,8 +115,8 @@ BEGIN
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.procedure(cancer_condition_id, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
-	SELECT opcc.cancer_condition_id, ImagingProcedureEUCAIM, OffsetFromDiagnosis, OffsetUnitEUCAIM, cast(PerformedDate as date), ImagingProcedureCategoryCodeEUCAIM
+	INSERT INTO eucaim_cdm_output.procedure(cancer_condition_id, ProcedureIdentifier, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
+	SELECT opcc.cancer_condition_id, ProcedureIdentifier, ImagingProcedureEUCAIM, OffsetFromDiagnosis, OffsetUnitEUCAIM, cast(PerformedDate as date), ImagingProcedureCategoryCodeEUCAIM
 	FROM eucaim_cdm_ingestion.ImagingProcedure iip
 	JOIN eucaim_cdm_output.cancer_condition opcc ON iip.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON iip.PrimaryCancerConditionIdentifier = ipcc.Identifier

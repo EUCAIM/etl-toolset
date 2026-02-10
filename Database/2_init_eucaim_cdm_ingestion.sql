@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HealthStatus (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
-    Identifier VARCHAR(50) PRIMARY KEY,
+    Identifier VARCHAR(150) PRIMARY KEY,
     PatientIdentifier VARCHAR(150) NOT NULL,
     HealthStatusEUCAIM VARCHAR(50),
     HealthStatusOriginal VARCHAR(50),
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
 );
 
 -------------------------------------------------------------------------------------------
--- PrimaryCancerCondition, HistologicGrade, CancerStage, Procedure, ImagingProcedure, Tumor
+-- PrimaryCancerCondition, HistologicGrade, CancerStage, Procedure, ImagingProcedure, Tumor, LabTestResult
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.PrimaryCancerCondition (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
@@ -222,6 +222,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImagingProcedure (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
     ProcedureIdentifier VARCHAR(150) PRIMARY KEY,
     PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
+    Patientidentifier VARCHAR(150) NOT NULL,
     OffsetFromDiagnosis DECIMAL(5,2),
     OffsetUnitEUCAIM VARCHAR(50),
     OffsetUnitOriginal VARCHAR(50),
@@ -259,6 +260,24 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Tumor (
     HistologicGradeOriginal VARCHAR(50),
     Episode INTEGER,
     EpisodeStartDate VARCHAR(15),
+    processed BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.LabTestResult (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
+    Identifier VARCHAR(150) PRIMARY KEY,
+    PatientIdentifier VARCHAR(150) NOT NULL,
+    codeOriginal VARCHAR(150),
+    codeEUCAIM VARCHAR(150),
+    ValueAsNumber DECIMAL(5,2),
+    ValueAsConceptEUCAIM VARCHAR(50),
+    ValueAsConceptOriginal VARCHAR(50),
+    ValueUnitEUCAIM VARCHAR(50),
+    ValueUnitOriginal VARCHAR(50),
+    DateOfTestResult VARCHAR(15),
+    OffsetFromDiagnosis DECIMAL(5,2),
+    OffsetUnitEUCAIM VARCHAR(50),
+    OffsetUnitOriginal VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
 );
 
