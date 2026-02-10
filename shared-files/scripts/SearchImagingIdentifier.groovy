@@ -39,17 +39,22 @@ class ImagingIdentifierLookupService implements LookupService<String> {
 
         try {
             
+            def studyUID = input.StudyUID
             def patientID = input.PatientID
             def datasetID = input.DatasetID
+            def imagingTimepoint = Integer.parseInt(input.ImagingTimepoint)
 
+            log.info("studyUID: " + studyUID)
             log.info("patientID: " + patientID)
             log.info("datasetID: " + datasetID)
+            log.info("imagingTimepoint: " + imagingTimepoint)
 
             def sql = """
                     SELECT  i.procedureidentifier 
-                    FROM ImagingProcedure i
-                    JOIN CancerPatient p ON (p.Identifier = i.patientidentifier  and p.datasetidentifier = i.datasetidentifier)
-                    WHERE i.datasetIdentifier = ? and i.patientidentifier = ?; 
+                    FROM eucaim_cdm_ingestion.ImagingProcedure i               
+                    JOIN eucaim_cdm_ingestion.PrimaryCancerCondition pcc ON i.PrimaryCancerConditionIdentifier = pcc.Identifier 
+                    JOIN eucaim_cdm_ingestion.CancerPatient cp ON pcc.PatientIdentifier = cp.Identifier
+                    WHERE lower(cp.DatasetIdentifier) = ? and pcc.Patientidentifier = ? and i.ImagingTimepoint = ?; 
                 """
 
             log.info(sql)
@@ -57,6 +62,7 @@ class ImagingIdentifierLookupService implements LookupService<String> {
             def pstmt = conn.prepareStatement(sql)
             pstmt.setString(1, datasetID.toString())
             pstmt.setString(2, patientID.toString())
+            pstmt.setInt(3, imagingTimepoint)
             def rs = pstmt.executeQuery()
 
             if (rs.next()) {
