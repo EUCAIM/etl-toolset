@@ -38,7 +38,7 @@ spec:
             - name: ETL_HOME
               value: "/mnt/persistent-home/ETL-files"
             - name: ETL_RESOURCES
-              value: "/mnt/persistent-shared-folder/apps/etl"
+              value: "/opt/nifi"
             #- name: NIFI_WEB_HTTPS_HOST
             #  value: "localhost"
           command: 
