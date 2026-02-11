@@ -51,7 +51,7 @@ nifiRegistry:
 postgresql:
   image:
     repository: harbor.eucaim-node.i3m.upv.es:5000/library/etl/postgres-etl
-    tag: "15-0"
+    tag: "15-1"
   user: postgres
   password: postgres
   database: eucaim-nifi-test2

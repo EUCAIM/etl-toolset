@@ -55,8 +55,6 @@ spec:
             && mkdir -p /mnt/persistent-home/ETL-files/staging_data/curated_as_csv/clinical_data
             && mkdir -p /mnt/persistent-home/ETL-files/staging_data/input_as_csv/clinical_data
             && mkdir -p /mnt/persistent-home/ETL-files/staging_data/input_as_csv/image_metadata
-            && mkdir -p /mnt/persistent-home/ETL-files/flows
-            && mkdir -p /mnt/persistent-home/ETL-files/scripts
             && mkdir -p /mnt/persistent-home/ETL-files/TDC_Output
             && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_data                  /opt/nifi/nifi-current/data
             && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_database_repository   /opt/nifi/nifi-current/database_repository
@@ -66,13 +64,12 @@ spec:
             && ln -s /mnt/persistent-home/ETL-files/input_data    /opt/nifi/input_data
             && ln -s /mnt/persistent-home/ETL-files/output_data   /opt/nifi/output_data
             && ln -s /mnt/persistent-home/ETL-files/staging_data  /opt/nifi/staging_data
-            && ln -s /mnt/persistent-home/ETL-files/flows         /opt/nifi/flows
-            && ln -s /mnt/persistent-home/ETL-files/scripts       /opt/nifi/scripts
+            && ln -s /mnt/persistent-shared-folder/apps/etl/flows         /opt/nifi/flows
+            && ln -s /mnt/persistent-shared-folder/apps/etl/scripts       /opt/nifi/scripts
             && ln -s /mnt/persistent-home/ETL-files/TDC_Output    /opt/nifi/TDC_Output
-            && ln -s /mnt/persistent-home/ETL-files/postgresql-42.7.4.jar /opt/nifi/postgresql-42.7.4.jar
-            && ln -s /mnt/persistent-home/ETL-files/truststore.jks        /opt/nifi/truststore.jks
-            && ln -s /mnt/persistent-home/ETL-files/keystore.jks          /opt/nifi/keystore.jks
-            && ln -s /mnt/persistent-home/ETL-files/init.sh               /opt/nifi/init.sh
-            && chmod +x /opt/nifi/init.sh 
-            && ( /opt/nifi/init.sh & exec /opt/nifi/scripts/start.sh )
+            && ln -s /mnt/persistent-shared-folder/apps/etl/postgresql-42.7.4.jar /opt/nifi/postgresql-42.7.4.jar
+            && ln -s /mnt/persistent-shared-folder/apps/etl/truststore.jks        /opt/nifi/truststore.jks
+            && ln -s /mnt/persistent-shared-folder/apps/etl/keystore.jks          /opt/nifi/keystore.jks
+            && ln -s /mnt/persistent-shared-folder/apps/etl/init.sh               /opt/nifi/init.sh
+            && (/bin/bash /opt/nifi/init.sh & exec /opt/nifi/scripts/start.sh )
             
