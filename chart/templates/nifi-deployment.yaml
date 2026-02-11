@@ -35,6 +35,10 @@ spec:
               value: "8443"
             - name: NIFI_WEB_PROXY_CONTEXT_PATH
               value: "/"
+            - name: ETL_HOME
+              value: "/mnt/persistent-home/ETL-files"
+            - name: ETL_RESOURCES
+              value: "/mnt/persistent-shared-folder/apps/etl"
             #- name: NIFI_WEB_HTTPS_HOST
             #  value: "localhost"
           command: 
