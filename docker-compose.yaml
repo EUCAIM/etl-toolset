@@ -4,7 +4,7 @@ services:
     container_name: WM_backend
     environment:
     - DB_HOST=postgres
-    - DB_NAME=eucaim-nifi-test2
+    - DB_NAME=eucaim-etl-db
     - DB_USER=postgres
     - DB_PASSWORD=postgres
     - DB_PORT=5432
@@ -29,7 +29,7 @@ services:
     command: sh -c "npm install && npm run dev -- --host"
   nifi:
     depends_on:
-      postgres:
+      nifi-postgres:
         condition: service_healthy
     image: apache/nifi:2.3.0
     container_name: nifi
@@ -47,21 +47,23 @@ services:
       - NIFI_WEB_PROXY_HOST=nifi:8443,${LOCAL_IP}:8443
       - NIFI_WEB_HTTPS_PORT=8443
       - NIFI_WEB_PROXY_CONTEXT_PATH=/
+      - ETL_HOME=/mnt/persistent-home/ETL-files/
+      - ETL_RESOURCES=/mnt/persistent-home/ETL-files/
     volumes:
       - ./nifi_data/nifi_data:/opt/nifi/nifi-current/data
       - ./nifi_data/nifi_database_repository:/opt/nifi/nifi-current/database_repository
       - ./nifi_data/nifi_flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
       - ./nifi_data/nifi_content_repository:/opt/nifi/nifi-current/content_repository
       - ./nifi_data/nifi_provenance_repository:/opt/nifi/nifi-current/provenance_repository
-      - ./input_data:/input_data
-      - ./output_data:/output_data
-      - ./staging_data:/staging_data
+      - ./input_data:/mnt/persistent-home/ETL-files/input_data
+      - ./output_data:/mnt/persistent-home/ETL-files/output_data
+      - ./staging_data:/mnt/persistent-home/ETL-files/staging_data
       - ./flows/:/flows
-      - ./TDC_Output:/TDC_Output
-      - ./postgresql-42.7.4.jar:/postgresql-42.7.4.jar
+      - ./TDC_Output:/mnt/persistent-home/ETL-files/TDC_Output
+      - ./postgresql-42.7.4.jar:/mnt/persistent-home/ETL-files/postgresql-42.7.4.jar
       - ./truststore.jks:/truststore.jks
       - ./keystore.jks:/keystore.jks
-      - ./scripts/:/scripts
+      - ./scripts/:/mnt/persistent-home/ETL-files/scripts
       - ./init.sh:/scripts/init.sh
     entrypoint: ["sh","-c","tr -d '\r' < /scripts/init.sh > /tmp/init.sh ; chmod +x /tmp/init.sh ; /tmp/init.sh & exec /opt/nifi/scripts/start.sh"]
   mqtt:
@@ -75,20 +77,20 @@ services:
     volumes:
       - ./mosquitto_config:/mosquitto/config
     restart: unless-stopped
-  postgres:
+  nifi-postgres:
     image: postgres:latest
-    container_name: postgres_db
+    container_name: nifi-postgres
     restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: eucaim-nifi-test2
+      POSTGRES_DB: eucaim-etl-db
       POSTGRES_USER: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
     healthcheck:
       test: [
         "CMD-SHELL",
-        "pg_isready -U postgres -d eucaim-nifi-test2 && psql -U postgres -d eucaim-nifi-test2 -tAc \"SELECT status FROM init_complete WHERE status = true LIMIT 1;\" | grep -q t"
+        "pg_isready -U postgres -d eucaim-etl-db && psql -U postgres -d eucaim-etl-db -tAc \"SELECT status FROM init_complete WHERE status = true LIMIT 1;\" | grep -q t"
       ]
       interval: 10s
       timeout: 5s
@@ -96,10 +98,10 @@ services:
     volumes:
       - ./Database/:/docker-entrypoint-initdb.d/
       - ./postgres_data:/var/lib/postgresql/data
-  TDC:
+  nifi-tdc:
     image: bahia_tdc
     build: ./TDC
-    container_name: TDC
+    container_name: nifi-tdc
     restart: unless-stopped
     ports:
       - "5000:5000"
@@ -107,7 +109,7 @@ services:
       - ./TDC_Output:/app/results
   nifiRegistry:
     depends_on:
-      postgres:
+      nifi-postgres:
         condition: service_healthy
     image: apache/nifi-registry:latest
     container_name: nifi_registry
