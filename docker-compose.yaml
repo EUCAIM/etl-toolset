@@ -97,7 +97,7 @@ services:
       retries: 35
     volumes:
       - ./Database/:/docker-entrypoint-initdb.d/
-      - ./postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
   nifi-tdc:
     image: bahia_tdc
     build: ./TDC
@@ -119,3 +119,5 @@ services:
     volumes:
      - ./registry/flow-storage:/opt/nifi-registry/nifi-registry-current/flow_storage
      - ./registry/database:/opt/nifi-registry/nifi-registry-current/database
+volumes:
+  postgres_data:
