@@ -1,6 +1,5 @@
 # Create directories
 $dirs = @(
-    "postgres_data",
     "nifi_data\nifi_content_repository",
     "nifi_data\nifi_data",
     "nifi_data\nifi_database_repository",
