@@ -1308,14 +1308,14 @@
                     "description": "",
                     "sensitive": false,
                     "provided": false,
-                    "value": "/mnt/persistent-home/ETL-files/postgresql-42.7.4.jar"
+                    "value": "${ETL_RESOURCES}/postgresql-42.7.4.jar"
                 },
                 {
                     "name": "output_base_path",
                     "description": "",
                     "sensitive": false,
                     "provided": false,
-                    "value": "/mnt/persistent-home/ETL-files/output_data"
+                    "value": "${ETL_HOME}/output_data"
                 },
                 {
                     "name": "TabularDataCurator_URL",
@@ -1329,28 +1329,28 @@
                     "description": "",
                     "sensitive": false,
                     "provided": false,
-                    "value": "/mnt/persistent-home/ETL-files/scripts"
+                    "value": "${ETL_RESOURCES}/scripts"
                 },
                 {
                     "name": "input_base_path",
                     "description": "",
                     "sensitive": false,
                     "provided": false,
-                    "value": "/mnt/persistent-home/ETL-files/input_data"
+                    "value": "${ETL_HOME}/input_data"
                 },
                 {
                     "name": "staging_base_path",
                     "description": "",
                     "sensitive": false,
                     "provided": false,
-                    "value": "/mnt/persistent-home/ETL-files/staging_data"
+                    "value": "${ETL_HOME}/staging_data"
                 },
                 {
                     "name": "TDC results path",
                     "description": "",
                     "sensitive": false,
                     "provided": false,
-                    "value": "/mnt/persistent-home/ETL-files/TDC_Output"
+                    "value": "${ETL_HOME}/TDC_Output"
                 }
             ],
             "inheritedParameterContexts": [],
