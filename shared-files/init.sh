@@ -29,6 +29,12 @@ registryIp=$(getent hosts $registryName | awk '{ print $1 }')
 nifiName=nifi-nifi
 #nifiName=localhost
 #sleep 60
+while ! curl -sfk http://$registryName:18080/nifi-registry-api/buckets > /dev/null; do
+    echo "still waiting for Registry to start"
+    sleep 5
+done
+echo "** Applying changes ** "
+
 while ! curl -sfk https://$nifiName:8443/nifi > /dev/null; do
     echo "still waiting for nifi to start"
     sleep 5
