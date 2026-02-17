@@ -12,7 +12,7 @@ trusted-host=devpi-service.package-repos-proxy
 mkdir -p /opt/nifi/input_data/clinical_data
 mkdir -p /opt/nifi/input_data/image_metadata
 mkdir -p /opt/nifi/input_data/image_timepoints
-mkdir -p /opt/nifi/output_data/clinical_data
+mkdir -p /opt/nifi/output_data/
 mkdir -p /opt/nifi/staging_data/curated_as_csv/clinical_data
 mkdir -p /opt/nifi/staging_data/input_as_csv/clinical_data
 mkdir -p /opt/nifi/staging_data/input_as_csv/image_metadata
