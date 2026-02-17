@@ -3,6 +3,21 @@
 CREATE SCHEMA eucaim_cdm_ingestion;
 
 -------------------------------------------------------------------------------------------
+-- Log and control
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ProcessLog (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    filename VARCHAR(255),
+    datasetId VARCHAR(100),
+    datasetType VARCHAR(100),  -- clinical_data | image_metadata | image_timepoints
+    pipelineStage VARCHAR(50),  -- loop01 | loop02 | loop03 | loop04
+    stepNumber INTEGER,
+    stepName VARCHAR(100),
+    level varchar(50),
+    status VARCHAR(50),
+    message TEXT,
+    timestamp TIMESTAMP
+);
+
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
