@@ -21,7 +21,7 @@ The results are generated as a set of CSV files in the corresponding **output_da
 
 ## Dataset requirements ##
 
-- Please **include as prefix for the files, the Dataset ID**. Example **4fcdd34b95f8eed2a3d07291e4c2173e_bcancerA_sample.csv**. This Dataset ID can be found in the [EUCAIM catalogue](https://catalogue.eucaim.cancerimage.eu)
+- Please **include as prefix for ALL the files, the Dataset ID**. Example **4fcdd34b95f8eed2a3d07291e4c2173e_bcancerA_sample.csv**. This Dataset ID can be found in the [EUCAIM catalogue](https://catalogue.eucaim.cancerimage.eu)
 - CSV input files **must be comma (,)** separated
 - CSV input files **must use dot (.)** as a decimal separator
 
@@ -88,3 +88,8 @@ sh: 1: /opt/nifi/init.sh: Permission denied
 ```
 
 If you see the "Permission denied" message, the solution is to ensure that the file has valid read and execution permissions for the user running the startup script of the ETL.
+
+
+### 2. Ingesting the imaging timepoints does not seem to work, and/or is generating errors
+
+Please check the csv file containing the imaging timepoints includes the expected header, with at least the columns **Timepoint** (also "ImagingTimepoint" is valid as column name), **StudyInstanceUID** and **PatientID** (column names no case sensitive).
