@@ -54,7 +54,7 @@ postgresql:
     tag: "15-1"
   user: postgres
   password: postgres
-  database: eucaim-nifi-test2
+  database: eucaim-etl-db
   persistence:
     size: 8Gi
 tdc:
