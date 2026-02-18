@@ -31,10 +31,19 @@ INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 VALUES ('thyroid', '3');
 
 
+INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
+
+VALUES ('1181c8428de05bb98fa8896d281cc0fd', '3');
+
 
 INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 
 VALUES ('breast', '37');
+
+INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
+
+VALUES ('4fcdd34b95f8eed2a3d07291e4c2173e', '37');
+
 
 INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 
@@ -173,6 +182,11 @@ INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValu
 
 VALUES ('RID39574', 'PET-CT');
 
+
+
+INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValue)
+
+VALUES ('MG', 'Mammography');
 
 
 
@@ -610,6 +624,18 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorGradeCodeService (
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageValue (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupLabTestResultCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
     parsedValue VARCHAR(200)

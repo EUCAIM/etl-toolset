@@ -1,7 +1,7 @@
 const { Pool } = require("pg");
 require("dotenv").config();
 const host = process.env.DB_HOST || 'localhost';
-const database = process.env.DB_NAME || "eucaim-nifi-test2";
+const database = process.env.DB_NAME || "eucaim-etl-db";
 const user = process.env.DB_USER || "postgres";
 const password = process.env.DB_PASSWORD || "postgres";
 const port =  process.env.DB_PORT || 5432
