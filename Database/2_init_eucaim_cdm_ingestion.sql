@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ProcessLog (
     level varchar(50),
     status VARCHAR(50),
     message TEXT,
-    timestamp TIMESTAMP
+    timestamp TIMESTAMP,
+    processed BOOLEAN DEFAULT FALSE
 );
 
 
