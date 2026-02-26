@@ -247,6 +247,10 @@ INSERT INTO eucaim_etl_aux.LookupPatientDiagnosticCategory (originalValue, parse
 
 VALUES ('Patient with Cancer', 'Patient with Cancer');
 
+INSERT INTO eucaim_etl_aux.LookupPatientDiagnosticCategory (originalValue, parsedValue)
+
+VALUES ('Primary Cancer', 'Primary Cancer Condition');
+
 
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCode (
@@ -617,6 +621,24 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (
     parsedValue VARCHAR(200)
 );
 
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('PZ, TZ', 'PZ+TZ');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('TZ, PZ', 'PZ+TZ');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('TZ, CZ', 'TZ+CZ');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('CZ, TZ', 'TZ+CZ');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('Temporal', 'Temporal lobe');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('Thalamus, Cingulum', 'Thalamus');
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorGradeCodeService (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -707,6 +729,10 @@ VALUES ('MG', 'Mammography');
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
 VALUES ('MR', 'Magnetic Resonance');
+
+INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
+
+VALUES ('MRI', 'Magnetic Resonance Imaging');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
