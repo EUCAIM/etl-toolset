@@ -31,10 +31,23 @@ INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 VALUES ('thyroid', '3');
 
 
+INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
+
+VALUES ('1181c8428de05bb98fa8896d281cc0fd', '3');
+
 
 INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 
 VALUES ('breast', '37');
+
+INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
+
+VALUES ('4fcdd34b95f8eed2a3d07291e4c2173e', '37');
+
+
+INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
+
+VALUES ('sas', '0');
 
 
 
@@ -171,6 +184,11 @@ VALUES ('RID39574', 'PET-CT');
 
 
 
+INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValue)
+
+VALUES ('MG', 'Mammography');
+
+
 
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupHistologyMorphologyCode (
@@ -253,6 +271,27 @@ INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedVal
 
 VALUES ('387713004', 'Excision of malignant neoplasm');
 
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('sentinel lymph node biopsy', 'Sentinel lymph node biopsy');
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureBodySite (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    originalValue VARCHAR(200),
+
+    parsedValue VARCHAR(200)
+
+);
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureBodySite (originalValue, parsedValue)
+
+VALUES ('right breast structure', 'Right breast structure');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureBodySite (originalValue, parsedValue)
+
+VALUES ('left breast structure', 'Left breast structure');
 
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorOrganCode (
@@ -465,6 +504,73 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTestCode (
 INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestCode (originalValue, parsedValue)
 VALUES ('PSA', 'Prostate specific antigen measurement');
 
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestCode (originalValue, parsedValue)
+VALUES ('ER', 'Presence of estrogen receptor in neoplasm');
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestCode (originalValue, parsedValue)
+VALUES ('PR', 'Presence of progesterone receptor in neoplasm');
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestCode (originalValue, parsedValue)
+VALUES ('KI-67', 'MKI67 (marker of proliferation Ki-67) gene variant measurement');
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTest1ResultValueAsConcept (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+
+);
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest1ResultValueAsConcept (originalValue, parsedValue)
+VALUES ('positive', 'HER2 positive');
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest1ResultValueAsConcept (originalValue, parsedValue)
+VALUES ('negative', 'HER2 negative');
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTest2ResultValueAsConcept (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+
+);
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest2ResultValueAsConcept (originalValue, parsedValue)
+VALUES ('positive', 'ER positive');
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest2ResultValueAsConcept (originalValue, parsedValue)
+VALUES ('negative', 'ER negative');
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTest3ResultValueAsConcept (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+
+);
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest3ResultValueAsConcept (originalValue, parsedValue)
+VALUES ('positive', 'PR positive');
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest3ResultValueAsConcept (originalValue, parsedValue)
+VALUES ('negative', 'PR negative');
+
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTest4ResultValueAsConcept (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+
+);
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest4ResultValueAsConcept (originalValue, parsedValue)
+VALUES ('positive', 'MKI67 Positive');
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest4ResultValueAsConcept (originalValue, parsedValue)
+VALUES ('negative', 'MKI67 Negative');
+
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.lookupmedicalhistorycategory (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -495,6 +601,10 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteCode (
     parsedValue VARCHAR(200)
 );
 
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteCode (originalValue, parsedValue)
+VALUES ('breast', 'Breast');
+
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -513,6 +623,48 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorGradeCodeService (
     parsedValue VARCHAR(200)
 );
 
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageValue (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupLabTestResultCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupMedicationAdministrationCode (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupMedicationAdministrationResponse (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupMedicationAdministrationResponse (originalValue, parsedValue)
+VALUES ('partial response', 'Partial response');
+
+INSERT INTO eucaim_etl_aux.LookupMedicationAdministrationResponse (originalValue, parsedValue)
+VALUES ('complete response', 'Complete response');
+
+INSERT INTO eucaim_etl_aux.LookupMedicationAdministrationResponse (originalValue, parsedValue)
+VALUES ('stable disease', 'Stable disease');
+
+INSERT INTO eucaim_etl_aux.LookupMedicationAdministrationResponse (originalValue, parsedValue)
+VALUES ('progressive disease', 'Progressive disease');
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -522,7 +674,16 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyM
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
 VALUES ('8140', 'Adenocarcinoma, NOS, of prostate gland');
 
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionTopography (
 
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+
+);
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('Malignant neoplasm of the nipple and areola of the right breast', 'Malignant neoplasm: Nipple and areola');
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupImagingModality (
 
@@ -531,6 +692,8 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupImagingModality (
     parsedValue VARCHAR(200)
 
 );
+
+
 
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
