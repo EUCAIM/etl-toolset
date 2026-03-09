@@ -48,32 +48,36 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 
         try {
             input.each { property, value ->
-                if (!value) return
-
-                def sql = """
+                if (!value) {
+                    result["${property}"] = "null"
+                    log.info("CodeableConceptsLookupService.lookup - Checked null value ")
+                } else {
+                    def sql = """
                     SELECT c.concept_code
                     FROM eucaim_hyperontology_codes.concept c
                     WHERE c.concept_name = ?
-                """
+                    """
 
-                log.info(sql)
+                    log.info(sql)
 
-                def pstmt = conn.prepareStatement(sql)
-                pstmt.setString(1, value.toString())
-                def rs = pstmt.executeQuery()
+                    def pstmt = conn.prepareStatement(sql)
+                    pstmt.setString(1, value.toString())
+                    def rs = pstmt.executeQuery()
 
-                log.info("CodeableConceptsLookupService.lookup - Executed query with value: " + value.toString())
+                    log.info("CodeableConceptsLookupService.lookup - Executed query with value: " + value.toString())
 
-                if (rs.next()) {
-                    log.info("CodeableConceptsLookupService.lookup - Parsing one result")
-                    def code = rs.getString("concept_code")
-                    result["${property}"] = code
-                } else {
-                    result["${property}"] = "NOT FOUND"
-                }
-
+                    if (rs.next()) {
+                        log.info("CodeableConceptsLookupService.lookup - Parsing one result")
+                        def code = rs.getString("concept_code")
+                        result["${property}"] = code
+                    } else {
+                        result["${property}"] = "NOT FOUND"
+                    }   
                 rs.close()
                 pstmt.close()
+                }
+
+                
             }
         } catch (Exception e) {
             log.error("CodeableConceptsLookupService.lookup - Lookup error: {}", [e.message])
@@ -135,3 +139,4 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 }
 
 lookupService = new CodeableConceptsLookupService()
+
