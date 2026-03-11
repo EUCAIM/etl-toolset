@@ -118,6 +118,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.radiotherapy (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.surgical_procedure (
     treatment_id INTEGER PRIMARY KEY REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
     surgical_procedure_code VARCHAR(100),
+    surgical_procedure_body_site_code VARCHAR(100),
+    surgical_procedure_body_site_location VARCHAR(100),
+    surgical_procedure_body_site_laterality VARCHAR(100),
     surgical_procedure_offset_from_diagnosis INTEGER,
     surgical_procedure_offset_from_diagnosis_unit VARCHAR(50),
     surgical_procedure_date DATE,	
