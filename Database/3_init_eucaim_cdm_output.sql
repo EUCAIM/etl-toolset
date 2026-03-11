@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.health_status_assessment (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor_marker_test (
     tumor_marker_test_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id INTEGER REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
+    --cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
     tumor_marker_test_category VARCHAR(50),
     tumor_marker_test_code VARCHAR(50),
     tumor_marker_test_as_number DECIMAL(5,2),
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.histologic_grade (
     histologic_grade_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
     patient_id INTEGER REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id),
+    --procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id),
     histologic_grade_scoring_system VARCHAR(150),
     histologic_grade_code VARCHAR(50),
     histologic_grade_value_as_concept VARCHAR(50)
