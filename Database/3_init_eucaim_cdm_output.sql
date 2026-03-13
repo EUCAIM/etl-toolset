@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.health_status_assessment (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor_marker_test (
     tumor_marker_test_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id INTEGER REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
+    --cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
     tumor_marker_test_category VARCHAR(50),
     tumor_marker_test_code VARCHAR(50),
     tumor_marker_test_as_number DECIMAL(5,2),
@@ -92,10 +92,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.medical_history (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.treatment (
     treatment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id INTEGER REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    treatment_type VARCHAR(50),
+    treatment_type VARCHAR(100),
     treatment_response VARCHAR(200),
     treatment_intent VARCHAR(200),
-    TreatmentIdentifier VARCHAR(100),
+    TreatmentIdentifier VARCHAR(200),
     Episode INTEGER
 );
 
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.histologic_grade (
     histologic_grade_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
     patient_id INTEGER REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id),
+    --procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id),
     histologic_grade_scoring_system VARCHAR(150),
     histologic_grade_code VARCHAR(50),
     histologic_grade_value_as_concept VARCHAR(50)
@@ -277,7 +277,12 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
     series_uid VARCHAR(70),
     series_number INTEGER,
     series_description VARCHAR(170),
-	series_manufacturer VARCHAR(70)
+	series_manufacturer VARCHAR(70),
+    series_body_side_code VARCHAR(70),
+    series_body_side_location VARCHAR(70),
+    series_body_side_laterality VARCHAR(70),
+    series_acquisition_date DATE,
+    series_modality VARCHAR(70)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_modality (
