@@ -367,6 +367,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
     ImageSeriesNumber INTEGER,
     Description VARCHAR(170),
 	Manufacturer VARCHAR(70),
+    BodyPart VARCHAR(100),
+    AcquisitionDate VARCHAR(50),
+    Modality VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
 );
 
