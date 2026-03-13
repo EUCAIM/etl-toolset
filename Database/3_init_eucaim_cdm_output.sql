@@ -92,10 +92,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.medical_history (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.treatment (
     treatment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id INTEGER REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    treatment_type VARCHAR(50),
+    treatment_type VARCHAR(100),
     treatment_response VARCHAR(200),
     treatment_intent VARCHAR(200),
-    TreatmentIdentifier VARCHAR(100),
+    TreatmentIdentifier VARCHAR(200),
     Episode INTEGER
 );
 
