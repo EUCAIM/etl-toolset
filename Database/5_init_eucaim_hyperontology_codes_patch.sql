@@ -129,3 +129,41 @@ VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1005507'
 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1016659', 'https://cancerimage.eu/ontology/EUCAIM#IMG1016659', 'Bilateral');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1000068', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1000068', 'Primary malignant neoplasm of breast');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001186', 'https://cancerimage.eu/ontology/EUCAIM#COM1001186', 'Partial response');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001310', 'https://cancerimage.eu/ontology/EUCAIM#COM1001310', 'Positive');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001332', 'https://cancerimage.eu/ontology/EUCAIM#COM1001332', 'Negative');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1002025', 'https://cancerimage.eu/ontology/EUCAIM#COM1002025', 'High');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1001718', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1001718', 'Sentinel lymph node biopsy');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001312', 'https://cancerimage.eu/ontology/EUCAIM#COM1001312', 'Complete response');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1034672', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1034672', 'Excision of breast');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1063529', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1063529', 'Invasive ductal carcinoma with an extensive intraductal component');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1001717', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1001717', 'Biopsy of lymph node');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1034673', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1034673', 'Breast Conservation Treatment');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1005277', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1005277', 'External beam radiation therapy procedure');
+
+

@@ -229,7 +229,7 @@ VALUES ('lung adenocarcinoma', 'Adenocarcinoma, NOS, of lung, NOS');
 
 INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
 
-VALUES ('lung small cell carcinoma', 'Small cell carcinoma of lung, NOS');
+VALUES ('lung small cell carcinoma', 'Neoplasm of lung');
 
 
 
@@ -264,6 +264,18 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCode (
 INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
 
 VALUES ('409063005', 'Excision of malignant neoplasm');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('mastectomy', 'Excision of breast');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('breast-conserving surgery', 'Breast Conservation Treatment');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('axillary lymph node dissection', 'Biopsy of lymph node');
 
 
 
@@ -321,6 +333,10 @@ VALUES ('breast', 'Breast');
 INSERT INTO eucaim_etl_aux.LookupTumorOrganCode (originalValue, parsedValue)
 
 VALUES ('Thyroid BED', 'Head and neck');
+
+INSERT INTO eucaim_etl_aux.LookupTumorOrganCode (originalValue, parsedValue)
+
+VALUES ('lung cancer', 'Neoplasm of lung');
 
 
 
@@ -673,6 +689,48 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyM
 
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
 VALUES ('8140', 'Adenocarcinoma, NOS, of prostate gland');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('invasive ductal carninoma of breast', 'Invasive ductal carcinoma with an extensive intraductal component');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('invasive ductal carcinoma of breast', 'Invasive ductal carcinoma with an extensive intraductal component');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+
+VALUES ('small cell carcinoma', 'Neoplasm of lung');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+
+VALUES ('lung squamous cell carcinoma', 'Squamous cell carcinoma, NOS, of lung, NOS');
+
+
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+
+VALUES ('breast cancer', 'Neoplasm of breast');
+
+
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+
+VALUES ('thyroid cancer', 'Thyroid cancer');
+
+
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+
+VALUES ('lung adenocarcinoma', 'Adenocarcinoma, NOS, of lung, NOS');
+
+
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+
+VALUES ('lung small cell carcinoma', 'Neoplasm of lung');
+
+
+
+
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionTopography (
 
