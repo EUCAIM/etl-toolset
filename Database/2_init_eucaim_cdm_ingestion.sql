@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerPatient (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HealthStatus (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
-    Identifier VARCHAR(50) PRIMARY KEY,
+    Identifier VARCHAR(150) PRIMARY KEY,
     PatientIdentifier VARCHAR(150) NOT NULL,
     HealthStatusEUCAIM VARCHAR(50),
     HealthStatusOriginal VARCHAR(50),
@@ -367,6 +367,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
     ImageSeriesNumber INTEGER,
     Description VARCHAR(170),
 	Manufacturer VARCHAR(70),
+    BodyPart VARCHAR(100),
+    AcquisitionDate VARCHAR(50),
+    Modality VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
 );
 
