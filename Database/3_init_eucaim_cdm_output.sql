@@ -277,7 +277,12 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
     series_uid VARCHAR(70),
     series_number INTEGER,
     series_description VARCHAR(170),
-	series_manufacturer VARCHAR(70)
+	series_manufacturer VARCHAR(70),
+    series_body_side_code VARCHAR(70),
+    series_body_side_location VARCHAR(70),
+    series_body_side_laterality VARCHAR(70),
+    series_acquisition_date DATE,
+    series_modality VARCHAR(70)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_modality (
