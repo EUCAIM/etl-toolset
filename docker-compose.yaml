@@ -3,7 +3,7 @@ services:
     image: node:18
     container_name: WM_backend
     environment:
-    - DB_HOST=postgres
+    - DB_HOST=nifi-postgres
     - DB_NAME=eucaim-etl-db
     - DB_USER=postgres
     - DB_PASSWORD=postgres
