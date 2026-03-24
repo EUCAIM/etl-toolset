@@ -1,192 +1,270 @@
-import React, { useState, useEffect } from 'react';
-import { RefreshCw, Database, AlertCircle, CheckCircle, Clock, FileText } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  RefreshCw,
+  Database,
+  AlertCircle,
+  CheckCircle,
+  Layers,
+  ChevronDown,
+  ChevronRight,
+  Tag,
+  Check,
+} from "lucide-react";
 
+const backendIp = import.meta.env.VITE_BACKEND_IP || "localhost";
 
-const backendIp = import.meta.env.VITE_BACKEND_IP;
-
+const COMPLETION_RULES: Record<string, number> = {
+  clinical_data: 8,
+  image_timepoints: 4,
+  image_metadata: 3,
+};
 
 interface Job {
-  id: string;
+  id: number;
   filename: string;
-  step: string;
+  datasetid: string;
+  datasettype: string;
+  pipelinestage: string;
+  stepnumber: number;
+  stepname: string;
+  level: string;
+  status: string;
+  message: string;
+  timestamp: string;
+  processed: boolean;
 }
 
 function App() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [secondsUntilRefresh, setSecondsUntilRefresh] = useState(15);
+  const [expandedDatasets, setExpandedDatasets] = useState<
+    Record<string, boolean>
+  >({});
 
-  const fetchJobs = async () => {
+  const toggleDataset = (id: string) => {
+    setExpandedDatasets((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const fetchJobs = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
+      setIsSyncing(true);
       setError(null);
-      
-      const response = await fetch("http://" + backendIp + ":3000/jobs");
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch jobs: ${response.status} ${response.statusText}`);
-      }
-      
+      const response = await fetch(`http://${backendIp}:3000/jobs`);
+      if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
       const data = await response.json();
       setJobs(data);
-      setLastUpdated(new Date());
+
+      setExpandedDatasets((prev) => {
+        const next = { ...prev };
+        data.forEach((job: Job) => {
+          const id = job.datasetid === "---" ? "No name" : job.datasetid;
+          if (next[id] === undefined) next[id] = true;
+        });
+        return next;
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred",
+      );
     } finally {
       setLoading(false);
+      setIsSyncing(false);
     }
   };
 
   useEffect(() => {
     fetchJobs();
+    const timer = setInterval(() => {
+      setSecondsUntilRefresh((prev) => {
+        if (prev <= 1) {
+          fetchJobs(true);
+          return 15;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
 
-  const getStepIcon = (step: string) => {
-    const stepLower = step.toLowerCase();
-    if (stepLower.includes('complete') || stepLower.includes('done') || stepLower.includes('finished')) {
-      return <CheckCircle className="w-4 h-4 text-green-500" />;
-    }
-    if (stepLower.includes('processing') || stepLower.includes('running') || stepLower.includes('progress')) {
-      return <Clock className="w-4 h-4 text-blue-500 animate-spin" />;
-    }
-    if (stepLower.includes('error') || stepLower.includes('failed') || stepLower.includes('fail')) {
-      return <AlertCircle className="w-4 h-4 text-red-500" />;
-    }
-    return <FileText className="w-4 h-4 text-gray-500" />;
-  };
+  const groupedData = useMemo(() => {
+    return jobs.reduce(
+      (acc, job) => {
+        const dId = job.datasetid === "---" ? "No name" : job.datasetid;
+        const dType = job.datasettype || "General";
+        if (!acc[dId]) acc[dId] = {};
+        if (!acc[dId][dType]) acc[dId][dType] = [];
+        acc[dId][dType].push(job);
+        return acc;
+      },
+      {} as Record<string, Record<string, Job[]>>,
+    );
+  }, [jobs]);
 
-  const getStepBadgeColor = (step: string) => {
-    const stepLower = step.toLowerCase();
-    if (stepLower.includes('complete') || stepLower.includes('done') || stepLower.includes('finished')) {
-      return 'bg-green-100 text-green-800 border-green-200';
-    }
-    if (stepLower.includes('processing') || stepLower.includes('running') || stepLower.includes('progress')) {
-      return 'bg-blue-100 text-blue-800 border-blue-200';
-    }
-    if (stepLower.includes('error') || stepLower.includes('failed') || stepLower.includes('fail')) {
-      return 'bg-red-100 text-red-800 border-red-200';
-    }
-    return 'bg-gray-100 text-gray-800 border-gray-200';
+  const isTypeComplete = (type: string, jobsInGroup: Job[]) => {
+    const targetStep = COMPLETION_RULES[type];
+    if (!targetStep) return false;
+    return jobsInGroup.some(
+      (job) => job.stepnumber >= targetStep && job.status === "OK",
+    );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-blue-600 rounded-lg">
-              <Database className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">ETL Jobs Dashboard</h1>
-            </div>
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+              <Layers className="text-blue-600" /> Eucaim ETL Monitor
+            </h1>
           </div>
-          
-          {/* Stats and Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <div className="flex gap-4">
-              <div className="bg-white px-4 py-2 rounded-lg shadow-sm border">
-                <span className="text-sm font-medium text-gray-600">Total Jobs</span>
-                <p className="text-2xl font-bold text-gray-900">{jobs.length}</p>
+          <button
+            onClick={() => fetchJobs()}
+            className="p-2 hover:bg-white rounded-full border shadow-sm transition-all active:scale-95"
+          >
+            <RefreshCw
+              size={18}
+              className={
+                isSyncing ? "animate-spin text-blue-500" : "text-gray-600"
+              }
+            />
+          </button>
+        </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3">
+            <AlertCircle /> {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="text-center py-20 text-gray-400 font-medium italic">
+            Initializing pipeline view...
+          </div>
+        ) : (
+          Object.entries(groupedData).map(([datasetId, types]) => (
+            <div key={datasetId} className="mb-8">
+              <div
+                onClick={() => toggleDataset(datasetId)}
+                className="flex items-center gap-3 mb-4 cursor-pointer group select-none"
+              >
+                <div className="transition-transform duration-200">
+                  {expandedDatasets[datasetId] ? (
+                    <ChevronDown size={18} />
+                  ) : (
+                    <ChevronRight size={18} />
+                  )}
+                </div>
+                <Database className="text-blue-500" size={20} />
+                <h2 className="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
+                  {datasetId}
+                </h2>
               </div>
-              {lastUpdated && (
-                <div className="bg-white px-4 py-2 rounded-lg shadow-sm border">
-                  <span className="text-sm font-medium text-gray-600">Last Updated</span>
-                  <p className="text-sm text-gray-900">{lastUpdated.toLocaleTimeString()}</p>
+
+              {expandedDatasets[datasetId] && (
+                <div className="ml-6 space-y-6">
+                  {Object.entries(types).map(([type, datasetJobs]) => {
+                    const finished = isTypeComplete(type, datasetJobs);
+
+                    return (
+                      <div
+                        key={type}
+                        className={`bg-white rounded-xl shadow-sm border transition-all ${finished ? "border-green-200 shadow-green-50" : "border-gray-200"}`}
+                      >
+                        <div
+                          className={`px-4 py-3 border-b flex justify-between items-center ${finished ? "bg-green-50/40" : "bg-slate-50"}`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Tag
+                              size={14}
+                              className={
+                                finished ? "text-green-600" : "text-slate-400"
+                              }
+                            />
+                            <span
+                              className={`text-xs font-bold uppercase tracking-wider ${finished ? "text-green-700" : "text-slate-600"}`}
+                            >
+                              {type}
+                            </span>
+                          </div>
+
+                          {finished && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-green-600/70 font-medium">
+                                Last step reached:{" "}
+                                {new Date(
+                                  datasetJobs[datasetJobs.length - 1].timestamp,
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-green-500 text-white rounded-full shadow-sm">
+                                <Check size={12} strokeWidth={4} />
+                                <span className="text-[10px] font-black uppercase">
+                                  Complete
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-sm">
+                            <tbody className="divide-y divide-gray-100">
+                              {datasetJobs
+                                .sort((a, b) => a.stepnumber - b.stepnumber)
+                                .map((job) => (
+                                  <tr
+                                    key={job.id}
+                                    className="hover:bg-slate-50/80 transition-colors"
+                                  >
+                                    <td className="px-4 py-4 w-12 text-center font-mono text-[10px] text-slate-400">
+                                      {job.stepnumber}
+                                    </td>
+                                    <td className="px-4 py-4">
+                                      <div className="font-semibold text-slate-700">
+                                        {job.stepname}
+                                      </div>
+                                      <div className="text-[10px] text-slate-400 truncate max-w-xs">
+                                        {job.filename}
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-xs text-slate-500 italic max-w-sm">
+                                      {job.message}
+                                    </td>
+                                    <td className="px-4 py-4 text-right pr-6">
+                                      {job.status === "OK" ? (
+                                        <div className="flex items-center justify-end gap-1.5 text-green-600">
+                                          <span className="text-[10px] font-bold uppercase tracking-tighter">
+                                            Success
+                                          </span>
+                                          <CheckCircle size={18} />
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center justify-end gap-1.5 text-red-500">
+                                          <span className="text-[10px] font-bold uppercase tracking-tighter">
+                                            Error
+                                          </span>
+                                          <AlertCircle size={18} />
+                                        </div>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
-            
-            <button
-              onClick={fetchJobs}
-              disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          {error && (
-            <div className="p-6 bg-red-50 border-b border-red-200">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-red-500" />
-                <div>
-                  <h3 className="font-medium text-red-900">Error Loading Jobs</h3>
-                  <p className="text-sm text-red-700">{error}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {loading ? (
-            <div className="p-12 text-center">
-              <div className="inline-flex items-center gap-3 text-gray-600">
-                <RefreshCw className="w-5 h-5 animate-spin" />
-                <span className="text-lg">Loading jobs...</span>
-              </div>
-            </div>
-          ) : jobs.length === 0 ? (
-            <div className="p-12 text-center">
-              <Database className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
-              <p className="text-gray-600">There are no jobs to display at the moment.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="text-left py-4 px-6 font-semibold text-gray-900">Job ID</th>
-                    <th className="text-left py-4 px-6 font-semibold text-gray-900">Filename</th>
-                    <th className="text-left py-4 px-6 font-semibold text-gray-900">Step</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {jobs.map((job, index) => (
-                    <tr 
-                      key={job.id} 
-                      className={`hover:bg-gray-50 transition-colors duration-150 ${
-                        index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
-                      }`}
-                    >
-                      <td className="py-4 px-6">
-                        <div className="font-mono text-sm text-gray-900 bg-gray-100 px-2 py-1 rounded inline-block">
-                          {job.id}
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-gray-500" />
-                          <span className="text-gray-900 font-medium">{job.filename}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-2">
-                          {getStepIcon(job.step)}
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStepBadgeColor(job.step)}`}>
-                            {job.step}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        {jobs.length > 0 && (
-          <div className="mt-6 text-center text-sm text-gray-500">
-            Showing {jobs.length} job{jobs.length !== 1 ? 's' : ''}
-          </div>
+          ))
         )}
       </div>
     </div>
