@@ -1,0 +1,21 @@
+patient_anon_id,birth_date,decision,dicom_tags.PatientSex.Value,dicom_tags.InstitutionName,original_data.a_pat_alder,original_data.op_pad_insitusnomed,original_data.op_pad_invasivsnomed,original_data.op_pad_nhg,original_data.a_diag_dat,original_data.a_tnm_tklass,original_data.a_tnm_nklass,original_data.a_tnm_mklass,original_data.a_pat_sida,original_data.op_kir_axill,original_data.op_kir_brost,original_data.op_kir_dat
+0c808d7354b35a6eab1153ff03f73f93150c33b00eb11954d1ae0dbda5b7c7a5,1964-01-01,HEALTHY,F,B 6,57.0,,10,1,2021-02-19,20,0,0,2,1,2,2021-03-23
+023cb12f354d3f71e3692f3e1caf6cdc4f200a9dd2d6df3e93d74dd709e54029,1952-11-01,HEALTHY,F,Tumba2,,,,,,,,,,,,
+cf81963bcf2debaf9897e996086989fd0fff506238dbc3c49c95f12a34cc4f1c,1953-05-01,HEALTHY,F,13010731 Malarsjukhuset,,,,,,,,,,,,
+57b5d4d7bb83d19ff826c21227d38e590bbecb714b25471d5163db754a4806f8,1941-04-01,HEALTHY,F,,74.0,10,10,3,2015-11-24,10,0,0,2,1,1,2016-01-07
+d59d82f83afde024378f215dee7dd8cf8d65722cb11b13ac675bbed915ac6405,1972-12-01,HEALTHY,F,SCR1 LIN,,,,,,,,,,,,
+6eb5c8681fe153cbb607f652ecb09341239ebcbde1074f08a411f913fbc05851,1964-08-01,HEALTHY,F,B 8,,,,,,,,,,,,
+5577fbc56be3e3978326af1deb5534873f198d0e7f75cc8fdf5798a2f4770692,1946-06-01,HEALTHY,F,,71.0,,40,2,2018-03-02,10,0,0,2,1,1,2018-04-05
+5796d73ce10d42f8b8810916f69315b726e89f59b7b3d2aba621d6be0884648f,1944-03-01,HEALTHY,F,B 6,,,,,,,,,,,,
+15dbee48a6826123763bf740714539e1dc8c535770cefcc4d73650c54110436d,1957-11-01,HEALTHY,F,,,,,,,,,,,,,
+afffefb89466350543483c9ac9ffe98a468c267cff470d23d608b41a86ec51d5,1944-12-01,HEALTHY,F,,73.0,,10,2,2018-02-20,20,0,0,2,1,1,2018-03-26
+cd6aad609a852231e71a77879ed78e540e8d108062a84fb43ec58a8ffaa4dd6c,1944-01-01,HEALTHY,F,B 6,75.0,,40,2,2019-01-18,10,10,0,2,1,1,2019-02-12
+67756ec2becfdc11dee2b3cb1bf6cf1b84b9ad6e6726a8eac9a68ae5575c3a41,1954-10-01,HEALTHY,F,"13011731 Nyköpings Lasarett, Mammoenheten",,,,,,,,,,,,
+9d281399c2f4cd2fba94c696981ac4a6de690135facf2e8042c681ea8142e48d,1947-09-01,HEALTHY,F,13012731 Kullbergska sjukhuset Katrineholm,,,,,,,,,,,,
+c34b86d1e1db526c6b8ccbf05b6eab55677d2e95650cc9097e4b98919400794d,1947-10-01,HEALTHY,F,Södersjukhuset,,,,,,,,,,,,
+872cffcf2550e17e84a5d3d583021a7771d582b3ba7c73c5899201cfc44d93bd,1944-05-01,HEALTHY,F,Karolinska Mammo lab 2,,,,,,,,,,,,
+142f9ac91983cf863fe55a4f7d1cae41a9924084d90d3b20b356ad4d7fdbb510,1955-12-01,HEALTHY,F,,,,,,,,,,,,,
+97547105cf2c57af50862b942f93b90819b3c61eee9994280d2431f0a1219599,1966-07-01,SELECTION,F,Södersjukhuset,49.0,10,10,1,2016-01-11,10,0,0,2,1,2,2016-02-02
+67d2a8526b53f2a52e8ba3715e074d46ea165c56af704eaf6b2479bc0f7cf66e,1951-05-01,SELECTION,F,Södersjukhuset,64.0,10,30,2,2015-05-25,10,0,0,1,1,1,2015-07-02
+0cbf17846e5ee5e84037b2fec8ce20df8aac6a9b1b7add7c2e1c18f9f01c1ec9,1948-08-01,SELECTION,F,Sophiahemmet,68.0,40,20,2,2016-09-21,10,0,0,1,1,1,2016-10-07
+cbdcd3e0f8f8325e574910b5a30f8f1528570597965953eef27c0bd14cfec0db,1972-01-01,SELECTION,F,SCR1 MOT,46.0,,,,2018-07-04,20,10,10,2,,,
