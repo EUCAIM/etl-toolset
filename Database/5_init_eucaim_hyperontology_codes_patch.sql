@@ -166,4 +166,22 @@ VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1034673
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1005277', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1005277', 'External beam radiation therapy procedure');
 
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1002172', 'https://cancerimage.eu/ontology/EUCAIM#COM1002172', 'Low');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1035832', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1035832', 'Fulvestrant');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1035831', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1035831', 'IPATASERTIB');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1035061', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1035061', 'Nab paclitaxel');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1035830', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1035830', 'Granulocyte colony-stimulating factor');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1035833', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1035833', 'Anthracycline');
+
 
