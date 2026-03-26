@@ -107,4 +107,4 @@ with open(OUTPUT_SQL, "w", encoding="utf-8") as f:
 'S'
 );\n""")
 
-print("✅ SQL generado en concept.sql")
+print("✅ SQL generado en \'" + OUTPUT_SQL + "\' a partir de la ontología en \'" + OWL_FILE + "\'")
