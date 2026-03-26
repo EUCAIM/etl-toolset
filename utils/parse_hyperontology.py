@@ -68,7 +68,7 @@ def infer_domain(s):
 
 
 concepts = []
-id_counter = 1
+id_counter = 10000
 
 for s in g.subjects(RDF.type, OWL.Class):
     uri = str(s)
@@ -94,17 +94,11 @@ for s in g.subjects(RDF.type, OWL.Class):
 
 
 with open(OUTPUT_SQL, "w", encoding="utf-8") as f:
+    f.write(f"""
+CREATE SEQUENCE IF NOT EXISTS eucaim_hyperontology_codes.eucaim_concept_id_seq;
+SELECT setval('eucaim_hyperontology_codes.eucaim_concept_id_seq', (SELECT MAX(concept_id) FROM eucaim_hyperontology_codes.concept));\n""")
     for c in concepts:
-        f.write(f"""INSERT INTO eucaim_hyperontology_codes.concept VALUES (
-{c['id']},
-'{c['code']}',
-'{c['uri']}',
-'{c['name']}',
-'{c['domain']}',
-'None',
-'EUCAIM',
-'Class',
-'S'
-);\n""")
+        f.write(f"""
+INSERT INTO eucaim_hyperontology_codes.concept VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '{c['code']}', '{c['uri']}', '{c['name']}', '{c['domain']}', 'None', 'EUCAIM', 'Class', 'S');\n""")
 
 print("✅ SQL generado en \'" + OUTPUT_SQL + "\' a partir de la ontología en \'" + OWL_FILE + "\'")
