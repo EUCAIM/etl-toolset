@@ -129,3 +129,15 @@ VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1005507'
 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1016659', 'https://cancerimage.eu/ontology/EUCAIM#IMG1016659', 'Bilateral');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001366', 'https://cancerimage.eu/ontology/EUCAIM#COM1001366', 'Female');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001370', 'https://cancerimage.eu/ontology/EUCAIM#COM1001370', 'Male');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1000039', 'https://cancerimage.eu/ontology/EUCAIM#COM1000039', 'Healthy patient');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1002628', 'https://cancerimage.eu/ontology/EUCAIM#COM1002628', 'Subject under discussion with suspicious findings');
