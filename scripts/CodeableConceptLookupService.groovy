@@ -49,7 +49,7 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
         try {
             input.each { property, value ->
                 if (!value) {
-                    result["${property}"] = "null"
+                    result["${property}"] = null
                     log.info("CodeableConceptsLookupService.lookup - Checked null value ")
                 } else {
                     def sql = """
