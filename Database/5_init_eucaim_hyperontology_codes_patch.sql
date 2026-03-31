@@ -141,3 +141,16 @@ VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1000039'
 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1002628', 'https://cancerimage.eu/ontology/EUCAIM#COM1002628', 'Subject under discussion with suspicious findings');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1002303', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1002303', 'DCIS (Ductal carcinoma in situ) of breast');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1002304', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1002304', 'LCIS (lobular carcinoma in situ) of breast');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1002302', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1002302', 'Mixed ductal and lobular carcinoma in situ of breast');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1002306', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1002306', 'Other carcinoma in situ of breast');
+
