@@ -1,4 +1,4 @@
--- Step 5 ETL initialization check
+-- Step 8 ETL initialization check
 
 CREATE TABLE jobs (id VARCHAR(250) PRIMARY KEY, filename VARCHAR(250), step  NUMERIC);
 
