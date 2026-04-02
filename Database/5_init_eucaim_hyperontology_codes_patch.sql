@@ -1,4 +1,4 @@
--- Step 4 Eucaim Hyperontology temporary patches (to be removed)
+-- Step 5 Eucaim Hyperontology temporary patches (to be removed)
 
 CREATE SEQUENCE eucaim_hyperontology_codes.eucaim_concept_id_seq;
 

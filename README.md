@@ -93,3 +93,14 @@ If you see the "Permission denied" message, the solution is to ensure that the f
 ### 2. Ingesting the imaging timepoints does not seem to work, and/or is generating errors
 
 Please check the csv file containing the imaging timepoints includes the expected header, with at least the columns **Timepoint** (also "ImagingTimepoint" is valid as column name), **StudyInstanceUID** and **PatientID** (column names no case sensitive).
+
+
+### 3. The initilization of the nifi-postgres container (the internal ETL database) fails, when it was previously working
+
+Unfortunatly, updating from any release prior to 0.3.X to these or later releases, renders the database storage not compatible. If it s absolutely necessary to preserve previously ingested data, change the version in the docker-compose or contact with us for help. If you can afford to re-ingest the dataset files, please run only the first time after upgrading the ETL:
+
+```bash
+docker compose down -v
+```
+
+Afterwards execute the launch script as normal, and ingest the files following the same instructions.
