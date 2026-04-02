@@ -1,4 +1,4 @@
-name: Test NiFi Pipelines
+name: Test NiFi environment and pipelines
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
       - name: Launch environment
         run: ./startup.sh
 
-      - name: Esperar a que init termine
+      - name: Waiting for nifi pipelines full initialization
         run: |
           CONTAINER=$(docker compose ps -q nifi)
 
@@ -35,6 +35,6 @@ jobs:
       - name: Run tests
         run: ./scripts/run_tests.sh
 
-      - name: Apagar entorno
+      - name: Clean environment
         if: always()
         run: docker compose down -v
