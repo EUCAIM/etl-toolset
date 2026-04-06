@@ -645,6 +645,159 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageValue (
     parsedValue VARCHAR(200)
 );
 
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageTValue (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('0', 'AJCC/UICC 8th clinical T0 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1', 'AJCC/UICC 8th clinical T1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1a', 'AJCC/UICC 8th clinical T1a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1a1', 'AJCC/UICC 8th clinical T1a1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1a2', 'AJCC/UICC 8th clinical T1a2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1b', 'AJCC/UICC 8th clinical T1b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1b1', 'AJCC/UICC 8th clinical T1b1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1b2', 'AJCC/UICC 8th clinical T1b2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1b3', 'AJCC/UICC 8th clinical T1b3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1c', 'AJCC/UICC 8th clinical T1c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1c1', 'AJCC/UICC 8th clinical T1c1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1c2', 'AJCC/UICC 8th clinical T1c2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1c3', 'AJCC/UICC 8th clinical T1c3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1d', 'AJCC/UICC 8th clinical T1d Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1mi', 'AJCC/UICC 8th clinical T1mi Category');
+
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageNValue (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('0', 'AJCC/UICC 8th clinical N0 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('0a', 'AJCC/UICC 8th clinical N0a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('0b', 'AJCC/UICC 8th clinical N0b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1', 'AJCC/UICC 8th clinical N1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1a', 'AJCC/UICC 8th clinical N1a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1b', 'AJCC/UICC 8th clinical N1b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1b1', 'AJCC/UICC 8th clinical N1b1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1b2', 'AJCC/UICC 8th clinical N1b2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1b3', 'AJCC/UICC 8th clinical N1b3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1b4', 'AJCC/UICC 8th clinical N1b4 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1c', 'AJCC/UICC 8th clinical N1c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1mi', 'AJCC/UICC 8th clinical N1mi Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('2', 'AJCC/UICC 8th clinical N2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('2a', 'AJCC/UICC 8th clinical N2a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('2b', 'AJCC/UICC 8th clinical N2b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('2c', 'AJCC/UICC 8th clinical N2c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('2mi', 'AJCC/UICC 8th clinical N2mi Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('3', 'AJCC/UICC 8th clinical N3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('3a', 'AJCC/UICC 8th clinical N3a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('3b', 'AJCC/UICC 8th clinical N3b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('3c', 'AJCC/UICC 8th clinical N3c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('X', 'AJCC/UICC 8th clinical NX Category');
+
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageMValue (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('0', 'AJCC/UICC 8th clinical M0 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('1', 'AJCC/UICC 8th clinical M1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('1a', 'AJCC/UICC 8th clinical M1a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('1b', 'AJCC/UICC 8th clinical M1b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('1c', 'AJCC/UICC 8th clinical M1c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('1d', 'AJCC/UICC 8th clinical M1d Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('X', 'AJCC/UICC 8th clinical MX Category');
+
+
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupLabTestResultCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),

@@ -184,4 +184,138 @@ VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1035830
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1035833', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1035833', 'Anthracycline');
 
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1065557', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1065557', 'AJCC/UICC 8th clinical T0 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1063940', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1063940', 'AJCC/UICC 8th clinical T1 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1070457', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1070457', 'AJCC/UICC 8th clinical T1a Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1110758', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1110758', 'AJCC/UICC 8th clinical T1a1 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1111065', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1111065', 'AJCC/UICC 8th clinical T1a2 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1070115', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1070115', 'AJCC/UICC 8th clinical T1b Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1099833', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1099833', 'AJCC/UICC 8th clinical T1b1 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1099298', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1099298', 'AJCC/UICC 8th clinical T1b2 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1099565', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1099565', 'AJCC/UICC 8th clinical T1b3 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1070573', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1070573', 'AJCC/UICC 8th clinical T1c Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1113242', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1113242', 'AJCC/UICC 8th clinical T1c1 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1113557', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1113557', 'AJCC/UICC 8th clinical T1c2 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1113873', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1113873', 'AJCC/UICC 8th clinical T1c3 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1070342', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1070342', 'AJCC/UICC 8th clinical T1d Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1070228', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1070228', 'AJCC/UICC 8th clinical T1mi Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1063997', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1063997', 'AJCC/UICC 8th clinical N0 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1071662', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1071662', 'AJCC/UICC 8th clinical N0a Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1071537', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1071537', 'AJCC/UICC 8th clinical N0b Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1063842', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1063842', 'AJCC/UICC 8th clinical N1 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1067703', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1067703', 'AJCC/UICC 8th clinical N1a Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1067882', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1067882', 'AJCC/UICC 8th clinical N1b Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1115147', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1115147', 'AJCC/UICC 8th clinical N1b1 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1114827', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1114827', 'AJCC/UICC 8th clinical N1b2 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1114190', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1114190', 'AJCC/UICC 8th clinical N1b3 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1114508', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1114508', 'AJCC/UICC 8th clinical N1b4 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1067615', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1067615', 'AJCC/UICC 8th clinical N1c Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1067792', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1067792', 'AJCC/UICC 8th clinical N1mi Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1063907', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1063907', 'AJCC/UICC 8th clinical N2 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1069673', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1069673', 'AJCC/UICC 8th clinical N2a Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1069458', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1069458', 'AJCC/UICC 8th clinical N2b Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1069352', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1069352', 'AJCC/UICC 8th clinical N2c Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1069565', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1069565', 'AJCC/UICC 8th clinical N2mi Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1063923', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1063923', 'AJCC/UICC 8th clinical N3 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1069892', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1069892', 'AJCC/UICC 8th clinical N3a Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1070003', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1070003', 'AJCC/UICC 8th clinical N3b Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1069782', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1069782', 'AJCC/UICC 8th clinical N3c Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1072967', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1072967', 'AJCC/UICC 8th clinical NX Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1064417', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1064417', 'AJCC/UICC 8th clinical M0 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1063977', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1063977', 'AJCC/UICC 8th clinical M1 Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1071413', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1071413', 'AJCC/UICC 8th clinical M1a Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1071047', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1071047', 'AJCC/UICC 8th clinical M1b Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1071168', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1071168', 'AJCC/UICC 8th clinical M1c Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1071290', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1071290', 'AJCC/UICC 8th clinical M1d Category');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1073798', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1073798', 'AJCC/UICC 8th clinical MX Category');
+
+
+
 
