@@ -1,0 +1,40 @@
+name: Test NiFi environment and pipelines
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Launch environment
+        run: ./startup.sh
+
+      - name: Waiting for nifi pipelines full initialization
+        run: |
+          CONTAINER=$(docker compose ps -q nifi)
+
+          echo "Waiting for: init.sh"
+
+          until docker exec $CONTAINER sh -c '[ -f /tmp/init_done ]'; do
+            echo "Not ready yet..."
+            sleep 5
+          done
+
+          echo "Init complete ✅"
+
+      - name: Run tests
+        run: ./scripts/run_tests.sh
+
+      - name: Clean environment
+        if: always()
+        run: docker compose down -v
