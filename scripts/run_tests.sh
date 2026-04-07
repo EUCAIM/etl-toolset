@@ -29,5 +29,19 @@ echo "Output detected!"
 echo "Files generated:"
 ls -l "$OUTPUT_DIR"
 
+echo "Validating rows number.."
+TOTAL_ROWS=0
+for f in output_data/*.csv; do
+  ROWS=$(($(wc -l < "$f") - 1))
+  TOTAL_ROWS=$((TOTAL_ROWS + ROWS))
+done
+
+echo "Number of output rows: $TOTAL_ROWS"
+
+if [ "$TOTAL_ROWS" -eq 0 ]; then
+  echo "❌ Not processed data"
+  exit 1
+fi
+
 echo "Test PASSED"
 exit 0
