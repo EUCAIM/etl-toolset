@@ -13,12 +13,12 @@ echo "Copied imaging metadata sample file to $INPUT_DIR"
 MAX_RETRIES=60   
 SLEEP_SEC=5      
 COUNT=0
-echo "Waiting for output files in $OUTPUT_DIR ..."
-until [ "$(ls -A $OUTPUT_DIR 2>/dev/null)" ]; do
+until find "$OUTPUT_DIR" -type f | grep -q .; do
   if [ $COUNT -ge $MAX_RETRIES ]; then
     echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
     exit 1
   fi
+
   echo "Still waiting..."
   sleep $SLEEP_SEC
   COUNT=$((COUNT+1))
@@ -31,7 +31,7 @@ ls -l "$OUTPUT_DIR"
 
 echo "Validating rows number.."
 TOTAL_ROWS=0
-for f in output_data/*.csv; do
+for f in $OUTPUT_DIR/*.csv; do
   ROWS=$(($(wc -l < "$f") - 1))
   TOTAL_ROWS=$((TOTAL_ROWS + ROWS))
 done
