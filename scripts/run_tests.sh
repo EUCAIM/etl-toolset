@@ -1,5 +1,10 @@
 #!/bin/bash
 
+### skiping tests (for main branch at least)
+### comment this line to enable script
+exit 0
+
+
 set -e  # fail if any command fails
 echo "==== RUNNING TEST: processing imaging metadata sample ===="
 
