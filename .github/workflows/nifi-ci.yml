@@ -3,10 +3,10 @@ name: Test NiFi environment and pipelines
 on:
   push:
     branches:
-      - develop
+      - AUTH
   pull_request:
     branches:
-      - develop
+      - AUTH
 
 jobs:
   test:
