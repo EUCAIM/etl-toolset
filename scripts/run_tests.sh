@@ -100,6 +100,8 @@ until find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" | grep -q .; do
   ls -l staging_data/curated_as_csv/clinical_data/
   ls -l TDC_Output
   ls -l "$OUTPUT_DIR"
+  cat output_data/mapping_logs/*.csv
+  cat output_data/etl_process_logs/*.csv
   sleep $SLEEP_SEC
   COUNT=$((COUNT+1))
 done
