@@ -144,9 +144,40 @@ if [ "$TOTAL_ROWS" -ne $NUMBER_OF_PATIENTS ]; then
 fi
 
 
-### validations for imaging timepoints (TODO)
+### validations for imaging timepoints
 rm -f $OUTPUT_DIR/*.csv
 
+TEST_CSV="sample_data/4fcdd34b95f8eed2a3d07291e4c2173e_AUTH_imaging_timepoints_dcm_studies_metadata_breast.csv"
+NUMBER_OF_PATIENTS=4
+cp "$TEST_CSV" "$INPUT_DIR/image_timepoints/"
+echo "Copied imaging timepoints sample file to $INPUT_DIR"
+
+
+echo "Validating rows numbers in output database..."
+MAX_RETRIES=40  
+SLEEP_SEC=5      
+COUNT=0
+TOTAL_ROWS=0
+
+until [ "$TOTAL_ROWS" -ne 0 ]; do
+  if [ $COUNT -ge $MAX_RETRIES ]; then
+    echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
+    docker logs nifi-tdc
+    docker logs nifi
+    exit 1
+  fi
+  TOTAL_ROWS=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_output.patient;" | xargs)
+  echo "Still waiting..."
+  sleep $SLEEP_SEC
+  COUNT=$((COUNT+1))
+done
+
+echo "Number of output rows in eucaim_cdm_output.patient table: $TOTAL_ROWS  (Expected rows: $NUMBER_OF_PATIENTS)"
+
+if [ "$TOTAL_ROWS" -ne $NUMBER_OF_PATIENTS ]; then
+  echo "❌ Output seems not correct"
+  exit 1
+fi
 
 echo "Test PASSED"
 exit 0
