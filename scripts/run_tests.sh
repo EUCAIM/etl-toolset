@@ -95,6 +95,10 @@ until find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" | grep -q .; do
   fi
 
   echo "Still waiting..."
+  ls -l input_data/clinical_data
+  ls -l staging_data/input_as_csv/clinical_data/
+  ls -l staging_data/curated_as_csv/clinical_data/
+  ls -l TDC_Output
   ls -l "$OUTPUT_DIR"
   sleep $SLEEP_SEC
   COUNT=$((COUNT+1))
