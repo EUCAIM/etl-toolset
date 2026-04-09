@@ -91,11 +91,11 @@ COUNT=0
 until find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" | grep -q .; do
   if [ $COUNT -ge $MAX_RETRIES ]; then
     echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
-    ls -l "$OUTPUT_DIR"
     exit 1
   fi
 
   echo "Still waiting..."
+  ls -l "$OUTPUT_DIR"
   sleep $SLEEP_SEC
   COUNT=$((COUNT+1))
 done
