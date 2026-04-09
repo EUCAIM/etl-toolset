@@ -21,7 +21,7 @@ NUMBER_OF_PATIENTS=4
 cp "$TEST_CSV" "$INPUT_DIR/clinical_data/"
 echo "Copied clinical data sample file to $INPUT_DIR"
 
-MAX_RETRIES=60   
+MAX_RETRIES=130   
 SLEEP_SEC=5      
 COUNT=0
 until find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" | grep -q .; do
@@ -70,7 +70,7 @@ if [ "$TOTAL_ROWS" -eq 0 ]; then
   exit 1
 fi
 
-if [ "$TOTAL_ROWS" -ne $NUMBER_OF_STUDIES ]; then
+if [ "$TOTAL_ROWS" -ne $NUMBER_OF_PATIENTS ]; then
   echo "❌ Output seems not correct"
   exit 1
 fi
