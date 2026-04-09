@@ -91,6 +91,8 @@ COUNT=0
 until find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" | grep -q .; do
   if [ $COUNT -ge $MAX_RETRIES ]; then
     echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
+    docker logs nifi-tdc
+    docker logs nifi
     exit 1
   fi
 
