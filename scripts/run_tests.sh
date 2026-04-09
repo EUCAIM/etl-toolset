@@ -79,6 +79,7 @@ fi
 
 ### validations for clinical data
 rm -f $OUTPUT_DIR/*.csv
+docker logs nifi-tdc
 
 TEST_CSV="sample_data/4fcdd34b95f8eed2a3d07291e4c2173e_Breast_Cancer3_sample.csv"
 NUMBER_OF_PATIENTS=4
