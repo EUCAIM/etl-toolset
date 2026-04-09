@@ -27,6 +27,8 @@ COUNT=0
 until find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" | grep -q .; do
   if [ $COUNT -ge $MAX_RETRIES ]; then
     echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
+    docker logs nifi-tdc
+    docker logs nifi
     exit 1
   fi
 
@@ -79,7 +81,6 @@ fi
 
 ### validations for clinical data
 rm -f $OUTPUT_DIR/*.csv
-docker logs nifi-tdc
 
 TEST_CSV="sample_data/4fcdd34b95f8eed2a3d07291e4c2173e_Breast_Cancer3_sample.csv"
 NUMBER_OF_PATIENTS=4
@@ -98,12 +99,6 @@ until find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" | grep -q .; do
   fi
 
   echo "Still waiting..."
-  ls -l input_data/clinical_data
-  ls -l staging_data/input_as_csv/clinical_data/
-  ls -l staging_data/curated_as_csv/clinical_data/
-  ls -l TDC_Output
-  ls -l "$OUTPUT_DIR"
-  cat output_data/etl_process_logs/*.csv
   sleep $SLEEP_SEC
   COUNT=$((COUNT+1))
 done
