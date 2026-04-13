@@ -157,11 +157,18 @@ BEGIN
 	JOIN eucaim_cdm_output.procedure op ON iis.ImagingProcedureIdentifier = op.ProcedureIdentifier
 	WHERE iis.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.image_series(study_id, series_uid, series_number, series_description, series_manufacturer, series_body_side_code, series_acquisition_date, series_modality)
-	SELECT ois.study_id, ImageSeriesUID, ImageSeriesNumber, Description, Manufacturer, BodyPart, cast(AcquisitionDate as date), modality
+	INSERT INTO eucaim_cdm_output.image_series(study_uid, series_uid, series_number, series_description, series_manufacturer, series_body_side_code, series_acquisition_date, series_modality)
+	SELECT ois.study_uid, ImageSeriesUID, ImageSeriesNumber, Description, Manufacturer, BodyPart, cast(AcquisitionDate as date), modality
 	FROM eucaim_cdm_ingestion.ImageSeries iise
 	JOIN eucaim_cdm_ingestion.ImageStudy iis ON iise.ImageStudyUID = iis.ImageStudyUID
 	JOIN eucaim_cdm_output.image_study ois ON iise.ImageStudyUID = ois.study_uid
+	WHERE iis.DatasetIdentifier = p_dataset_id;
+
+	-- SliceThickness
+	INSERT INTO eucaim_cdm_output.image_modality(series_uid, acquisition_parameter_code, acquisition_parameter_value_as_code, acquisition_parameter_value_as_number, acquisition_parameter_value_unit)
+	SELECT ImageSeriesUID, 'IMG1016306', null, SliceThickness, null
+	FROM eucaim_cdm_ingestion.ImageTags  iita
+	JOIN eucaim_cdm_ingestion.ImageStudy iis ON iita.ImageStudyUID = iis.ImageStudyUID
 	WHERE iis.DatasetIdentifier = p_dataset_id;
 
 	-- Update flag for this dataset_id	(currently handled in NiFi process group)
