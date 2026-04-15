@@ -264,7 +264,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_study (
     study_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id) ON DELETE CASCADE,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    study_uid VARCHAR(70),
+    study_uid VARCHAR(70) NOT NULL,
     ImagingTimepoint INTEGER,
     study_offset_from_diagnosis DECIMAL(5,2),
     study_offset_unit VARCHAR(20)
@@ -272,8 +272,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_study (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
     series_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    series_uid VARCHAR(70) NOT NULL,
+    study_uid VARCHAR(70) NOT NULL,
     study_id INTEGER REFERENCES eucaim_cdm_output.image_study(study_id) ON DELETE CASCADE,
-    series_uid VARCHAR(70),
     series_number INTEGER,
     series_description VARCHAR(170),
 	series_manufacturer VARCHAR(70),
@@ -286,7 +287,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_modality (
     modality_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    series_id INTEGER REFERENCES eucaim_cdm_output.image_series(series_id) ON DELETE CASCADE,
+    series_uid VARCHAR(70) NOT NULL,
+    series_id INTEGER  REFERENCES eucaim_cdm_output.image_series(series_id) ON DELETE CASCADE,
     acquisition_parameter_code VARCHAR(50),
     acquisition_parameter_value_as_code VARCHAR(50),
     acquisition_parameter_value_as_number DECIMAL(5,2),
