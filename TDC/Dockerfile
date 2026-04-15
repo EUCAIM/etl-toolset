@@ -11,6 +11,7 @@ WORKDIR /app
 COPY ./requirements.txt /app
 
 RUN python -m pip install --upgrade pip setuptools wheel \
+ && pip install --no-cache-dir "setuptools<82" \
  && pip install --no-cache-dir cython numpy \
  && pip install --no-cache-dir -r requirements.txt
 

@@ -128,6 +128,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.surgical_procedure (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.medication_administration (
     treatment_id INTEGER PRIMARY KEY REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
     medication_code VARCHAR(50),
+    medication_id INTEGER,
     medication_start_date DATE,
     medication_end_date DATE,
     medication_offset_from_diagnosis INTEGER,
