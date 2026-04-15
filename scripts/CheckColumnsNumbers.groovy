@@ -23,7 +23,7 @@ try {
 	
     String header = lines[0]
     if (header == null) return
-    def expectedCols = header.split(",").length
+    def expectedCols = header.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).length
     log.info(header)
 
     for (int lineNumber = 1; lineNumber < lines.size(); lineNumber++) {
