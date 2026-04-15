@@ -173,4 +173,7 @@ for file in "$FOLDER"/*.json; do
 
     ((index+=450))
 done
+
+touch /tmp/init_done
+
 echo "****eucaim startup script completed ****"
