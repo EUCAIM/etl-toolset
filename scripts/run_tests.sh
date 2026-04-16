@@ -9,7 +9,7 @@ set -e  # fail if any command fails
 echo "==== RUNNING TEST: start main ===="
 
 
-### definitions and parameters
+### definitions: global parameters
 INPUT_DIR="input_data"
 OUTPUT_DIR="output_data"
 POSTGRES_CONTAINER=$(docker compose ps -q nifi-postgres)
@@ -27,7 +27,7 @@ SLEEP_SEC=5
 COUNT=0
 
 
-### validations for clinical data
+### definitions: validations for clinical data
 procesar_pipeline_clinical_data() {
   rm -f $OUTPUT_DIR/*.csv
   cp "$CLINICAL_DATA_TEST_CSV" "$INPUT_DIR/clinical_data/"
@@ -85,19 +85,9 @@ procesar_pipeline_clinical_data() {
     exit 1
   fi
 }
-  
-if [ -f $CLINICAL_DATA_TEST_CSV ]; then
-  procesar_pipeline_clinical_data
-
-  if [ -f $CLINICAL_DATA_EXTRA_TEST_SCRIPT ]; then
-    echo "Detected additional clinical data tests on: $CLINICAL_DATA_EXTRA_TEST_SCRIPT"
-    source $CLINICAL_DATA_EXTRA_TEST_SCRIPT
-  fi
-fi
 
 
-
-### validations for imaging metadata pipelines
+### definitions: validations for imaging metadata pipelines
 procesar_pipeline_imaging_metadata() {
   rm -f $OUTPUT_DIR/*.csv
   cp "$IMAGE_METADATA_TEST_CSV" "$INPUT_DIR/image_metadata/"
@@ -156,12 +146,8 @@ procesar_pipeline_imaging_metadata() {
   fi
 }
 
-if [ -f $IMAGE_METADATA_TEST_CSV ]; then
-  procesar_pipeline_imaging_metadata
-fi
 
-
-### validations for imaging timepoints pipelines
+### definitions: validations for imaging timepoints pipelines
 procesar_pipeline_imaging_timepoints() {
   rm -f $OUTPUT_DIR/*.csv
   cp "$IMAGING_TIMEPOINTS_TEST_CSV" "$INPUT_DIR/image_timepoints/"
@@ -191,10 +177,24 @@ procesar_pipeline_imaging_timepoints() {
   fi
 }
 
+
+### executing tests
+if [ -f $CLINICAL_DATA_TEST_CSV ]; then
+  procesar_pipeline_clinical_data
+
+  if [ -f $CLINICAL_DATA_EXTRA_TEST_SCRIPT ]; then
+    echo "Detected additional clinical data tests on: $CLINICAL_DATA_EXTRA_TEST_SCRIPT"
+    source $CLINICAL_DATA_EXTRA_TEST_SCRIPT
+  fi
+fi
+
+if [ -f $IMAGE_METADATA_TEST_CSV ]; then
+  procesar_pipeline_imaging_metadata
+fi
+
 if [ -f $IMAGING_TIMEPOINTS_TEST_CSV ]; then
   procesar_pipeline_imaging_timepoints
 fi
-
 
 ### closing tests
 echo "Test PASSED"
