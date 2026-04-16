@@ -1,6 +1,11 @@
 #!/bin/bash
 echo "****Starting eucaim startup script ****"
 
+#remove flag file
+if [ -f /tmp/init_done ]; then
+    rm /tmp/init_done
+fi
+
 #install jq to parse json
 pip install jq --break-system-packages
 
@@ -174,6 +179,7 @@ for file in "$FOLDER"/*.json; do
     ((index+=450))
 done
 
+#create flag file to mark as completed
 touch /tmp/init_done
 
 echo "****eucaim startup script completed ****"
