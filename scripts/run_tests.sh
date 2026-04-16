@@ -1,13 +1,7 @@
 #!/bin/bash
 
-### skiping tests (for main branch at least)
-### comment this line to enable script
-### exit 0
-
-
 set -e  # fail if any command fails
 echo "==== RUNNING TEST: start main ===="
-
 
 ### definitions: global parameters
 INPUT_DIR="input_data"
@@ -195,6 +189,7 @@ fi
 if [ -f $IMAGING_TIMEPOINTS_TEST_CSV ]; then
   procesar_pipeline_imaging_timepoints
 fi
+
 
 ### closing tests
 echo "Test PASSED"
