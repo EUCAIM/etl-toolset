@@ -259,17 +259,12 @@ if [ "$TOTAL_ROWS" -ne $NUMBER_OF_STUDIES ]; then
 fi
 
 
-# Temporary!!
-echo "Test PASSED"
-exit 0
-
-
 ### validations for imaging timepoints
 
 rm -f $OUTPUT_DIR/*.csv
 
 TEST_CSV="sample_data/aaaadcw3slp2bbsux2urluqaae_PerProGlio_imaging_timepoints_testing_02.csv"
-NUMBER_OF_PATIENTS=4
+NUMBER_OF_PATIENTS=20
 cp "$TEST_CSV" "$INPUT_DIR/image_timepoints/"
 echo "Copied imaging timepoints sample file to $INPUT_DIR"
 
