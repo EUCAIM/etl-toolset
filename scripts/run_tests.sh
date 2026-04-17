@@ -15,7 +15,7 @@ POSTGRES_CONTAINER=$(docker compose ps -q nifi-postgres)
 ### validations for clinical data 
 rm -f $OUTPUT_DIR/*.csv
 
-TEST_CSV_CLINICAL="sample_data/dimos_med_uoa_gr_eucaim_brain_UOA_brainCancer_test_02_overarchingEpisode.csv"
+TEST_CSV_CLINICAL="sample_data/dimos-med-uoa-gr-eucaim-brain_UOA_brainCancer_test_02_overarchingEpisode.csv"
 NUMBER_OF_PATIENTS=2
 
 cp "$TEST_CSV_CLINICAL" "$INPUT_DIR/clinical_data/"
@@ -92,7 +92,7 @@ fi
 
 echo "✔️ Patient birth sex code is the expected in test data"
 
-PATIENT_DIAGNOSTICCATEGORY_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT diagnosticcategoryeucaim FROM eucaim_cdm_ingestion.cancerpatient c where id=1;" | xargs)
+PATIENT_DIAGNOSTICCATEGORY_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT diagnosticcategoryeucaim FROM eucaim_cdm_ingestion.cancerpatient c where identifier='EUCAIM-42359961463279617395233496226407435633';" | xargs)
 PATIENT_DIAGNOSTICCATEGORY_CODE="CLIN1007988"
 
 if [ "$PATIENT_DIAGNOSTICCATEGORY_QUERY" != "$PATIENT_DIAGNOSTICCATEGORY_CODE" ]; then
@@ -154,7 +154,7 @@ fi
 
 echo "✔️ Surgical Procedure Code is the expected in test data"
 
-TUMOR_LOCATION_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT bodysitelocationqualifiereucaim FROM eucaim_cdm_ingestion.tumor c where identifier='dimos_med_uoa_gr_eucaim_prostateEUCAIM-235865861987234915500053222799778009958_cancerCondition_1tumor_1';" | xargs)
+TUMOR_LOCATION_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT bodysitelocationqualifiereucaim FROM eucaim_cdm_ingestion.tumor c where identifier='dimos-med-uoa-gr-eucaim-brainEUCAIM-235865861987234915500053222799778009958_cancerCondition_1tumor_1';" | xargs)
 TUMOR_LOCATION_CODE="BP1000350"
 
 if [ "$TUMOR_LOCATION_CODE_QUERY" != "$TUMOR_LOCATION_CODE" ]; then
@@ -167,7 +167,7 @@ echo "✔️ Tumor Location Code is the expected in test data"
 ### validations for imaging metadata
 rm -f $OUTPUT_DIR/*.csv
 
-TEST_CSV_IMAGING="sample_data/dimos_med_uoa_gr_eucaim_brain_UOA_brainCancer_DICOM_metadata_testing.csv"
+TEST_CSV_IMAGING="sample_data/dimos-med-uoa-gr-eucaim-brain_UOA_brainCancer_DICOM_metadata_testing.csv"
 NUMBER_OF_STUDIES=3
 
 cp "$TEST_CSV_IMAGING" "$INPUT_DIR/image_metadata/"
@@ -233,14 +233,11 @@ fi
 
 rm -f $OUTPUT_DIR/*.csv
 
-TEST_CSV="sample_data/dimos_med_uoa_gr_eucaim_brain_UOA_brainCancer_imaging_timepoints_testing.csv"
-NUMBER_OF_PATIENTS=4
+TEST_CSV="sample_data/dimos-med-uoa-gr-eucaim-brain_UOA_brainCancer_imaging_timepoints_testing.csv"
+NUMBER_OF_PATIENTS=2
 cp "$TEST_CSV" "$INPUT_DIR/image_timepoints/"
 echo "Copied imaging timepoints sample file to $INPUT_DIR"
 
-echo "Testing output database temporarely deactivated!"
-echo "Test PASSED"
-exit 0
 
 echo "Validating rows numbers in output database..."
 MAX_RETRIES=40  
@@ -271,12 +268,4 @@ fi
 
 echo "Test PASSED"
 
-exit 0SURGICAL_PROCEDURE_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT procedureeucaim FROM eucaim_cdm_ingestion.surgicalprocedure c where id=2;" | xargs)
-SURGICAL_PROCEDURE_CODE="CLIN1004413"
-
-if [ "$SURGICAL_PROCEDURE_CODE_QUERY" != "$SURGICAL_PROCEDURE_CODE" ]; then
-  echo "❌ Not expected Surgical Procedure code on patient test1"
-  exit 1
-fi
-
-echo "✔️ Surgical Procedure Code is the expected in test data"
+exit 0
