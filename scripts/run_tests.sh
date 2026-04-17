@@ -154,7 +154,7 @@ fi
 
 echo "✔️ Surgical Procedure Code is the expected in test data"
 
-TUMOR_LOCATION_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT bodysitelocationqualifiereucaim FROM eucaim_cdm_ingestion.tumor c where id=2;" | xargs)
+TUMOR_LOCATION_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT bodysitelocationqualifiereucaim FROM eucaim_cdm_ingestion.tumor c where identifier='https://dimos.med.uoa.gr/eucaim/brain/EUCAIM-235865861987234915500053222799778009958_cancerCondition_1tumor_1';" | xargs)
 TUMOR_LOCATION_CODE="BP1000350"
 
 if [ "$TUMOR_LOCATION_CODE_QUERY" != "$TUMOR_LOCATION_CODE" ]; then
@@ -238,6 +238,8 @@ NUMBER_OF_PATIENTS=4
 cp "$TEST_CSV" "$INPUT_DIR/image_timepoints/"
 echo "Copied imaging timepoints sample file to $INPUT_DIR"
 
+echo "Testing output database temporarely deactivated!"
+exit 1
 
 echo "Validating rows numbers in output database..."
 MAX_RETRIES=40  
@@ -267,6 +269,7 @@ fi
 
 
 echo "Test PASSED"
+
 exit 0SURGICAL_PROCEDURE_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT procedureeucaim FROM eucaim_cdm_ingestion.surgicalprocedure c where id=2;" | xargs)
 SURGICAL_PROCEDURE_CODE="CLIN1004413"
 
