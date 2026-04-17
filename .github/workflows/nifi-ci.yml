@@ -3,10 +3,10 @@ name: Test NiFi environment and pipelines
 on:
   push:
     branches:
-      - develop
+      - LaFe_PerProGlio
   pull_request:
     branches:
-      - develop
+      - LaFe_PerProGlio
 
 jobs:
   test:
