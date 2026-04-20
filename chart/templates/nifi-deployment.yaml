@@ -7,6 +7,10 @@ metadata:
     chaimeleon.eu/toolVersion: "{{ .Chart.Version }}"
     chaimeleon.eu/persistentHomeMountPoint: "/mnt/persistent-home"
     chaimeleon.eu/persistentSharedFolderMountPoint: "/mnt/persistent-shared-folder"
+{{- if .Values.datasetsList }}
+#   chaimeleon.eu/datasetsIDs: "{{ .Values.datasetsList }}"
+#   chaimeleon.eu/datasetsMountPoint: "/mnt/datasets"
+{{- end }}
 spec:
   replicas: 1
   selector:
@@ -26,9 +30,15 @@ spec:
             - containerPort: 8443
           env:
             - name: SINGLE_USER_CREDENTIALS_USERNAME
-              value: "eucaim"
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ include "nifi.name" . }}-nifi"
+                  key: username
             - name: SINGLE_USER_CREDENTIALS_PASSWORD
-              value: "eucaim123456789"
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ include "nifi.name" . }}-nifi"
+                  key: password
             - name: NIFI_WEB_PROXY_HOST
               value: "{{ include "nifi.name" . }}-nifi:8443,{{ .Values.nifi.localIp }}:8443"
             - name: NIFI_WEB_HTTPS_PORT
@@ -45,31 +55,24 @@ spec:
           - "sh"
           - "-c"
           - >-
-            mkdir -p /mnt/persistent-home/ETL-files/nifi_data/nifi_data
-            && mkdir -p /mnt/persistent-home/ETL-files/nifi_data/nifi_database_repository
-            && mkdir -p /mnt/persistent-home/ETL-files/nifi_data/nifi_flowfile_repository
-            && mkdir -p /mnt/persistent-home/ETL-files/nifi_data/nifi_content_repository
-            && mkdir -p /mnt/persistent-home/ETL-files/nifi_data/nifi_provenance_repository
-            && mkdir -p /mnt/persistent-home/ETL-files/input_data
-            && mkdir -p /mnt/persistent-home/ETL-files/output_data
-            && mkdir -p /mnt/persistent-home/ETL-files/staging_data/curated_as_csv/clinical_data
-            && mkdir -p /mnt/persistent-home/ETL-files/staging_data/input_as_csv/clinical_data
-            && mkdir -p /mnt/persistent-home/ETL-files/staging_data/input_as_csv/image_metadata
-            && mkdir -p /mnt/persistent-home/ETL-files/TDC_Output
-            && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_data                  /opt/nifi/nifi-current/data
-            && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_database_repository   /opt/nifi/nifi-current/database_repository
-            && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_flowfile_repository   /opt/nifi/nifi-current/flowfile_repository
-            && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_content_repository    /opt/nifi/nifi-current/content_repository
-            && ln -s /mnt/persistent-home/ETL-files/nifi_data/nifi_provenance_repository /opt/nifi/nifi-current/provenance_repository
-            && ln -s /mnt/persistent-home/ETL-files/input_data    /opt/nifi/input_data
-            && ln -s /mnt/persistent-home/ETL-files/output_data   /opt/nifi/output_data
-            && ln -s /mnt/persistent-home/ETL-files/staging_data  /opt/nifi/staging_data
-            && ln -s /mnt/persistent-shared-folder/apps/etl/flows         /opt/nifi/flows
-            && ln -s /mnt/persistent-shared-folder/apps/etl/scripts       /opt/nifi/scripts
-            && ln -s /mnt/persistent-home/ETL-files/TDC_Output    /opt/nifi/TDC_Output
-            && ln -s /mnt/persistent-shared-folder/apps/etl/postgresql-42.7.4.jar /opt/nifi/postgresql-42.7.4.jar
-            && ln -s /mnt/persistent-shared-folder/apps/etl/truststore.jks        /opt/nifi/truststore.jks
-            && ln -s /mnt/persistent-shared-folder/apps/etl/keystore.jks          /opt/nifi/keystore.jks
-            && ln -s /mnt/persistent-shared-folder/apps/etl/init.sh               /opt/nifi/init.sh
-            && (/bin/bash /opt/nifi/init.sh & exec /opt/nifi/scripts/start.sh )
+            mkdir -p $ETL_HOME/nifi_data/nifi_data
+            && mkdir -p $ETL_HOME/nifi_data/nifi_database_repository
+            && mkdir -p $ETL_HOME/nifi_data/nifi_flowfile_repository
+            && mkdir -p $ETL_HOME/nifi_data/nifi_content_repository
+            && mkdir -p $ETL_HOME/nifi_data/nifi_provenance_repository
+            && mkdir -p $ETL_HOME/input_data
+            && mkdir -p $ETL_HOME/output_data
+            && mkdir -p $ETL_HOME/staging_data/curated_as_csv/clinical_data
+            && mkdir -p $ETL_HOME/staging_data/input_as_csv/clinical_data
+            && mkdir -p $ETL_HOME/staging_data/input_as_csv/image_metadata
+            && mkdir -p $ETL_HOME/TDC_Output
+            && ln -s $ETL_HOME/nifi_data/nifi_data                  /opt/nifi/nifi-current/data
+            && ln -s $ETL_HOME/nifi_data/nifi_database_repository   /opt/nifi/nifi-current/database_repository
+            && ln -s $ETL_HOME/nifi_data/nifi_flowfile_repository   /opt/nifi/nifi-current/flowfile_repository
+            && ln -s $ETL_HOME/nifi_data/nifi_content_repository    /opt/nifi/nifi-current/content_repository
+            && ln -s $ETL_HOME/nifi_data/nifi_provenance_repository /opt/nifi/nifi-current/provenance_repository
+            && ln -s $ETL_RESOURCES/flows         /opt/nifi/flows
+            && ln -s $ETL_RESOURCES/truststore.jks        /opt/nifi/truststore.jks
+            && ln -s $ETL_RESOURCES/keystore.jks          /opt/nifi/keystore.jks
+            && (/bin/bash $ETL_RESOURCES/init.sh & exec /opt/nifi/scripts/start.sh )
             
