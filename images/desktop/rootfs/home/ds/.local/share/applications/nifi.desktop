@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Nifi
+Exec=/home/ds/.local/bin/open-nifi
+Terminal=true
+Path=/home/ds

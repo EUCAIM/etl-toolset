@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=DBeaver SQL client
+Exec=/home/ds/persistent-shared-folder/apps/dbeaver-sql-client/dbeaver/dbeaver
+Path=/home/ds

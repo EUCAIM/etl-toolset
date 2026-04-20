@@ -1,0 +1,9 @@
+{
+    "policies": {
+        "Certificates": {
+            "Install": [
+                "/tmp/nifi-cert.crt"
+            ]
+        }
+    }
+}
