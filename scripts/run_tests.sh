@@ -248,8 +248,7 @@ TOTAL_ROWS=0
 until [ "$TOTAL_ROWS" -ne 0 ]; do
   if [ $COUNT -ge $MAX_RETRIES ]; then
     echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
-    docker logs nifi-tdc
-    docker logs nifi
+    docker logs nifi -n 1500
     exit 1
   fi
   TOTAL_ROWS=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_output.patient;" | xargs)
