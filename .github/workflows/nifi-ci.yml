@@ -3,10 +3,10 @@ name: Test NiFi environment and pipelines
 on:
   push:
     branches:
-      - develop
+      - SAS
   pull_request:
     branches:
-      - develop
+      - SAS
 
 jobs:
   test:
