@@ -172,6 +172,36 @@ BEGIN
 	JOIN eucaim_cdm_output.image_series ois ON iita.ImageSeriesUID = ois.series_uid
 	WHERE iist.DatasetIdentifier = p_dataset_id;
 
+	-- Episodes
+	INSERT INTO eucaim_cdm_output.episode(patient_id, episode_type_code, episode_number, episode_start_date, episode_end_date)
+	SELECT PatientIdentifier, TypeOriginal, EpisodeNumber, cast(StartDate as date), cast(EndDate as date)
+	FROM eucaim_cdm_ingestion.Episode iep
+	WHERE iep.DatasetIdentifier = p_dataset_id;
+
+	-- Episodes relationships
+	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_id, event_table_name)
+	SELECT episode_id, cancer_condition_id, 'cancer_condition'
+	FROM eucaim_cdm_output.episode oep 
+	JOIN eucaim_cdm_output.cancer_condition occ ON occ.patient_id = oep.patient_id 
+	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id 
+	WHERE opa.dataset_id = p_dataset_id;
+
+	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_id, event_table_name)
+	SELECT episode_id, procedure_id, 'procedure'
+	FROM eucaim_cdm_output.episode oep 
+	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id 
+	JOIN eucaim_cdm_output.cancer_condition occ ON occ.patient_id = oep.patient_id
+	JOIN eucaim_cdm_output.procedure opr ON opr.cancer_condition_id  = occ.cancer_condition_id 
+	WHERE opa.dataset_id = p_dataset_id;
+
+	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_id, event_table_name)
+	SELECT episode_id, treatment_id, 'treatment'
+	FROM eucaim_cdm_output.episode oep 
+	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id 
+	JOIN eucaim_cdm_output.treatment otr ON otr.patient_id = oep.patient_id 
+	WHERE opa.dataset_id = p_dataset_id;
+
+
 	-- Update flag for this dataset_id	(currently handled in NiFi process group)
 
 END;

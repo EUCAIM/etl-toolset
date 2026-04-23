@@ -28,7 +28,7 @@ try {
 
     for (int lineNumber = 1; lineNumber < lines.size(); lineNumber++) {
         def line = lines[lineNumber]
-        def cols = line.split(",", -1).length  // -1 para incluir vacíos
+        def cols = line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/, -1).length  // -1 para incluir vacíos
 
         if (cols != expectedCols) {
             def mismatch = "Line ${lineNumber}: ${cols} columns (expected ${expectedCols})"
