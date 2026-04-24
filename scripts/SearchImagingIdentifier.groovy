@@ -77,7 +77,7 @@ class ImagingIdentifierLookupService implements LookupService<String> {
             pstmt.close()
 
         } catch (Exception e) {
-            log.error("SearchImagingIdentifier.lookup - Lookup error: {}", [e.message])
+            log.warning("SearchImagingIdentifier.lookup - Lookup error: {}", [e.message])
             result["imagingIdentifier"] = "NOT FOUND"
         } finally {
             if (conn != null) conn.close()
