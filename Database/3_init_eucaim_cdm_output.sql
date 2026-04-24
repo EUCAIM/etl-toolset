@@ -253,7 +253,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.episode (
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.episode_event (
-    episode_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY REFERENCES eucaim_cdm_output.episode(episode_id) ON DELETE CASCADE,
+    episode_event_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    episode_id INTEGER REFERENCES eucaim_cdm_output.episode(episode_id) ON DELETE CASCADE,
 	event_table_id INTEGER,
     event_table_name VARCHAR(150)
 );
