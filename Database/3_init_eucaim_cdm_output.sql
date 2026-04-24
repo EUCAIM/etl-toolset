@@ -187,6 +187,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.cancer_stage (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.procedure (
     procedure_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
+    patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     ProcedureIdentifier VARCHAR(150),
     procedure_code VARCHAR(50),
     procedure_category VARCHAR(50),
