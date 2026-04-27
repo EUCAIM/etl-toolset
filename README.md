@@ -44,14 +44,15 @@ Please push first at least once, the files for clinical data and DICOM metadata,
 
 ## Dataset output folders ##
 
-The generated output files, containing the dataset converted into the EUCAIM CDM, are written here:
-- `output_data\clinical_data`
-
-The generated output files, containing the DICOM metadata converted into the EUCAIM CDM, are written here:
-- `output_data\image_metadata`
+The generated output files, containing the dataset data and DICOM metadata both converted into the EUCAIM CDM, are written here:
+- `output_data`
 
 Additional output to support the review of the mapping process is written here:
 - `output_data\mapping_logs` 
+
+Additional output with info and error logs for the pipelines steps being processed is written here:
+- `output_data\mapping_logs` 
+
 
 ## License ##
 
