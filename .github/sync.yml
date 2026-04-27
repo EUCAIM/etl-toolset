@@ -1,0 +1,6 @@
+group:
+  - files:
+      - source: .github/workflows
+	dest: .github/workflows
+    repos: |
+      https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL
