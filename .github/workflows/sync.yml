@@ -14,9 +14,9 @@ jobs:
         uses: BetaHuhn/repo-file-sync-action@v1
         with:
           GH_PAT: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOKIt1vCnJiy3a0tIaQA28OMIL2djtt7LoFIVgC9dYkd francisco.castro@bahiasoftware.es  
-group:
-  - files:
-      - source: .github/workflows
-        dest: .github/workflows
-    repos: |
-      https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL
+	group:
+	  - files:
+	      - source: .github/workflows
+		dest: .github/workflows
+	    repos: |
+	      https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL
