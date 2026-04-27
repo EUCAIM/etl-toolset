@@ -6,7 +6,7 @@ CREATE SCHEMA IF NOT EXISTS eucaim_cdm_output;
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.dataset (
     dataset_id VARCHAR(150) PRIMARY KEY,
     dataset_title VARCHAR(150),
-    dataset_description VARCHAR(500)
+    dataset_description VARCHAR(1500)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.patient (

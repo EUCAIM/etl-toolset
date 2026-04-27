@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Dataset (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
     Identifier VARCHAR(150) PRIMARY KEY,
     Title VARCHAR(150) NOT NULL,
-    Description VARCHAR(500),
+    Description VARCHAR(1500),
     processed BOOLEAN DEFAULT FALSE
 );
 
