@@ -1,0 +1,7 @@
+Frontend/.vite/
+TDC_Output/
+nifi_data/
+output_data/
+registry/
+staging_data/
+utils/testing/

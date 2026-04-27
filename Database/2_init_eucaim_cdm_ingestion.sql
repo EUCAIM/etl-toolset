@@ -168,6 +168,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
     OffsetUnitOriginal VARCHAR(50),
     MedicationCodeEUCAIM VARCHAR(50),
     MedicationCodeOriginal VARCHAR(50),
+    MeditationId INTEGER,
     Episode INTEGER,
     EpisodeStartDate VARCHAR(15),
     processed BOOLEAN DEFAULT FALSE
