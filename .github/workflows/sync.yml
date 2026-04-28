@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@develop
+        uses: actions/checkout@v2
       - name: Run GitHub File Sync
-        uses: EUCAIM/etl-toolset@develop
+        uses: Redocly/repo-file-sync-action@main
         with:
           GH_PAT: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOKIt1vCnJiy3a0tIaQA28OMIL2djtt7LoFIVgC9dYkd francisco.castro@bahiasoftware.es
