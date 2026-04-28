@@ -1,16 +1,41 @@
-name: Sync Files
+name: Sync Repos
+
 on:
   push:
     branches:
       - develop
-  workflow_dispatch:
+  # You can add more triggers, such as scheduled events
+  # schedule:
+  #   - cron: '0 0 * * *'
+
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-      - name: Run GitHub File Sync
-        uses: Redocly/repo-file-sync-action@main
+      - name: Checkout source repository
+        uses: actions/checkout@v5
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          GH_PAT: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOKIt1vCnJiy3a0tIaQA28OMIL2djtt7LoFIVgC9dYkd francisco.castro@bahiasoftware.es
+          ssh-private-key: ${{ secrets.PAT }}
+
+      - name: Add Gitea to known_hosts
+        run: |
+          ssh-keyscan scm.cloud-bahiasoftware.es >> ~/.ssh/known_hosts
+      - name: Push to destination repository
+        run: |
+          git config --global user.email "francisco.castro@bahiasoftware.es"
+          git config --global user.name "fcasnun"
+          git clone https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL.git
+          cd Eucaim_ETL
+          git remote add https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL.git
+          git remote update
+          git checkout develop
+          git merge ${{ env.ORIGINAL_REPO_NAME }}/develop
+          git push origin develop
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          ORIGINAL_REPO_NAME: etl-toolset
+          ORG_NAME: EUCAIM
+          REMOTE_ORG_NAME : rpalpal
