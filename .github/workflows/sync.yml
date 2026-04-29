@@ -23,9 +23,9 @@ jobs:
         run: |
           git clone ssh://git@scm.cloud-bahiasoftware.es:222/rpalpal/Eucaim_ETL.git
           cd Eucaim_ETL
+          git checkout -b develop --track origin/develop
           git remote add etl-toolset git@github.com:EUCAIM/etl-toolset.git
           git remote update
-          git switch origin/develop
           git merge ${{ env.ORIGINAL_REPO_NAME }}/develop
           git push origin develop
         env:
