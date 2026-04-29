@@ -1,4 +1,4 @@
-name: Sync Repos develop branch
+name: Sync Repos Develop branch
 
 on:
   push:
