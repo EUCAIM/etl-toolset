@@ -16,7 +16,6 @@ jobs:
         uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.PAT }}
-
       - name: Add Gitea to known_hosts
         run: |
           ssh-keyscan -p 222 scm.cloud-bahiasoftware.es >> ~/.ssh/known_hosts
