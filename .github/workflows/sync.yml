@@ -19,7 +19,7 @@ jobs:
 
       - name: Add Gitea to known_hosts
         run: |
-          ssh-keyscan scm.cloud-bahiasoftware.es >> ~/.ssh/known_hosts
+          ssh-keyscan -p 222 scm.cloud-bahiasoftware.es >> ~/.ssh/known_hosts
       - name: Push to destination repository
         run: |
           git config --global user.email "francisco.castro@bahiasoftware.es"
