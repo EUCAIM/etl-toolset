@@ -22,7 +22,6 @@ jobs:
           ssh-keyscan -p 222 scm.cloud-bahiasoftware.es >> ~/.ssh/known_hosts
       - name: Push to destination repository
         run: |
-          git config --global user.email "francisco.castro@bahiasoftware.es"
           git config --global user.name "fcasnun"
           git clone https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL.git
           cd Eucaim_ETL
