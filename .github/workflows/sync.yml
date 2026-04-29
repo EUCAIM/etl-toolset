@@ -22,9 +22,9 @@ jobs:
           ssh-keyscan -p 222 scm.cloud-bahiasoftware.es >> ~/.ssh/known_hosts
       - name: Push to destination repository
         run: |
-          git clone https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL.git
+          git clone ssh://git@scm.cloud-bahiasoftware.es:222/rpalpal/Eucaim_ETL.git
           cd Eucaim_ETL
-          git remote add https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL.git
+          git remote add ssh://git@scm.cloud-bahiasoftware.es:222/rpalpal/Eucaim_ETL.git
           git remote update
           git checkout develop
           git merge ${{ env.ORIGINAL_REPO_NAME }}/develop
