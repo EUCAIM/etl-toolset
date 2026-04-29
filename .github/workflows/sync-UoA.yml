@@ -1,0 +1,36 @@
+name: Sync Repos UoA branch
+
+on:
+  push:
+    branches:
+      - UoA
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v5
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.PAT }}
+      - name: Add Gitea to known_hosts
+        run: |
+          ssh-keyscan -p 222 scm.cloud-bahiasoftware.es >> ~/.ssh/known_hosts
+      - name: Push to destination repository
+        run: |
+          git clone ssh://git@scm.cloud-bahiasoftware.es:222/rpalpal/Eucaim_ETL.git
+          cd Eucaim_ETL
+          git checkout -b ${{ env.BRANCH }} --track origin/${{ env.BRANCH }}
+          git remote add etl-toolset git@github.com:EUCAIM/etl-toolset.git
+          git remote update
+          git merge ${{ env.ORIGINAL_REPO_NAME }}/${{ env.BRANCH }}
+          git push origin ${{ env.BRANCH }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          ORIGINAL_REPO_NAME: etl-toolset
+          ORG_NAME: EUCAIM
+          REMOTE_ORG_NAME : rpalpal
+          BRANCH: UoA
