@@ -25,7 +25,7 @@ jobs:
           cd Eucaim_ETL
           git remote add etl-toolset git@github.com:EUCAIM/etl-toolset.git
           git remote update
-          git checkout develop
+          git checkout EUCAIM_ETL/develop
           git merge ${{ env.ORIGINAL_REPO_NAME }}/develop
           git push origin develop
         env:
