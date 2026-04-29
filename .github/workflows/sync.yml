@@ -23,8 +23,6 @@ jobs:
         run: |
           git clone ssh://git@scm.cloud-bahiasoftware.es:222/rpalpal/Eucaim_ETL.git
           cd Eucaim_ETL
-          git remote add ssh://git@scm.cloud-bahiasoftware.es:222/rpalpal/Eucaim_ETL.git
-          git remote update
           git checkout develop
           git merge ${{ env.ORIGINAL_REPO_NAME }}/develop
           git push origin develop
