@@ -25,6 +25,24 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.patient (
 );
 
 
+-- Cancer Condition
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.cancer_condition (
+    cancer_condition_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
+    Identifier VARCHAR(150),
+    cancer_condition_age_at_diagnosis DECIMAL(5,2),    
+    cancer_condition_age_unit VARCHAR(50),
+    cancer_condition_asserted_date DATE,
+    cancer_condition_offset_from_primary INTEGER,
+    cancer_condition_offset_unit VARCHAR(50),
+    cancer_condition_code VARCHAR(50),
+    cancer_condition_type VARCHAR(50),
+    cancer_condition_histology_morphology VARCHAR(150),
+    cancer_condition_topography VARCHAR(150),
+    Episode INTEGER
+);
+
+
 -- Entities related with CancerPatient directly: Health Status Assessment, Tumor Marker Test, Family Member History, Lab Test Result, Medical History
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.health_status_assessment (
     assessment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -39,7 +57,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.health_status_assessment (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor_marker_test (
     tumor_marker_test_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    --cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
+    cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
     tumor_marker_test_category VARCHAR(50),
     tumor_marker_test_code VARCHAR(50),
     tumor_marker_test_as_number DECIMAL(5,2),
@@ -85,87 +103,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.medical_history (
 );
 
 
-
--- Treatments: Surgical Procedure, Medication Administration, Radiotherapy
-CREATE TABLE IF NOT EXISTS eucaim_cdm_output.treatment (
-    treatment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    treatment_type VARCHAR(100),
-    treatment_response VARCHAR(200),
-    treatment_intent VARCHAR(200),
-    TreatmentIdentifier VARCHAR(200),
-    Episode INTEGER
-);
-
-CREATE TABLE IF NOT EXISTS eucaim_cdm_output.radiotherapy (
-    treatment_id INTEGER PRIMARY KEY REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
-    radiotherapy_modality VARCHAR(150),
-    radiotherapy_technique VARCHAR(150),
-    radiotherapy_start_date DATE,
-    radiotherapy_end_date DATE,
-    radiotherapy_offset_from_diagnosis INTEGER,
-    radiotherapy_offset_unit VARCHAR(50),
-    radiotherapy_number_of_sessions INTEGER,
-    radiotherapy_total_dose DECIMAL(5,2),
-    radiotherapy_dose_to_volume DECIMAL(5,2),
-    radiotherapy_fractions_delivered INTEGER,
-    radiotherapy_dose_unit VARCHAR(50),
-    Episode INTEGER
-);
-
-CREATE TABLE IF NOT EXISTS eucaim_cdm_output.surgical_procedure (
-    treatment_id INTEGER PRIMARY KEY REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
-    surgical_procedure_code VARCHAR(100),
-    surgical_procedure_body_site_code VARCHAR(100),
-    surgical_procedure_body_site_location VARCHAR(100),
-    surgical_procedure_body_site_laterality VARCHAR(100),
-    surgical_procedure_offset_from_diagnosis INTEGER,
-    surgical_procedure_offset_from_diagnosis_unit VARCHAR(50),
-    surgical_procedure_date DATE,	
-    Episode INTEGER
-);
-
-CREATE TABLE IF NOT EXISTS eucaim_cdm_output.medication_administration (
-    treatment_id INTEGER PRIMARY KEY REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
-    medication_code VARCHAR(50),
-    medication_id INTEGER,
-    medication_start_date DATE,
-    medication_end_date DATE,
-    medication_offset_from_diagnosis INTEGER,
-    medication_offset_unit VARCHAR(50),
-    medication_number_of_sessions INTEGER,
-    medication_total_dose DECIMAL(5,2),
-    medication_dose_unit VARCHAR(50),
-    medication_effective_period DECIMAL(4,1),
-    medication_effective_period_unit VARCHAR(50),
-    Episode INTEGER
-);
-
-CREATE TABLE IF NOT EXISTS eucaim_cdm_output.adverse_event (
-    adverse_event_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
-    treatment_id INTEGER REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
-    adverse_event_resulting_effect VARCHAR(200),
-    adverse_event_date DATE
-);
-
-
--- Cancer Condition, Histologic Grade, Cancer Stage, Procedure, Tumor
-CREATE TABLE IF NOT EXISTS eucaim_cdm_output.cancer_condition (
-    cancer_condition_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    Identifier VARCHAR(150),
-    cancer_condition_age_at_diagnosis DECIMAL(5,2),    
-    cancer_condition_age_unit VARCHAR(50),
-    cancer_condition_asserted_date DATE,
-    cancer_condition_offset_from_primary INTEGER,
-    cancer_condition_offset_unit VARCHAR(50),
-    cancer_condition_code VARCHAR(50),
-    cancer_condition_type VARCHAR(50),
-    cancer_condition_histology_morphology VARCHAR(150),
-    cancer_condition_topography VARCHAR(150),
-    Episode INTEGER
-);
-
+-- Histologic Grade, Cancer Stage, Procedure, Body Site, Tumor
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.histologic_grade (
     histologic_grade_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
@@ -199,10 +137,22 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.procedure (
     Episode INTEGER
 );
 
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.body_site (
+    body_site_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    body_site_code VARCHAR(150),
+    body_site_location VARCHAR(150),
+    body_site_laterality VARCHAR(50),
+    body_site_volume DECIMAL(5,2),
+    body_site_volume_unit VARCHAR(50)
+);
+
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor (
     tumor_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
+    --cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
+    procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id) ON DELETE CASCADE,
+    histologic_grade_id INTEGER REFERENCES eucaim_cdm_output.histologic_grade(histologic_grade_id) ON DELETE CASCADE,
+    body_site_id INTEGER REFERENCES eucaim_cdm_output.body_site(body_site_id) ON DELETE CASCADE,
     Identifier VARCHAR(150),
 	tumor_is_index BOOLEAN,
 	tumor_histology_morphology VARCHAR(50),
@@ -237,6 +187,72 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor_observation (
 	tumor_observation_value_unit VARCHAR(15),
     tumor_observation_value_as_concept VARCHAR(50),
     tumor_observation_Value_as_number INTEGER
+);
+
+
+-- Treatments: Surgical Procedure, Medication Administration, Radiotherapy
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.treatment (
+    treatment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
+    treatment_type VARCHAR(100),
+    treatment_response VARCHAR(200),
+    treatment_intent VARCHAR(200),
+    TreatmentIdentifier VARCHAR(200),
+    Episode INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.radiotherapy (
+    treatment_id INTEGER PRIMARY KEY REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
+    radiotherapy_modality VARCHAR(150),
+    radiotherapy_technique VARCHAR(150),
+    radiotherapy_start_date DATE,
+    radiotherapy_end_date DATE,
+    radiotherapy_offset_from_diagnosis INTEGER,
+    radiotherapy_offset_unit VARCHAR(50),
+    radiotherapy_number_of_sessions INTEGER,
+    radiotherapy_total_dose DECIMAL(5,2),
+    radiotherapy_dose_to_volume DECIMAL(5,2),
+    radiotherapy_fractions_delivered INTEGER,
+    radiotherapy_dose_unit VARCHAR(50),
+    surgical_procedure_body_site_id VARCHAR(200),
+    Episode INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.surgical_procedure (
+    treatment_id INTEGER PRIMARY KEY REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
+    surgical_procedure_code VARCHAR(100),
+    surgical_procedure_body_site_code VARCHAR(100),
+    surgical_procedure_body_site_location VARCHAR(100),
+    surgical_procedure_body_site_laterality VARCHAR(100),
+    surgical_procedure_offset_from_diagnosis INTEGER,
+    surgical_procedure_offset_from_diagnosis_unit VARCHAR(50),
+    surgical_procedure_date DATE,	
+    radiotherapy_body_site_id VARCHAR(200),
+    Episode INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.medication_administration (
+    treatment_id INTEGER REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
+    medication_code VARCHAR(50),
+    medication_id INTEGER,
+    medication_start_date DATE,
+    medication_end_date DATE,
+    medication_offset_from_diagnosis INTEGER,
+    medication_offset_unit VARCHAR(50),
+    medication_number_of_sessions INTEGER,
+    medication_total_dose DECIMAL(5,2),
+    medication_dose_unit VARCHAR(50),
+    medication_effective_period DECIMAL(4,1),
+    medication_effective_period_unit VARCHAR(50),
+    Episode INTEGER,
+    PRIMARY KEY (treatment_id, medication_id)
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.adverse_event (
+    adverse_event_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+    treatment_id INTEGER REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
+    adverse_event_resulting_effect VARCHAR(200),
+    adverse_event_date DATE
 );
 
 
