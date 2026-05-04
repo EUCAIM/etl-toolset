@@ -286,6 +286,14 @@ INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedVal
 
 VALUES ('sentinel lymph node biopsy', 'Sentinel lymph node biopsy');
 
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('partial', 'Subtotal Resection');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('complete', 'Gross Total Resection');
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureBodySite (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
