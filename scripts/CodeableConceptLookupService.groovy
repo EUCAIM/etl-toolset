@@ -55,7 +55,7 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                     def sql = """
                     SELECT c.concept_code
                     FROM eucaim_hyperontology_codes.concept c
-                    WHERE c.concept_name = ?
+                    WHERE LOWER(c.concept_name) = LOWER(?)
                     """
 
                     log.info(sql)
