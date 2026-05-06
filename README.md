@@ -2,14 +2,14 @@
 
 Build the images:
 ```
-docker build -t harbor.eucaim-node.i3m.upv.es/library/etl/postgres-etl:15-2 images/postgresql
+docker build -t harbor.eucaim-node.i3m.upv.es/library/etl/postgres-etl:15-3 images/postgresql
 docker build -t harbor.eucaim-node.i3m.upv.es/library/etl/tdc-app:1.0-slim images/TDC
 docker build -t harbor.eucaim-node.i3m.upv.es/library/etl/desktop:1.1 images/desktop
 ```
 
 Upload the images:
 ```
-docker push harbor.eucaim-node.i3m.upv.es/library/etl/postgres-etl:15-2
+docker push harbor.eucaim-node.i3m.upv.es/library/etl/postgres-etl:15-3
 docker push harbor.eucaim-node.i3m.upv.es/library/etl/tdc-app:1.0-slim
 docker push harbor.eucaim-node.i3m.upv.es/library/etl/desktop:1.1
 ```
