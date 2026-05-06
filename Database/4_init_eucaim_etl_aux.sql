@@ -243,6 +243,9 @@ VALUES ('parietal (4)', 'Parietal region');
 INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
 VALUES ('temporal (2)', 'Temporal brain region');
 
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
+
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPatientDiagnosticCategory (
 
@@ -301,6 +304,9 @@ VALUES ('sub-total resection', 'Subtotal Resection');
 INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
 
 VALUES ('Gross-total resection', 'Gross Total Resection');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureBodySite (
 
@@ -554,6 +560,9 @@ VALUES ('M-124', 'Mutated/c.1-124C>T');
 INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestResultValueAsConcept (originalValue, parsedValue)
 VALUES ('M-146', 'Mutated/c.1-146C>T');
 
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestResultValueAsConcept (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTest1ResultValueAsConcept (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -664,6 +673,9 @@ VALUES ('parietal (4)', 'Parietal region');
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
 VALUES ('temporal (2)', 'Temporal brain region');
 
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -682,7 +694,8 @@ VALUES ('parietal (4)', 'Parietal region');
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
 VALUES ('temporal (2)', 'Temporal brain region');
 
-
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorGradeCodeService (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -719,6 +732,9 @@ VALUES ('TMZ', 'Temozolomide');
 
 INSERT INTO eucaim_etl_aux.LookupMedicationAdministrationCode (originalValue, parsedValue)
 VALUES ('Fotemustina', 'Fotemustine');
+
+INSERT INTO eucaim_etl_aux.LookupMedicationAdministrationCode (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupMedicationAdministrationResponse (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
