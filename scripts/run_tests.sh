@@ -39,6 +39,8 @@ procesar_pipeline_clinical_data() {
     sleep $SLEEP_SEC
     COUNT=$((COUNT+1))
   done
+  
+  sleep $SLEEP_SEC
 
   echo "Output detected!"
   echo "Files generated:"
@@ -99,6 +101,8 @@ procesar_pipeline_imaging_metadata() {
     sleep $SLEEP_SEC
     COUNT=$((COUNT+1))
   done
+  
+  sleep $SLEEP_SEC
 
   echo "Output detected!"
   echo "Files generated:"
@@ -163,6 +167,8 @@ procesar_pipeline_imaging_timepoints() {
     COUNT=$((COUNT+1))
   done
 
+  sleep $SLEEP_SEC
+  
   echo "Number of output rows in eucaim_cdm_output.patient table: $TOTAL_ROWS  (Expected rows: $NUMBER_OF_PATIENTS)"
 
   if [ "$TOTAL_ROWS" -ne $NUMBER_OF_PATIENTS ]; then

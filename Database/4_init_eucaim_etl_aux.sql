@@ -294,6 +294,14 @@ INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedVal
 
 VALUES ('complete', 'Gross Total Resection');
 
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('sub-total resection', 'Subtotal Resection');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('Gross-total resection', 'Gross Total Resection');
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureBodySite (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
