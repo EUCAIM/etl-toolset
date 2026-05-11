@@ -293,7 +293,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_study (
     study_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id) ON DELETE CASCADE,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    study_uid VARCHAR(70) NOT NULL,
+    study_uid VARCHAR(150) NOT NULL,
     ImagingTimepoint INTEGER,
     study_offset_from_diagnosis DECIMAL(5,2),
     study_offset_unit VARCHAR(20)
@@ -301,8 +301,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_study (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
     series_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    series_uid VARCHAR(70) NOT NULL,
-    study_uid VARCHAR(70) NOT NULL,
+    series_uid VARCHAR(150) NOT NULL,
+    study_uid VARCHAR(150) NOT NULL,
     study_id INTEGER REFERENCES eucaim_cdm_output.image_study(study_id) ON DELETE CASCADE,
     series_number INTEGER,
     series_description VARCHAR(170),
@@ -322,4 +322,31 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_modality (
     acquisition_parameter_value_as_code VARCHAR(50),
     acquisition_parameter_value_as_number DECIMAL(5,2),
     acquisition_parameter_value_unit VARCHAR(50)
+);
+
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.segmentation_series (
+    segmentation_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    segmentation_series_uid VARCHAR(150) NOT NULL,
+    series_uid VARCHAR(150) NOT NULL,
+    study_uid VARCHAR(150) NOT NULL,
+    segmentation_algorithm_type VARCHAR(50) NOT NULL,
+    segmentation_annotation_type VARCHAR(50),
+    segmentation_annotator_specialty VARCHAR(50),
+    segmentation_annotator_experience INTEGER,
+    segmentation_performed_date DATE,
+    segmentation_status VARCHAR(50)
+);
+
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.segment (
+    segment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    segmentation_series_uid VARCHAR(150) NOT NULL,
+    segment_number INTEGER NOT NULL,
+    segment_label VARCHAR(50) NOT NULL,
+    segment_description VARCHAR(150) NOT NULL,
+    segment_algorithm_name VARCHAR(100),
+    segment_tool_name VARCHAR(100),
+    segment_tool_version VARCHAR(100),
+    segment_tool_coordinate_system VARCHAR(50)
 );
