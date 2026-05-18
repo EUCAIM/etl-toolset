@@ -51,6 +51,23 @@ spec:
               value: "/mnt/persistent-shared-folder/apps/etl"
             #- name: NIFI_WEB_HTTPS_HOST
             #  value: "localhost"
+            - name: SHARED_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: "shared-sql-db-auth"
+                  key: host
+            - name: SHARED_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "shared-sql-db-auth"
+                  key: user
+            - name: SHARED_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "shared-sql-db-auth"
+                  key: password
+            - name: SHARED_DB_NAME
+              value: "project-{{ .Values.projectCode }}--{{ .Values.subprojectCode }}"
           command: 
           - "sh"
           - "-c"

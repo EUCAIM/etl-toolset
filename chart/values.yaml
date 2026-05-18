@@ -2,6 +2,12 @@
 # Put here the ID of dataset you are going to work with (you can put more than one separated by comas):
 datasetsList: ""
 
+# Put here the code of the project and subproject where you want to upload the results of the ETL process:
+projectCode: ""
+subprojectCode: ""
+# You can see the code of your project and subproject in the details web page: 
+# https://eucaim-node.i3m.upv.es/dataset-service/projects
+# Select your project in the list to access the details and ensure you are logged in to see the subprojects.
 
 # ======= ADVANCED PARAMETERS (usually you don't need to change them)
 nifi:
