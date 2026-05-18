@@ -115,16 +115,16 @@ BEGIN
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.procedure(cancer_condition_id, ProcedureIdentifier, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
-	SELECT opcc.cancer_condition_id, ProcedureIdentifier, ImagingProcedureEUCAIM, OffsetFromDiagnosis, OffsetUnitEUCAIM, cast(PerformedDate as date), ImagingProcedureCategoryCodeEUCAIM
+	INSERT INTO eucaim_cdm_output.procedure(patient_id, cancer_condition_id, ProcedureIdentifier, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
+	SELECT opcc.patient_id, opcc.cancer_condition_id, ProcedureIdentifier, ImagingProcedureEUCAIM, OffsetFromDiagnosis, OffsetUnitEUCAIM, cast(PerformedDate as date), ImagingProcedureCategoryCodeEUCAIM
 	FROM eucaim_cdm_ingestion.ImagingProcedure iip
 	JOIN eucaim_cdm_output.cancer_condition opcc ON iip.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON iip.PrimaryCancerConditionIdentifier = ipcc.Identifier
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.tumor(Identifier, cancer_condition_id, tumor_is_index, tumor_histology_morphology, tumor_volume_unit, tumor_size_method, tumor_size_maximum_dimension, tumor_size_other_dimension, tumor_body_site, tumor_body_site_location, tumor_body_site_laterality)
-	SELECT it.Identifier, opcc.cancer_condition_id, isIndex, morphologyEUCAIM, volume, sizeMethodEUCAIM, sizeMaximumDimension, sizeOtherDimension, it.BodySiteEUCAIM, it.BodySiteLocationQualifierEUCAIM, it.BodySiteLateralityQualifierEUCAIM
+	INSERT INTO eucaim_cdm_output.tumor(Identifier, tumor_is_index, tumor_histology_morphology, tumor_volume_unit, tumor_size_method, tumor_size_maximum_dimension, tumor_size_other_dimension, tumor_body_site, tumor_body_site_location, tumor_body_site_laterality)
+	SELECT it.Identifier, isIndex, morphologyEUCAIM, volume, sizeMethodEUCAIM, sizeMaximumDimension, sizeOtherDimension, it.BodySiteEUCAIM, it.BodySiteLocationQualifierEUCAIM, it.BodySiteLateralityQualifierEUCAIM
 	FROM eucaim_cdm_ingestion.Tumor it
 	JOIN eucaim_cdm_output.cancer_condition opcc ON it.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON it.PrimaryCancerConditionIdentifier = ipcc.Identifier
@@ -171,6 +171,36 @@ BEGIN
 	JOIN eucaim_cdm_ingestion.ImageStudy iist ON iita.ImageStudyUID = iist.ImageStudyUID
 	JOIN eucaim_cdm_output.image_series ois ON iita.ImageSeriesUID = ois.series_uid
 	WHERE iist.DatasetIdentifier = p_dataset_id;
+
+	-- Episodes
+	INSERT INTO eucaim_cdm_output.episode(patient_id, episode_type_code, episode_number, episode_start_date, episode_end_date)
+	SELECT PatientIdentifier, TypeOriginal, EpisodeNumber, cast(StartDate as date), cast(EndDate as date)
+	FROM eucaim_cdm_ingestion.Episode iep
+	WHERE iep.DatasetIdentifier = p_dataset_id;
+
+	-- Episodes relationships
+	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_id, event_table_name)
+	SELECT episode_id, cancer_condition_id, 'cancer_condition'
+	FROM eucaim_cdm_output.episode oep 
+	JOIN eucaim_cdm_output.cancer_condition occ ON occ.patient_id = oep.patient_id 
+	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id 
+	WHERE opa.dataset_id = p_dataset_id;
+
+	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_id, event_table_name)
+	SELECT episode_id, opr.procedure_id, 'procedure'
+	FROM eucaim_cdm_output.episode oep 
+	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id 
+	JOIN eucaim_cdm_output.cancer_condition occ ON occ.patient_id = oep.patient_id
+	JOIN eucaim_cdm_output.procedure opr ON opr.cancer_condition_id  = occ.cancer_condition_id 
+	WHERE opa.dataset_id = p_dataset_id;
+
+	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_id, event_table_name)
+	SELECT episode_id, treatment_id, 'treatment'
+	FROM eucaim_cdm_output.episode oep 
+	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id 
+	JOIN eucaim_cdm_output.treatment otr ON otr.patient_id = oep.patient_id 
+	WHERE opa.dataset_id = p_dataset_id;
+
 
 	-- Update flag for this dataset_id	(currently handled in NiFi process group)
 
