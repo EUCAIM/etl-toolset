@@ -84,8 +84,8 @@ fi
 
 echo "✔️ Number of radiotherapy procedures is the expected in test data"
 
-SURGICAL_PROCEDURE_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT procedureeucaim FROM eucaim_cdm_ingestion.surgicalprocedure c where id=2;" | xargs)
-SURGICAL_PROCEDURE_CODE="CLIN1004413"
+SURGICAL_PROCEDURE_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT procedureeucaim FROM eucaim_cdm_ingestion.surgicalprocedure c where id=3;" | xargs)
+SURGICAL_PROCEDURE_CODE="CLIN1004586"
 
 if [ "$SURGICAL_PROCEDURE_CODE_QUERY" != "$SURGICAL_PROCEDURE_CODE" ]; then
   echo "❌ Not expected Surgical Procedure code on patient test1"
@@ -114,12 +114,3 @@ fi
 
 echo "✔️ Tumor Marker Test Code is the expected in test data"
 
-SURGICAL_PROCEDURE_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT procedureeucaim FROM eucaim_cdm_ingestion.surgicalprocedure c where id=2;" | xargs)
-SURGICAL_PROCEDURE_CODE="CLIN1004413"
-
-if [ "$SURGICAL_PROCEDURE_CODE_QUERY" != "$SURGICAL_PROCEDURE_CODE" ]; then
-  echo "❌ Not expected Surgical Procedure code on patient test1"
-  exit 1
-fi
-
-echo "✔️ Surgical Procedure Code is the expected in test data"
