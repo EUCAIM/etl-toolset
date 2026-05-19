@@ -82,7 +82,7 @@ fi
 
 echo "✔️ Cancer related procedure code is the expected in test data"
 
-BIRTH_SEX_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT birthsexeucaim FROM eucaim_cdm_ingestion.cancerpatient c where id=1;" | xargs)
+BIRTH_SEX_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT birthsexeucaim FROM eucaim_cdm_ingestion.cancerpatient c where identifier='EUCAIM-42359961463279617395233496226407435633';" | xargs)
 BIRTH_SEX_CODE="COM1000177"
 
 if [ "$BIRTH_SEX_QUERY" != "$BIRTH_SEX_CODE" ]; then
