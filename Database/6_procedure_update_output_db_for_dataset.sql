@@ -123,8 +123,8 @@ BEGIN
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.tumor(Identifier, cancer_condition_id, tumor_is_index, tumor_histology_morphology, tumor_volume_unit, tumor_size_method, tumor_size_maximum_dimension, tumor_size_other_dimension, tumor_body_site, tumor_body_site_location, tumor_body_site_laterality)
-	SELECT it.Identifier, opcc.cancer_condition_id, isIndex, morphologyEUCAIM, volume, sizeMethodEUCAIM, sizeMaximumDimension, sizeOtherDimension, it.BodySiteEUCAIM, it.BodySiteLocationQualifierEUCAIM, it.BodySiteLateralityQualifierEUCAIM
+	INSERT INTO eucaim_cdm_output.tumor(Identifier, tumor_is_index, tumor_histology_morphology, tumor_volume_unit, tumor_size_method, tumor_size_maximum_dimension, tumor_size_other_dimension, tumor_body_site, tumor_body_site_location, tumor_body_site_laterality)
+	SELECT it.Identifier, isIndex, morphologyEUCAIM, volume, sizeMethodEUCAIM, sizeMaximumDimension, sizeOtherDimension, it.BodySiteEUCAIM, it.BodySiteLocationQualifierEUCAIM, it.BodySiteLateralityQualifierEUCAIM
 	FROM eucaim_cdm_ingestion.Tumor it
 	JOIN eucaim_cdm_output.cancer_condition opcc ON it.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON it.PrimaryCancerConditionIdentifier = ipcc.Identifier
@@ -187,7 +187,7 @@ BEGIN
 	WHERE opa.dataset_id = p_dataset_id;
 
 	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_id, event_table_name)
-	SELECT episode_id, procedure_id, 'procedure'
+	SELECT episode_id, opr.procedure_id, 'procedure'
 	FROM eucaim_cdm_output.episode oep 
 	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id 
 	JOIN eucaim_cdm_output.cancer_condition occ ON occ.patient_id = oep.patient_id
