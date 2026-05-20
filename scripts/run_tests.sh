@@ -8,11 +8,11 @@ INPUT_DIR="input_data"
 OUTPUT_DIR="output_data"
 POSTGRES_CONTAINER=$(docker compose ps -q nifi-postgres)
 
-CLINICAL_DATA_TEST_CSV="sample_data/aaaadcw3slp2bbsux2urluqaae_perproglio_synthetic_sample_2.csv"
+CLINICAL_DATA_TEST_CSV="sample_data/40dbe9fb-c607-445d-a582-dea531b676b1_PerProGlio_clinical_data_testing_02.csv"
 NUMBER_OF_PATIENTS=20
-IMAGE_METADATA_TEST_CSV="sample_data/aaaadcw3slp2bbsux2urluqaae_PerProGlio_DICOM_metadata_testing_02.csv"
+IMAGE_METADATA_TEST_CSV="sample_data/40dbe9fb-c607-445d-a582-dea531b676b1_PerProGlio_DICOM_metadata_testing_02.csv"
 NUMBER_OF_STUDIES=3
-IMAGING_TIMEPOINTS_TEST_CSV="sample_data/aaaadcw3slp2bbsux2urluqaae_PerProGlio_imaging_timepoints_testing_02.csv"
+IMAGING_TIMEPOINTS_TEST_CSV="sample_data/40dbe9fb-c607-445d-a582-dea531b676b1_PerProGlio_imaging_timepoints_testing_02.csv"
 
 CLINICAL_DATA_EXTRA_TEST_SCRIPT="scripts/run_clinical_data_specific_tests.sh"
 

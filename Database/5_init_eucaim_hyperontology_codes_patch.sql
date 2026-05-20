@@ -1,6 +1,6 @@
 -- Step 5 Eucaim Hyperontology temporary patches (to be removed)
 
-CREATE SEQUENCE eucaim_hyperontology_codes.eucaim_concept_id_seq;
+CREATE SEQUENCE IF NOT EXISTS eucaim_hyperontology_codes.eucaim_concept_id_seq;
 
 SELECT setval('eucaim_hyperontology_codes.eucaim_concept_id_seq', (SELECT MAX(concept_id) FROM eucaim_hyperontology_codes.concept));
 

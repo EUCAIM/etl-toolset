@@ -1,8 +1,8 @@
 ----------------------------------------------------
-CREATE SCHEMA eucaim_etl_aux;
+CREATE SCHEMA IF NOT EXISTS eucaim_etl_aux;
 
 
-CREATE TABLE eucaim_etl_aux.LookupHeaderRowsToRemove (
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupHeaderRowsToRemove (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 

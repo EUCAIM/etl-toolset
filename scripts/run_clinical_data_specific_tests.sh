@@ -84,7 +84,7 @@ fi
 
 echo "✔️ Number of radiotherapy procedures is the expected in test data"
 
-SURGICAL_PROCEDURE_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT procedureeucaim FROM eucaim_cdm_ingestion.surgicalprocedure c where treatmentidentifier='aaaadcw3slp2bbsux2urluqaaetest1_surgicalProcedure1_tumor_1';" | xargs)
+SURGICAL_PROCEDURE_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT procedureeucaim FROM eucaim_cdm_ingestion.surgicalprocedure c where treatmentidentifier='40dbe9fb-c607-445d-a582-dea531b676b1test1_surgicalProcedure1_tumor_1';" | xargs)
 SURGICAL_PROCEDURE_CODE="CLIN1004413"
 
 if [ "$SURGICAL_PROCEDURE_CODE_QUERY" != "$SURGICAL_PROCEDURE_CODE" ]; then

@@ -1,6 +1,6 @@
 -- Step 2 Eucaim CDM Schema definition: ingestion
 
-CREATE SCHEMA eucaim_cdm_ingestion;
+CREATE SCHEMA IF NOT EXISTS eucaim_cdm_ingestion;
 
 -------------------------------------------------------------------------------------------
 -- Log and control
