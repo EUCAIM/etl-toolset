@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+CONNECTION_PARAM=""
+if [ -n "$SHARED_DB_HOST" ] && [ -n "$SHARED_DB_NAME" ] && [ -n "$SHARED_DB_USERNAME" ] && [ -n "$SHARED_DB_PASSWORD" ]; then
+    CONNECTION_PARAM="-con name=$SHARED_DB_NAME|driver=postgresql|host=$SHARED_DB_HOST|database=$SHARED_DB_NAME|user=$SHARED_DB_USERNAME|password=$SHARED_DB_PASSWORD"
+fi
+
+
+echo "Opening DBeaver with connection to $SHARED_DB_NAME..."
+nohup  /home/ds/persistent-shared-folder/apps/dbeaver-sql-client/dbeaver/dbeaver $CONNECTION_PARAM
+

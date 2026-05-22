@@ -5,7 +5,7 @@ Build the images:
 docker build -t harbor.eucaim-node.i3m.upv.es/library/etl/nifi-etl:2.3.0-1 images/nifi
 docker build -t harbor.eucaim-node.i3m.upv.es/library/etl/postgres-etl:15-3 images/postgresql
 docker build -t harbor.eucaim-node.i3m.upv.es/library/etl/tdc-app:1.0-slim images/TDC
-docker build -t harbor.eucaim-node.i3m.upv.es/library/etl/desktop:1.1 images/desktop
+docker build -t harbor.eucaim-node.i3m.upv.es/library/etl/desktop:1.5 images/desktop
 ```
 
 Upload the images:
@@ -13,7 +13,7 @@ Upload the images:
 docker push harbor.eucaim-node.i3m.upv.es/library/etl/nifi-etl:2.3.0-1
 docker push harbor.eucaim-node.i3m.upv.es/library/etl/postgres-etl:15-3
 docker push harbor.eucaim-node.i3m.upv.es/library/etl/tdc-app:1.0-slim
-docker push harbor.eucaim-node.i3m.upv.es/library/etl/desktop:1.1
+docker push harbor.eucaim-node.i3m.upv.es/library/etl/desktop:1.5
 ```
 
 Package the chart:

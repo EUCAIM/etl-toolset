@@ -16,7 +16,7 @@ COPY --chown=ds:ds rootfs/home/ds /home/ds/
 
 # - Add execution permission to the scripts
 # - Autostart firefox with the web page of the nifi service
-RUN chmod +x /home/ds/.init/startup_etl.sh /home/ds/.local/bin/open-nifi \
+RUN chmod +x /home/ds/.init/startup_etl.sh /home/ds/.local/bin/open-nifi /home/ds/.local/bin/open-dbeaver \
  && echo '@/home/ds/.local/bin/open-nifi' >> /etc/xdg/lxsession/LXDE/autostart
 
 ## Install send etl logs

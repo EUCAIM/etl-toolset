@@ -2,7 +2,7 @@ apiVersion: v2
 name: nifi
 description: "[TESTING] Apache NiFi, PostgreSQL, NiFi Registry, and TDC"
 type: application
-version: "0.2.5"
+version: "0.2.6"
 appVersion: "2.3.0"
 home: https://github.com/EUCAIM/etl-toolset/
 icon: https://nifi.apache.org/images/apache-nifi-logo.svg
