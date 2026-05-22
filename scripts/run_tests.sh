@@ -11,7 +11,7 @@ POSTGRES_CONTAINER=$(docker compose ps -q nifi-postgres)
 CLINICAL_DATA_TEST_CSV="sample_data/40dbe9fb-c607-445d-a582-dea531b676b1_PerProGlio_clinical_data_testing_02.csv"
 NUMBER_OF_PATIENTS=20
 IMAGE_METADATA_TEST_CSV="sample_data/40dbe9fb-c607-445d-a582-dea531b676b1_PerProGlio_DICOM_metadata_testing_02.csv"
-NUMBER_OF_STUDIES=3
+NUMBER_OF_STUDIES=5
 IMAGING_TIMEPOINTS_TEST_CSV="sample_data/40dbe9fb-c607-445d-a582-dea531b676b1_PerProGlio_imaging_timepoints_testing_02.csv"
 
 CLINICAL_DATA_EXTRA_TEST_SCRIPT="scripts/run_clinical_data_specific_tests.sh"
@@ -40,6 +40,7 @@ procesar_pipeline_clinical_data() {
     COUNT=$((COUNT+1))
   done
   
+  sleep $SLEEP_SEC
   sleep $SLEEP_SEC
   sleep $SLEEP_SEC
 

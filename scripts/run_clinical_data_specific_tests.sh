@@ -53,7 +53,7 @@ fi
 echo "✔️ Health status code is the expected in test data"
 
 IMAGING_PROCEDURE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.imagingprocedure c where patientidentifier='test1';" | xargs)
-IMAGING_PROCEDURE_NUMBER=4
+IMAGING_PROCEDURE_NUMBER=6
 
 if [ "$IMAGING_PROCEDURE_QUERY" -ne "$IMAGING_PROCEDURE_NUMBER" ]; then
   echo "❌ Not expected number of imaging procedures for patient test1"
