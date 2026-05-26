@@ -107,7 +107,7 @@ INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001954', 'https://cancerimage.eu/ontology/EUCAIM#COM1001954', 'centimeter');
 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
-VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1000038', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000038', 'Magnetic resonance imaging');
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1000022', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000038', 'Magnetic resonance imaging');
 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1000030', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000030', 'Mammography');
