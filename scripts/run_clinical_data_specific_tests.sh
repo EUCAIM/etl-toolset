@@ -13,7 +13,7 @@ fi
 echo "✔️ Cancer related procedure code is the expected in test data"
 
 BIRTH_SEX_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT birthsexeucaim FROM eucaim_cdm_ingestion.cancerpatient c where identifier='test7';" | xargs)
-BIRTH_SEX_CODE="COM1000177"
+BIRTH_SEX_CODE="COM1001370"
 
 if [ "$BIRTH_SEX_QUERY" != "$BIRTH_SEX_CODE" ]; then
   echo "❌ Not expected birth sex code on patient 1"
