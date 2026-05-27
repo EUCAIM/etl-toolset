@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.medication_administration (
     medication_effective_period DECIMAL(4,1),
     medication_effective_period_unit VARCHAR(50),
     Episode INTEGER,
-    PRIMARY KEY (treatment_id, medication_id)
+    PRIMARY KEY (treatment_id)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.adverse_event (
