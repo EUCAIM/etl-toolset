@@ -6,6 +6,13 @@ SELECT setval('eucaim_hyperontology_codes.eucaim_concept_id_seq', (SELECT MAX(co
 
 
 INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
+VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001366', 'https://cancerimage.eu/ontology/EUCAIM#COM1001366', 'MALE');
+
+INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
+VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001370', 'https://cancerimage.eu/ontology/EUCAIM#COM1001370', 'FEMALE');
+
+
+INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
 VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1016670', 'https://cancerimage.eu/ontology/EUCAIM#IMG1016670', 'Left');
 
 INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
