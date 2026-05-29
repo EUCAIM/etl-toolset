@@ -295,6 +295,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_study (
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     study_uid VARCHAR(150) NOT NULL,
     ImagingTimepoint INTEGER,
+    study_acquisition_date DATE,
+    study_number_of_series INTEGER,
+    study_number_of_instances INTEGER,
+    study_access_uri VARCHAR(150),
     study_offset_from_diagnosis DECIMAL(5,2),
     study_offset_unit VARCHAR(20)
 );
@@ -307,9 +311,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
     series_number INTEGER,
     series_description VARCHAR(170),
 	series_manufacturer VARCHAR(70),
-    series_body_side_code VARCHAR(70),
-    series_body_side_location VARCHAR(70),
-    series_body_side_laterality VARCHAR(70),
     series_acquisition_date DATE,
     series_modality VARCHAR(70)
 );
