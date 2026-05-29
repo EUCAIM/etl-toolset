@@ -1253,5 +1253,10 @@ INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) 
 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('FUJIFILM Corporation', 'FUJIFILM');
 
+INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('GE MEDICAL SYSTEMS', 'GENERAL ELECTRIC');
+
+
+
+
 ----------------------------------------------------
 
