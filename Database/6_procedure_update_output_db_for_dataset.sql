@@ -160,8 +160,8 @@ BEGIN
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
 	-- Update entities for DICOM metadata
-	INSERT INTO eucaim_cdm_output.image_study(procedure_id, study_uid, ImagingTimepoint, study_offset_from_diagnosis, study_offset_unit)
-	SELECT op.procedure_id, ImageStudyUID, iis.ImagingTimepoint, iis.OffsetFromDiagnosis, iis.OffsetUnitEUCAIM
+	INSERT INTO eucaim_cdm_output.image_study(procedure_id, patient_id, study_uid, ImagingTimepoint, study_offset_from_diagnosis, study_offset_unit)
+	SELECT op.procedure_id, op.patient_id, ImageStudyUID, iis.ImagingTimepoint, iis.OffsetFromDiagnosis, iis.OffsetUnitEUCAIM
 	FROM eucaim_cdm_ingestion.ImageStudy iis
 	JOIN eucaim_cdm_output.procedure op ON iis.ImagingProcedureIdentifier = op.ProcedureIdentifier
 	WHERE iis.DatasetIdentifier = p_dataset_id;
