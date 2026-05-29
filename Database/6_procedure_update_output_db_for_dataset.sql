@@ -116,10 +116,19 @@ BEGIN
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
 	INSERT INTO eucaim_cdm_output.procedure(patient_id, cancer_condition_id, ProcedureIdentifier, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
-	SELECT opcc.patient_id, opcc.cancer_condition_id, ProcedureIdentifier, ImagingProcedureEUCAIM, OffsetFromDiagnosis, OffsetUnitEUCAIM, cast(PerformedDate as date), ImagingProcedureCategoryCodeEUCAIM
+	SELECT opcc.patient_id, opcc.cancer_condition_id, ProcedureIdentifier, ImagingProcedureEUCAIM, iip.OffsetFromDiagnosis, iip.OffsetUnitEUCAIM, cast(PerformedDate as date), ImagingProcedureCategoryCodeEUCAIM
 	FROM eucaim_cdm_ingestion.ImagingProcedure iip
 	JOIN eucaim_cdm_output.cancer_condition opcc ON iip.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON iip.PrimaryCancerConditionIdentifier = ipcc.Identifier
+	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
+	JOIN eucaim_cdm_ingestion.imagestudy iit on iip.procedureidentifier  = iit.imagingprocedureidentifier 
+	WHERE icp.DatasetIdentifier = p_dataset_id;
+
+	INSERT INTO eucaim_cdm_output.procedure(patient_id, cancer_condition_id, ProcedureIdentifier, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
+	SELECT opcc.patient_id, opcc.cancer_condition_id, ProcedureIdentifier, ProcedureEUCAIM, OffsetFromDiagnosis, OffsetUnitEUCAIM, cast(PerformedDate as date), ProcedureCategoryCodeEUCAIM
+	FROM eucaim_cdm_ingestion.CancerRelatedProcedure crp
+	JOIN eucaim_cdm_output.cancer_condition opcc ON crp.PrimaryCancerConditionIdentifier = opcc.Identifier
+	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON crp.PrimaryCancerConditionIdentifier = ipcc.Identifier
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
@@ -151,8 +160,8 @@ BEGIN
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
 	-- Update entities for DICOM metadata
-	INSERT INTO eucaim_cdm_output.image_study(procedure_id, study_uid, ImagingTimepoint, study_offset_from_diagnosis, study_offset_unit)
-	SELECT op.procedure_id, ImageStudyUID, iis.ImagingTimepoint, iis.OffsetFromDiagnosis, iis.OffsetUnitEUCAIM
+	INSERT INTO eucaim_cdm_output.image_study(procedure_id, patient_id, study_uid, ImagingTimepoint, study_offset_from_diagnosis, study_offset_unit)
+	SELECT op.procedure_id, op.patient_id, ImageStudyUID, iis.ImagingTimepoint, iis.OffsetFromDiagnosis, iis.OffsetUnitEUCAIM
 	FROM eucaim_cdm_ingestion.ImageStudy iis
 	JOIN eucaim_cdm_output.procedure op ON iis.ImagingProcedureIdentifier = op.ProcedureIdentifier
 	WHERE iis.DatasetIdentifier = p_dataset_id;
