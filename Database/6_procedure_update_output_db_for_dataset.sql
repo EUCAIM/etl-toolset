@@ -166,8 +166,8 @@ BEGIN
 	JOIN eucaim_cdm_output.procedure op ON iis.ImagingProcedureIdentifier = op.ProcedureIdentifier
 	WHERE iis.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.image_series(study_id, study_uid, series_uid, series_number, series_description, series_manufacturer, series_acquisition_date, series_modality, series_body_site, series_number, series_description)
-	SELECT ois.study_id, ois.study_uid, ImageSeriesUID, ImageSeriesNumber, Description, Manufacturer, cast(AcquisitionDate as date), modality, iise.BodyPart, ImageSeriesNumber, Description
+	INSERT INTO eucaim_cdm_output.image_series(study_id, study_uid, series_uid, series_number, series_description, series_manufacturer, series_acquisition_date, series_modality, series_body_site)
+	SELECT ois.study_id, ois.study_uid, ImageSeriesUID, ImageSeriesNumber, Description, Manufacturer, cast(AcquisitionDate as date), modality, iise.BodyPart
 	FROM eucaim_cdm_ingestion.ImageSeries iise
 	JOIN eucaim_cdm_ingestion.ImageStudy iis ON iise.ImageStudyUID = iis.ImageStudyUID
 	JOIN eucaim_cdm_output.image_study ois ON iise.ImageStudyUID = ois.study_uid
@@ -189,7 +189,7 @@ BEGIN
 	JOIN eucaim_cdm_ingestion.ImageStudy iist ON iita.ImageStudyUID = iist.ImageStudyUID
 	JOIN eucaim_cdm_output.image_series ois ON iita.ImageSeriesUID = ois.series_uid
 	WHERE iist.DatasetIdentifier = p_dataset_id
-	AND EchoTime IS NOT NULL
+	AND EchoTime IS NOT NULL;
 
 	-- Episodes
 	INSERT INTO eucaim_cdm_output.episode(patient_id, episode_type_code, episode_number, episode_start_date, episode_end_date)
