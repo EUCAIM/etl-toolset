@@ -166,20 +166,30 @@ BEGIN
 	JOIN eucaim_cdm_output.procedure op ON iis.ImagingProcedureIdentifier = op.ProcedureIdentifier
 	WHERE iis.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.image_series(study_id, study_uid, series_uid, series_number, series_description, series_manufacturer, series_acquisition_date, series_modality)
-	SELECT ois.study_id, ois.study_uid, ImageSeriesUID, ImageSeriesNumber, Description, Manufacturer, cast(AcquisitionDate as date), modality
+	INSERT INTO eucaim_cdm_output.image_series(study_id, study_uid, series_uid, series_number, series_description, series_manufacturer, series_acquisition_date, series_modality, series_body_site, series_number, series_description)
+	SELECT ois.study_id, ois.study_uid, ImageSeriesUID, ImageSeriesNumber, Description, Manufacturer, cast(AcquisitionDate as date), modality, iise.BodyPart, ImageSeriesNumber, Description
 	FROM eucaim_cdm_ingestion.ImageSeries iise
 	JOIN eucaim_cdm_ingestion.ImageStudy iis ON iise.ImageStudyUID = iis.ImageStudyUID
 	JOIN eucaim_cdm_output.image_study ois ON iise.ImageStudyUID = ois.study_uid
 	WHERE iis.DatasetIdentifier = p_dataset_id;
 
 	-- SliceThickness
-	INSERT INTO eucaim_cdm_output.image_modality(series_id, series_uid, acquisition_parameter_code, acquisition_parameter_value_as_code, acquisition_parameter_value_as_number, acquisition_parameter_value_unit)
-	SELECT ois.series_id, iita.ImageSeriesUID, 'IMG1016306', null, SliceThickness, null
+	INSERT INTO eucaim_cdm_output.image_modality(series_id, series_uid, study_uid, acquisition_parameter_code, acquisition_parameter_value_as_code, acquisition_parameter_value_as_number, acquisition_parameter_value_unit)
+	SELECT ois.series_id, iita.ImageSeriesUID, iita.ImageStudyUID, 'IMG1016306', null, SliceThickness, 'COM1000152'
 	FROM eucaim_cdm_ingestion.ImageTags  iita
 	JOIN eucaim_cdm_ingestion.ImageStudy iist ON iita.ImageStudyUID = iist.ImageStudyUID
 	JOIN eucaim_cdm_output.image_series ois ON iita.ImageSeriesUID = ois.series_uid
-	WHERE iist.DatasetIdentifier = p_dataset_id;
+	WHERE iist.DatasetIdentifier = p_dataset_id
+	AND SliceThickness IS NOT NULL;
+
+	-- EchoTime
+	INSERT INTO eucaim_cdm_output.image_modality(series_id, series_uid, study_uid, acquisition_parameter_code, acquisition_parameter_value_as_code, acquisition_parameter_value_as_number, acquisition_parameter_value_unit)
+	SELECT ois.series_id, iita.ImageSeriesUID, iita.ImageStudyUID, 'IMG1016641', null, EchoTime, 'COM1001955'
+	FROM eucaim_cdm_ingestion.ImageTags  iita
+	JOIN eucaim_cdm_ingestion.ImageStudy iist ON iita.ImageStudyUID = iist.ImageStudyUID
+	JOIN eucaim_cdm_output.image_series ois ON iita.ImageSeriesUID = ois.series_uid
+	WHERE iist.DatasetIdentifier = p_dataset_id
+	AND EchoTime IS NOT NULL
 
 	-- Episodes
 	INSERT INTO eucaim_cdm_output.episode(patient_id, episode_type_code, episode_number, episode_start_date, episode_end_date)

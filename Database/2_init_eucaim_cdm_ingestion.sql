@@ -388,6 +388,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
     FilterType VARCHAR(30),
     ConvolutionKernel VARCHAR(30),
     SliceThickness DECIMAL(5,2),
+    EchoTime DECIMAL(5,2),
     ImageRows INTEGER,
     ImageColumns INTEGER,
     PixelRowSpacing DECIMAL(6,4),
