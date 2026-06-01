@@ -308,6 +308,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
     series_uid VARCHAR(150) NOT NULL,
     study_uid VARCHAR(150) NOT NULL,
     study_id INTEGER REFERENCES eucaim_cdm_output.image_study(study_id) ON DELETE CASCADE,
+    series_body_site VARCHAR(150),
     series_number INTEGER,
     series_description VARCHAR(170),
 	series_manufacturer VARCHAR(70),
@@ -318,6 +319,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_modality (
     modality_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     series_uid VARCHAR(70) NOT NULL,
+    study_uid VARCHAR(150) NOT NULL,
     series_id INTEGER  REFERENCES eucaim_cdm_output.image_series(series_id) ON DELETE CASCADE,
     acquisition_parameter_code VARCHAR(50),
     acquisition_parameter_value_as_code VARCHAR(50),
