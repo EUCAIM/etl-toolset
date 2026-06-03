@@ -683,16 +683,16 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (
 );
 
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
-VALUES ('occipital (5)', 'Occipital region');
+VALUES ('occipital (5)', 'Occipital lobe');
 
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
-VALUES ('frontal (1)', 'Frontal brain region');
+VALUES ('frontal (1)', 'Frontal lobe');
 
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
-VALUES ('parietal (4)', 'Parietal region');
+VALUES ('parietal (4)', 'Parietal lobe');
 
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
-VALUES ('temporal (2)', 'Temporal brain region');
+VALUES ('temporal (2)', 'Temporal lobe');
 
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
 VALUES ('Unknown', 'Unknown');
@@ -1243,6 +1243,8 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupManufacturerAlias (
 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Siemens Healthineers', 'SIEMENS');
 
+INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('SIEMENS', 'SIEMENS');
+
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Philips Medical Systems', 'PHILIPS');
 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Philips Healthcare', 'PHILIPS');
@@ -1254,9 +1256,6 @@ INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('FUJIFILM Corporation', 'FUJIFILM');
 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('GE MEDICAL SYSTEMS', 'GENERAL ELECTRIC');
-
-
-
 
 ----------------------------------------------------
 

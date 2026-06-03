@@ -66,7 +66,7 @@ BEGIN
 
 	WITH inserted_treatment as (
 	INSERT INTO eucaim_cdm_output.treatment(patient_id, treatment_type, TreatmentIdentifier)
-		SELECT ocp.patient_id, 'GEN1000016', isp.treatmentidentifier 
+		SELECT ocp.patient_id, 'CLIN1004413', isp.treatmentidentifier 
 		FROM eucaim_cdm_ingestion.SurgicalProcedure isp
 		JOIN eucaim_cdm_ingestion.CancerPatient icp ON isp.PatientIdentifier = icp.Identifier
 		JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
@@ -79,7 +79,7 @@ BEGIN
 
 	WITH inserted_treatment as (
 	INSERT INTO eucaim_cdm_output.treatment(patient_id, treatment_type, TreatmentIdentifier)
-		SELECT ocp.patient_id, 'medication', icrm.treatmentidentifier 
+		SELECT ocp.patient_id, 'CLIN1034187', icrm.treatmentidentifier 
 		FROM eucaim_cdm_ingestion.CancerRelatedMedication icrm
 		JOIN eucaim_cdm_ingestion.CancerPatient icp ON icrm.PatientIdentifier = icp.Identifier
 		JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
@@ -91,16 +91,16 @@ BEGIN
 	JOIN inserted_treatment inserted ON icrm.TreatmentIdentifier = inserted.TreatmentIdentifier;
 
 	-- Update PrimaryCancerCondition
-	INSERT INTO eucaim_cdm_output.cancer_condition(Identifier, patient_id, cancer_condition_age_at_diagnosis, cancer_condition_age_unit, cancer_condition_asserted_date, cancer_condition_code, cancer_condition_histology_morphology)
-	SELECT ipcc.Identifier, ocp.patient_id, ipcc.AgeOfDiagnosis, ipcc.AgeUnitEUCAIM, cast(ipcc.AssertedDate as date), ipcc.PrimaryCancerConditionEUCAIM, ipcc.HistologyMorphologyBehaviourEUCAIM
+	INSERT INTO eucaim_cdm_output.cancer_condition(Identifier, patient_id, cancer_condition_age_at_diagnosis, cancer_condition_age_unit, cancer_condition_asserted_date, cancer_condition_code, cancer_condition_histology_morphology, cancer_condition_type)
+	SELECT ipcc.Identifier, ocp.patient_id, ipcc.AgeOfDiagnosis, ipcc.AgeUnitEUCAIM, cast(ipcc.AssertedDate as date), ipcc.PrimaryCancerConditionEUCAIM, ipcc.HistologyMorphologyBehaviourEUCAIM, ipcc.PrimaryCancerConditionType
 	FROM eucaim_cdm_ingestion.PrimaryCancerCondition ipcc
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
 	-- Update entities linked with PrimaryCancerCondition directly: HistologicGrade, CancerStage, Procedure, ImagingProcedure, Tumor
-	INSERT INTO eucaim_cdm_output.histologic_grade(cancer_condition_id, histologic_grade_code, histologic_grade_value_as_concept)
-	SELECT opcc.cancer_condition_id, CategoryEUCAIM, GradeEUCAIM
+	INSERT INTO eucaim_cdm_output.histologic_grade(cancer_condition_id, patient_id, histologic_grade_code, histologic_grade_value_as_concept, histologic_grade_scoring_system)
+	SELECT opcc.cancer_condition_id, icp.identifier, 'CLIN1049681', GradeEUCAIM, ScoringSystemEUCAIM
 	FROM eucaim_cdm_ingestion.HistologicGrade ihg
 	JOIN eucaim_cdm_output.cancer_condition opcc ON ihg.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON ihg.PrimaryCancerConditionIdentifier = ipcc.Identifier
@@ -160,14 +160,14 @@ BEGIN
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
 	-- Update entities for DICOM metadata
-	INSERT INTO eucaim_cdm_output.image_study(procedure_id, patient_id, study_uid, ImagingTimepoint, study_offset_from_diagnosis, study_offset_unit)
-	SELECT op.procedure_id, op.patient_id, ImageStudyUID, iis.ImagingTimepoint, iis.OffsetFromDiagnosis, iis.OffsetUnitEUCAIM
-	FROM eucaim_cdm_ingestion.ImageStudy iis
+	INSERT INTO eucaim_cdm_output.image_study(procedure_id, patient_id, study_uid, ImagingTimepoint, study_offset_from_diagnosis, study_offset_unit, study_acquisition_date, study_number_of_series, study_number_of_instances)
+    SELECT op.procedure_id, op.patient_id, ImageStudyUID, iis.ImagingTimepoint, iis.OffsetFromDiagnosis, iis.OffsetUnitEUCAIM, cast(iis.AcquisitionDate as date), iis.NumberOfSeries, iis.NumberOfInstances
+    FROM eucaim_cdm_ingestion.ImageStudy iis
 	JOIN eucaim_cdm_output.procedure op ON iis.ImagingProcedureIdentifier = op.ProcedureIdentifier
 	WHERE iis.DatasetIdentifier = p_dataset_id;
 
 	INSERT INTO eucaim_cdm_output.image_series(study_id, study_uid, series_uid, series_number, series_description, series_manufacturer, series_acquisition_date, series_modality, series_body_site)
-	SELECT ois.study_id, ois.study_uid, ImageSeriesUID, ImageSeriesNumber, Description, Manufacturer, cast(AcquisitionDate as date), modality, iise.BodyPart
+    SELECT ois.study_id, ois.study_uid, ImageSeriesUID, ImageSeriesNumber, Description, Manufacturer, cast(iise.AcquisitionDate as date), modality, iise.BodyPart
 	FROM eucaim_cdm_ingestion.ImageSeries iise
 	JOIN eucaim_cdm_ingestion.ImageStudy iis ON iise.ImageStudyUID = iis.ImageStudyUID
 	JOIN eucaim_cdm_output.image_study ois ON iise.ImageStudyUID = ois.study_uid
@@ -175,21 +175,22 @@ BEGIN
 
 	-- SliceThickness
 	INSERT INTO eucaim_cdm_output.image_modality(series_id, series_uid, study_uid, acquisition_parameter_code, acquisition_parameter_value_as_code, acquisition_parameter_value_as_number, acquisition_parameter_value_unit)
-	SELECT ois.series_id, iita.ImageSeriesUID, iita.ImageStudyUID, 'IMG1016306', null, SliceThickness, 'COM1000152'
+    SELECT ois.series_id, iita.ImageSeriesUID, iita.ImageStudyUID, 'IMG1016306', null, SliceThickness, 'COM1000152'
 	FROM eucaim_cdm_ingestion.ImageTags  iita
 	JOIN eucaim_cdm_ingestion.ImageStudy iist ON iita.ImageStudyUID = iist.ImageStudyUID
 	JOIN eucaim_cdm_output.image_series ois ON iita.ImageSeriesUID = ois.series_uid
 	WHERE iist.DatasetIdentifier = p_dataset_id
-	AND SliceThickness IS NOT NULL;
-
+    AND SliceThickness IS NOT NULL;
+    
 	-- EchoTime
-	INSERT INTO eucaim_cdm_output.image_modality(series_id, series_uid, study_uid, acquisition_parameter_code, acquisition_parameter_value_as_code, acquisition_parameter_value_as_number, acquisition_parameter_value_unit)
-	SELECT ois.series_id, iita.ImageSeriesUID, iita.ImageStudyUID, 'IMG1016641', null, EchoTime, 'COM1001955'
-	FROM eucaim_cdm_ingestion.ImageTags  iita
-	JOIN eucaim_cdm_ingestion.ImageStudy iist ON iita.ImageStudyUID = iist.ImageStudyUID
-	JOIN eucaim_cdm_output.image_series ois ON iita.ImageSeriesUID = ois.series_uid
-	WHERE iist.DatasetIdentifier = p_dataset_id
-	AND EchoTime IS NOT NULL;
+    INSERT INTO eucaim_cdm_output.image_modality(series_id, series_uid, study_uid, acquisition_parameter_code, acquisition_parameter_value_as_code, acquisition_parameter_value_as_number, acquisition_parameter_value_unit)
+    SELECT ois.series_id, iita.ImageSeriesUID, iita.ImageStudyUID, 'IMG1016641', null, EchoTime, 'COM1001955'
+    FROM eucaim_cdm_ingestion.ImageTags  iita
+    JOIN eucaim_cdm_ingestion.ImageStudy iist ON iita.ImageStudyUID = iist.ImageStudyUID
+    JOIN eucaim_cdm_output.image_series ois ON iita.ImageSeriesUID = ois.series_uid
+    WHERE iist.DatasetIdentifier = p_dataset_id
+    AND EchoTime IS NOT NULL;
+
 
 	-- Episodes
 	INSERT INTO eucaim_cdm_output.episode(patient_id, episode_type_code, episode_number, episode_start_date, episode_end_date)
