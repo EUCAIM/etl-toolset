@@ -4,13 +4,11 @@ CREATE SEQUENCE IF NOT EXISTS eucaim_hyperontology_codes.eucaim_concept_id_seq;
 
 SELECT setval('eucaim_hyperontology_codes.eucaim_concept_id_seq', (SELECT MAX(concept_id) FROM eucaim_hyperontology_codes.concept));
 
-
 INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
 VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001366', 'https://cancerimage.eu/ontology/EUCAIM#COM1001366', 'MALE');
 
 INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
 VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001370', 'https://cancerimage.eu/ontology/EUCAIM#COM1001370', 'FEMALE');
-
 
 INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
 VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1016670', 'https://cancerimage.eu/ontology/EUCAIM#IMG1016670', 'Left');
@@ -20,7 +18,7 @@ VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1016682
 
 
 INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
-VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1007991', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1007991', 'Glioblastoma');
+VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1007990', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1007990', 'Glioblastoma');
 
 
 INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
