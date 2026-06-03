@@ -182,7 +182,7 @@ BEGIN
 	WHERE iist.DatasetIdentifier = p_dataset_id
     AND SliceThickness IS NOT NULL;
     
-	-- EchoTime
+        -- EchoTime
     INSERT INTO eucaim_cdm_output.image_modality(series_id, series_uid, study_uid, acquisition_parameter_code, acquisition_parameter_value_as_code, acquisition_parameter_value_as_number, acquisition_parameter_value_unit)
     SELECT ois.series_id, iita.ImageSeriesUID, iita.ImageStudyUID, 'IMG1016641', null, EchoTime, 'COM1001955'
     FROM eucaim_cdm_ingestion.ImageTags  iita
