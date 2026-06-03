@@ -63,7 +63,7 @@ fi
 echo "✔️ Number of imaging procedures for a patient is the expected in test data"
 
 PCC_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT primarycancerconditioneucaim FROM eucaim_cdm_ingestion.primarycancercondition c where patientidentifier='test1';" | xargs)
-PCC_CODE="CLIN1007991"
+PCC_CODE="CLIN1007990"
 
 if [ "$PCC_CODE_QUERY" != "$PCC_CODE" ]; then
   echo "❌ Not expected PCC code on patient test1"
