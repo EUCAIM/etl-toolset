@@ -355,6 +355,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageStudy (
     OffsetUnitEUCAIM  VARCHAR(20),
     OffsetUnitOriginal  VARCHAR(20),
     ImagingProcedureIdentifier VARCHAR(250),
+    AcquisitionDate VARCHAR(20),
+    NumberOfSeries INTEGER,
+    NumberOfInstances INTEGER,
+    AccessURI VARCHAR(150),
     ImageStudyCategoryCode VARCHAR(70),
     processed BOOLEAN DEFAULT FALSE
 
@@ -369,6 +373,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
     Description VARCHAR(170),
 	Manufacturer VARCHAR(70),
     BodyPart VARCHAR(100),
+    Laterality VARCHAR(50),
     AcquisitionDate VARCHAR(50),
     Modality VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
