@@ -323,7 +323,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_modality (
     series_id INTEGER  REFERENCES eucaim_cdm_output.image_series(series_id) ON DELETE CASCADE,
     acquisition_parameter_code VARCHAR(50),
     acquisition_parameter_value_as_code VARCHAR(50),
-    acquisition_parameter_value_as_number DECIMAL(5,2),
+    acquisition_parameter_value_as_number DECIMAL(15,4),
     acquisition_parameter_value_unit VARCHAR(50)
 );
 
