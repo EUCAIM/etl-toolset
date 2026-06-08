@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.cancer_condition (
     cancer_condition_offset_unit VARCHAR(50),
     cancer_condition_code VARCHAR(50),
     cancer_condition_type VARCHAR(50),
+    cancer_condition_clinical_status VARCHAR(50),
     cancer_condition_histology_morphology VARCHAR(150),
     cancer_condition_topography VARCHAR(150),
     Episode INTEGER
