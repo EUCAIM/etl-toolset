@@ -43,6 +43,8 @@ procesar_pipeline_clinical_data() {
   sleep $SLEEP_SEC
   sleep $SLEEP_SEC
   sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
 
   echo "Output detected!"
   echo "Files generated:"
@@ -104,6 +106,7 @@ procesar_pipeline_imaging_metadata() {
     COUNT=$((COUNT+1))
   done
   
+  sleep $SLEEP_SEC
   sleep $SLEEP_SEC
   sleep $SLEEP_SEC
 
@@ -192,9 +195,13 @@ if [ -f $CLINICAL_DATA_TEST_CSV ]; then
   fi
 fi
 
+sleep $SLEEP_SEC
+
 if [ -f $IMAGE_METADATA_TEST_CSV ]; then
   procesar_pipeline_imaging_metadata
 fi
+
+sleep $SLEEP_SEC
 
 if [ -f $IMAGING_TIMEPOINTS_TEST_CSV ]; then
   procesar_pipeline_imaging_timepoints
