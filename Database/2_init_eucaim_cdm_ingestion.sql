@@ -1,6 +1,6 @@
 -- Step 2 Eucaim CDM Schema definition: ingestion
 
-CREATE SCHEMA eucaim_cdm_ingestion;
+CREATE SCHEMA IF NOT EXISTS eucaim_cdm_ingestion;
 
 -------------------------------------------------------------------------------------------
 -- Log and control
@@ -187,6 +187,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.PrimaryCancerCondition (
     AssertedDate DATE,
     PrimaryCancerConditionEUCAIM VARCHAR(50),
     PrimaryCancerConditionOriginal VARCHAR(50),
+    PrimaryCancerConditionType VARCHAR(50),
     HistologyMorphologyBehaviourEUCAIM VARCHAR(50),
     HistologyMorphologyBehaviourOriginal VARCHAR(50),
     EpisodeNumber INTEGER,
@@ -199,11 +200,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HistologicGrade (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
 	Identifier VARCHAR(150) PRIMARY KEY,
 	PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
-    CategoryEUCAIM VARCHAR(50),
+    ScoringSystemEUCAIM VARCHAR(50),
     CategoryOriginal VARCHAR(50),
     GradeEUCAIM VARCHAR(50),
     GradeOriginal VARCHAR(50),
-    Value INTEGER,
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -355,6 +355,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageStudy (
     OffsetUnitEUCAIM  VARCHAR(20),
     OffsetUnitOriginal  VARCHAR(20),
     ImagingProcedureIdentifier VARCHAR(250),
+    AcquisitionDate VARCHAR(20),
+    NumberOfSeries INTEGER,
+    NumberOfInstances INTEGER,
+    AccessURI VARCHAR(150),
     ImageStudyCategoryCode VARCHAR(70),
     processed BOOLEAN DEFAULT FALSE
 
@@ -369,6 +373,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
     Description VARCHAR(170),
 	Manufacturer VARCHAR(70),
     BodyPart VARCHAR(100),
+    Laterality VARCHAR(50),
     AcquisitionDate VARCHAR(50),
     Modality VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
@@ -384,14 +389,15 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
     XRayTubeCurrent INTEGER,
     Exposure INTEGER,
     ExposureTime INTEGER,
-    SpiralPitchFactor DECIMAL(6,4),
+    SpiralPitchFactor DECIMAL(7,4),
     FilterType VARCHAR(30),
     ConvolutionKernel VARCHAR(30),
-    SliceThickness DECIMAL(5,2),
+    SliceThickness DECIMAL(10,4),
+    EchoTime DECIMAL(10,5),
     ImageRows INTEGER,
     ImageColumns INTEGER,
-    PixelRowSpacing DECIMAL(6,4),
-    PixelColSpacing DECIMAL(6,4),
+    PixelRowSpacing DECIMAL(10,4),
+    PixelColSpacing DECIMAL(10,4),
     processed BOOLEAN DEFAULT FALSE, 
     PRIMARY KEY (ImageStudyUID, ImageSeriesUID)
 );

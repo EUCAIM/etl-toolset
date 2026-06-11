@@ -1,9 +1,14 @@
 -- Step 5 Eucaim Hyperontology temporary patches (to be removed)
 
-CREATE SEQUENCE eucaim_hyperontology_codes.eucaim_concept_id_seq;
+CREATE SEQUENCE IF NOT EXISTS eucaim_hyperontology_codes.eucaim_concept_id_seq;
 
 SELECT setval('eucaim_hyperontology_codes.eucaim_concept_id_seq', (SELECT MAX(concept_id) FROM eucaim_hyperontology_codes.concept));
 
+INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
+VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001366', 'https://cancerimage.eu/ontology/EUCAIM#COM1001366', 'MALE');
+
+INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
+VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001370', 'https://cancerimage.eu/ontology/EUCAIM#COM1001370', 'FEMALE');
 
 INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
 VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1016670', 'https://cancerimage.eu/ontology/EUCAIM#IMG1016670', 'Left');
@@ -13,7 +18,7 @@ VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1016682
 
 
 INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
-VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1007991', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1007991', 'Glioblastoma');
+VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1007990', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1007990', 'Glioblastoma');
 
 
 INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
@@ -107,7 +112,7 @@ INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001954', 'https://cancerimage.eu/ontology/EUCAIM#COM1001954', 'centimeter');
 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
-VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1000038', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000038', 'Magnetic resonance imaging');
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1000022', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000038', 'Magnetic resonance imaging');
 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1000030', 'https://cancerimage.eu/ontology/EUCAIM#IMG1000030', 'Mammography');
@@ -129,3 +134,36 @@ VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1005507'
 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'IMG1016659', 'https://cancerimage.eu/ontology/EUCAIM#IMG1016659', 'Bilateral');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001313', 'https://cancerimage.eu/ontology/EUCAIM#COM1001313', 'Mutated');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001887', 'https://cancerimage.eu/ontology/EUCAIM#COM1001887', 'Not mutated');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001889', 'https://cancerimage.eu/ontology/EUCAIM#COM1001889', 'Not methylated');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001314', 'https://cancerimage.eu/ontology/EUCAIM#COM1001314', 'Methylated');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1001099', 'https://cancerimage.eu/ontology/EUCAIM#COM1001099', 'Surgery');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1047415', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1047415', 'Karnofsky performance status');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1035837', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1035837', 'Bevacizumab');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'BP1000419', 'https://cancerimage.eu/ontology/EUCAIM#BP1000419', 'Occipital region');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'BP1000421', 'https://cancerimage.eu/ontology/EUCAIM#BP1000421', 'Temporal brain region');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'BP1000422', 'https://cancerimage.eu/ontology/EUCAIM#BP1000422', 'Parietal region');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'BP1000420', 'https://cancerimage.eu/ontology/EUCAIM#BP1000420', 'Frontal brain region');
