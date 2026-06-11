@@ -1,6 +1,7 @@
 -- Step 1 Eucaim Hyperontology extraction 
 CREATE SCHEMA IF NOT EXISTS eucaim_hyperontology_codes;
 
+DROP TABLE IF EXISTS eucaim_hyperontology_codes.concept;
 CREATE TABLE IF NOT EXISTS eucaim_hyperontology_codes.concept (
             concept_id INTEGER PRIMARY KEY,
             concept_code VARCHAR,
@@ -2371,6 +2372,8 @@ INSERT INTO eucaim_hyperontology_codes.concept VALUES (2358, 'diagnosedWith', 'h
 INSERT INTO eucaim_hyperontology_codes.concept VALUES (2359, 'CancerModifier', 'https://cancerimage.eu/ontology/EUCAIM#CancerModifier', 'None', 'None', 'None', 'EUCAIM', 'Class', 'S'); 
 INSERT INTO eucaim_hyperontology_codes.concept VALUES (2360, 'SemanticType', 'https://cancerimage.eu/ontology/EUCAIM#SemanticType', 'None', 'None', 'None', 'EUCAIM', 'Class', 'S'); 
 INSERT INTO eucaim_hyperontology_codes.concept VALUES (2361, 'language', 'http://purl.org/dc/elements/1.1/language', 'None', 'None', 'None', 'EUCAIM', 'Class', 'S'); 
+
+DROP TABLE IF EXISTS eucaim_hyperontology_codes.concept_relationship;
 CREATE TABLE IF NOT EXISTS eucaim_hyperontology_codes.concept_relationship (
             concept_id_1 INTEGER,
             concept_id_2 INTEGER,
@@ -5472,6 +5475,8 @@ INSERT INTO eucaim_hyperontology_codes.concept_relationship VALUES (25, 671.0, '
 INSERT INTO eucaim_hyperontology_codes.concept_relationship VALUES (2081, 1528.0, 'Is a'); 
 INSERT INTO eucaim_hyperontology_codes.concept_relationship VALUES (1015, 349.0, 'Is a'); 
 INSERT INTO eucaim_hyperontology_codes.concept_relationship VALUES (1849, 1613.0, 'Is a'); 
+
+DROP TABLE IF EXISTS eucaim_hyperontology_codes.concept_synonym;
 CREATE TABLE IF NOT EXISTS eucaim_hyperontology_codes.concept_synonym (
             concept_id INTEGER,
             synonym VARCHAR
@@ -7740,6 +7745,8 @@ INSERT INTO eucaim_hyperontology_codes.concept_synonym VALUES (926, 'Structure o
 INSERT INTO eucaim_hyperontology_codes.concept_synonym VALUES (519, 'Tremetex'); 
 INSERT INTO eucaim_hyperontology_codes.concept_synonym VALUES (946, 'International Society of Urologic Pathology prostate cancer staging system (staging scale)'); 
 INSERT INTO eucaim_hyperontology_codes.concept_synonym VALUES (1838, 'ALT02'); 
+
+DROP TABLE IF EXISTS eucaim_hyperontology_codes.concept_ancestor;
 CREATE TABLE IF NOT EXISTS eucaim_hyperontology_codes.concept_ancestor (
             ancestor_concept_id INTEGER,
             descendant_concept_id INTEGER,
@@ -28596,6 +28603,8 @@ INSERT INTO eucaim_hyperontology_codes.concept_ancestor VALUES (1043.0, 303.0, 4
 INSERT INTO eucaim_hyperontology_codes.concept_ancestor VALUES (349.0, 303.0, 2.0, 2.0); 
 INSERT INTO eucaim_hyperontology_codes.concept_ancestor VALUES (2008.0, 10.0, 1.0, 1.0); 
 INSERT INTO eucaim_hyperontology_codes.concept_ancestor VALUES (292.0, 10.0, 2.0, 2.0); 
+
+DROP TABLE IF EXISTS eucaim_hyperontology_codes.concept_external_mapping;
 CREATE TABLE IF NOT EXISTS eucaim_hyperontology_codes.concept_external_mapping (
             concept_id INTEGER,
             external_code VARCHAR,
