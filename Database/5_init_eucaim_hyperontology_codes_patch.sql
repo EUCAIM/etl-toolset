@@ -167,3 +167,69 @@ VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'BP1000422',
 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'BP1000420', 'https://cancerimage.eu/ontology/EUCAIM#BP1000420', 'Frontal brain region');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '45552258', 'https://cancerimage.eu/ontology/EUCAIM#45552258', 'C49');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '3357489', 'https://cancerimage.eu/ontology/EUCAIM#3357489', '409063005');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '45934692', 'https://cancerimage.eu/ontology/EUCAIM#45934692', 'VMAT');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '4242373', 'https://cancerimage.eu/ontology/EUCAIM#4242373', 'C-arm LINAC');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '45561808', 'https://cancerimage.eu/ontology/EUCAIM#45561808', 'C48');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '1243937', 'https://cancerimage.eu/ontology/EUCAIM#1243937', 'SBRT');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '4245119', 'https://cancerimage.eu/ontology/EUCAIM#4245119', 'CyberKnife');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '4264018', 'https://cancerimage.eu/ontology/EUCAIM#4264018', 'Left Thigh');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '4008238', 'https://cancerimage.eu/ontology/EUCAIM#4008238', 'Right Thigh');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '36770706', 'https://cancerimage.eu/ontology/EUCAIM#36770706', 'Retroperitoneum');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '1448029', 'https://cancerimage.eu/ontology/EUCAIM#1448029', 'Right tibia');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '36714295', 'https://cancerimage.eu/ontology/EUCAIM#36714295', 'Left Humerus');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '4284053', 'https://cancerimage.eu/ontology/EUCAIM#4284053', 'Right forearm');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '37528190', 'https://cancerimage.eu/ontology/EUCAIM#37528190', 'Right glute');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '1448030', 'https://cancerimage.eu/ontology/EUCAIM#1448030', 'Left tibia');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '45595663', 'https://cancerimage.eu/ontology/EUCAIM#45595663', 'C49.21');
+
+INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
+VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '45552260', 'https://cancerimage.eu/ontology/EUCAIM#45552260', 'C49.22');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
