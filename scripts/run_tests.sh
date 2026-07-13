@@ -41,6 +41,8 @@ procesar_pipeline_clinical_data() {
   done
 
   sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
 
   echo "Output detected!"
   echo "Files generated:"
