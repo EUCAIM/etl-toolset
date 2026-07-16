@@ -103,7 +103,7 @@ services:
     depends_on:
       nifi-postgres:
         condition: service_healthy
-    image: apache/nifi-registry:latest
+    image: apache/nifi-registry:2.3.0
     container_name: nifi_registry
     ports:
       - "18080:18080"

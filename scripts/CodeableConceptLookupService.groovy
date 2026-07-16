@@ -51,6 +51,8 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                 if (!value) {
                     result["${property}"] = null
                     log.info("CodeableConceptsLookupService.lookup - Checked null value ")
+                } else if (value.startsWith("code:")){
+                    result["${property}"] = value
                 } else {
                     def sql = """
                     SELECT c.concept_code
