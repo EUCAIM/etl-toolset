@@ -787,7 +787,11 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageCode (
 );
 
 
-
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage1Code (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
 
 INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
 VALUES ('0', 'AJCC/UICC 8th T0 Category');
