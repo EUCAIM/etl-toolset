@@ -1,8 +1,9 @@
 ----------------------------------------------------
-CREATE SCHEMA eucaim_etl_aux;
+CREATE SCHEMA IF NOT EXISTS eucaim_etl_aux;
 
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupHeaderRowsToRemove;
 
-CREATE TABLE eucaim_etl_aux.LookupHeaderRowsToRemove (
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupHeaderRowsToRemove (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
@@ -13,28 +14,21 @@ CREATE TABLE eucaim_etl_aux.LookupHeaderRowsToRemove (
 );
 
 
-
 INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 
 VALUES ('perproglio', '0');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 
 VALUES ('aaaadcw3slp2bbsux2urluqaae', '0');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 
 VALUES ('thyroid', '3');
 
-
 INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 
 VALUES ('1181c8428de05bb98fa8896d281cc0fd', '3');
-
 
 INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 
@@ -44,13 +38,12 @@ INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 
 VALUES ('4fcdd34b95f8eed2a3d07291e4c2173e', '37');
 
-
 INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 
 VALUES ('sas', '0');
 
 
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionCode (
 
@@ -63,8 +56,7 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionCode (
 );
 
 
-
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupRadiotherapyCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupRadiotherapyCode (
 
@@ -76,13 +68,12 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupRadiotherapyCode (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupRadiotherapyCode (originalValue, parsedValue)
 
 VALUES ('external radiotherapy', 'External beam radiation therapy procedure');
 
 
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupRadiotherapyModality;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupRadiotherapyModality (
 
@@ -95,8 +86,7 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupRadiotherapyModality (
 );
 
 
-
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupRadiotherapyTechnique;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupRadiotherapyTechnique (
 
@@ -109,8 +99,7 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupRadiotherapyTechnique (
 );
 
 
-
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupProcedureCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupProcedureCode (
 
@@ -122,31 +111,24 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupProcedureCode (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupProcedureCode (originalValue, parsedValue)
 
 VALUES ('Endobronchial Ultrasound-Guided Fine Needle Aspiration (EBUS-FNA)', 'Fine needle biopsy');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupProcedureCode (originalValue, parsedValue)
 
 VALUES ('RID10321', 'Computed tomography');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupProcedureCode (originalValue, parsedValue)
 
 VALUES ('10318', 'Magnetic resonance imaging');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupProcedureCode (originalValue, parsedValue)
 
 VALUES ('RID39574', 'PET-CT');
 
 
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupImagingProcedureCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupImagingProcedureCode (
 
@@ -158,38 +140,28 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupImagingProcedureCode (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValue)
 
 VALUES ('CT', 'Computed tomography');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValue)
 
 VALUES ('RID10321', 'Computed tomography');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValue)
 
 VALUES ('10318', 'Magnetic resonance imaging');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValue)
 
 VALUES ('RID39574', 'PET-CT');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValue)
 
 VALUES ('MG', 'Mammography');
 
 
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupHistologyMorphologyCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupHistologyMorphologyCode (
 
@@ -201,37 +173,43 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupHistologyMorphologyCode (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
 
 VALUES ('lung squamous cell carcinoma', 'Squamous cell carcinoma, NOS, of lung, NOS');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
 
 VALUES ('breast cancer', 'Neoplasm of breast');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
 
 VALUES ('thyroid cancer', 'Thyroid cancer');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
 
 VALUES ('lung adenocarcinoma', 'Adenocarcinoma, NOS, of lung, NOS');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
 
 VALUES ('lung small cell carcinoma', 'Small cell carcinoma of lung, NOS');
 
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+VALUES ('occipital (5)', 'Occipital region');
 
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+VALUES ('frontal (1)', 'Frontal brain region');
+
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+VALUES ('parietal (4)', 'Parietal region');
+
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+VALUES ('temporal (2)', 'Temporal brain region');
+
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupPatientDiagnosticCategory;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPatientDiagnosticCategory (
 
@@ -255,6 +233,7 @@ INSERT INTO eucaim_etl_aux.LookupPatientDiagnosticCategory (originalValue, parse
 
 VALUES ('DISCUSSION', 'Subject under discussion with suspicious findings');
 
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupSurgicalProcedureCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCode (
 
@@ -266,13 +245,9 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCode (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
 
 VALUES ('409063005', 'Excision of malignant neoplasm');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
 
@@ -281,6 +256,28 @@ VALUES ('387713004', 'Excision of malignant neoplasm');
 INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
 
 VALUES ('sentinel lymph node biopsy', 'Sentinel lymph node biopsy');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('partial', 'Subtotal Resection');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('complete', 'Gross Total Resection');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('sub-total resection', 'Subtotal Resection');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('Gross-total resection', 'Gross Total Resection');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupSurgicalProcedureBodySite;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (
 
@@ -382,6 +379,8 @@ INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureBodySite (originalValue, parse
 VALUES ('left breast structure', 'Left breast structure');
 
 
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorOrganCode;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorOrganCode (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -392,27 +391,20 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorOrganCode (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupTumorOrganCode (originalValue, parsedValue)
 
 VALUES ('lung', 'Lung, NOS');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupTumorOrganCode (originalValue, parsedValue)
 
 VALUES ('breast', 'Breast');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupTumorOrganCode (originalValue, parsedValue)
 
 VALUES ('Thyroid BED', 'Head and neck');
 
 
-
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorSizeDimensionUnit;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorSizeDimensionUnit (
 
@@ -424,13 +416,12 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorSizeDimensionUnit (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupTumorSizeDimensionUnit (originalValue, parsedValue)
 
 VALUES ('cm', 'centimeter');
 
 
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorLocationCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorLocationCode (
 
@@ -442,35 +433,24 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorLocationCode (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupTumorLocationCode (originalValue, parsedValue)
 
 VALUES ('1', 'Frontal brain region');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupTumorLocationCode (originalValue, parsedValue)
 
 VALUES ('2', 'Temporal brain region');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupTumorLocationCode (originalValue, parsedValue)
 
 VALUES ('4', 'Parietal brain region');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupTumorLocationCode (originalValue, parsedValue)
 
 VALUES ('5', 'Occipital bran region');
 
 
-
-
-
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorGradeCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorGradeCode (
 
@@ -482,33 +462,24 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorGradeCode (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupTumorGradeCode (originalValue, parsedValue)
 
 VALUES ('Grade-1', 'Grade 1 tumor');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupTumorGradeCode (originalValue, parsedValue)
 
 VALUES ('Grade-2', 'Grade 2 tumor');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupTumorGradeCode (originalValue, parsedValue)
 
 VALUES ('Grade-3', 'Grade 3 tumor');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupTumorGradeCode (originalValue, parsedValue)
 
 VALUES ('Grade-4', 'Grade 4 tumor');
 
 
-
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupHealthStatusValueCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupHealthStatusValueCode (
 
@@ -520,43 +491,32 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupHealthStatusValueCode (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupHealthStatusValueCode (originalValue, parsedValue)
 
 VALUES ('Class I', 'ASA physical status class 1');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupHealthStatusValueCode (originalValue, parsedValue)
 
 VALUES ('Class II', 'ASA physical status class 2');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupHealthStatusValueCode (originalValue, parsedValue)
 
 VALUES ('Class III', 'ASA physical status class 3');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupHealthStatusValueCode (originalValue, parsedValue)
 
 VALUES ('Class IV', 'ASA physical status class 4');
 
-
-
 INSERT INTO eucaim_etl_aux.LookupHealthStatusValueCode (originalValue, parsedValue)
 
 VALUES ('Class V', 'ASA physical status class 5');
-
-
 
 INSERT INTO eucaim_etl_aux.LookupHealthStatusValueCode (originalValue, parsedValue)
 
 VALUES ('Class VI', 'ASA physical status class 6');
 
 
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode (
 
@@ -568,7 +528,6 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode
 
 );
 
-
 INSERT INTO eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
 VALUES ('Breast cancer', 'Carcinoma of breast');
 
@@ -579,7 +538,7 @@ INSERT INTO eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode (originalValue
 VALUES ('Prostate cancer', 'Carcinoma of prostate');
 
 
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorMarkerTestCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTestCode (
 
@@ -601,6 +560,29 @@ VALUES ('PR', 'Presence of progesterone receptor in neoplasm');
 INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestCode (originalValue, parsedValue)
 VALUES ('KI-67', 'MKI67 (marker of proliferation Ki-67) gene variant measurement');
 
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorMarkerTestResultValueAsConcept;
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTestResultValueAsConcept (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+
+);
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestResultValueAsConcept (originalValue, parsedValue)
+VALUES ('M-124', 'Mutated/c.1-124C>T');
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestResultValueAsConcept (originalValue, parsedValue)
+VALUES ('M-146', 'Mutated/c.1-146C>T');
+
+INSERT INTO eucaim_etl_aux.LookupTumorMarkerTestResultValueAsConcept (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorMarkerTest1ResultValueAsConcept;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTest1ResultValueAsConcept (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -615,6 +597,9 @@ VALUES ('positive', 'HER2 positive');
 INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest1ResultValueAsConcept (originalValue, parsedValue)
 VALUES ('negative', 'HER2 negative');
 
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorMarkerTest2ResultValueAsConcept;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTest2ResultValueAsConcept (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -628,6 +613,9 @@ VALUES ('positive', 'ER positive');
 
 INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest2ResultValueAsConcept (originalValue, parsedValue)
 VALUES ('negative', 'ER negative');
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorMarkerTest3ResultValueAsConcept;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTest3ResultValueAsConcept (
 
@@ -644,6 +632,8 @@ INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest3ResultValueAsConcept (originalV
 VALUES ('negative', 'PR negative');
 
 
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorMarkerTest4ResultValueAsConcept;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorMarkerTest4ResultValueAsConcept (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -659,11 +649,16 @@ INSERT INTO eucaim_etl_aux.LookupTumorMarkerTest4ResultValueAsConcept (originalV
 VALUES ('negative', 'MKI67 Negative');
 
 
+DROP TABLE IF EXISTS eucaim_etl_aux.lookupmedicalhistorycategory;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.lookupmedicalhistorycategory (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
     parsedValue VARCHAR(200)
 );
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupMedicalHistoryCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupMedicalHistoryCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -671,17 +666,26 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupMedicalHistoryCode (
     parsedValue VARCHAR(200)
 );
 
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupRadiotherapyAdverseEvent;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupRadiotherapyAdverseEvent (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
     parsedValue VARCHAR(200)
 );
 
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupRadiotherapyResponse;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupRadiotherapyResponse (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
     parsedValue VARCHAR(200)
 );
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorBodySiteCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -693,6 +697,8 @@ INSERT INTO eucaim_etl_aux.LookupTumorBodySiteCode (originalValue, parsedValue)
 VALUES ('breast', 'Breast');
 
 
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -703,7 +709,25 @@ INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue
 VALUES ('1', 'Right');
 
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('occipital (5)', 'Occipital region');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
 VALUES ('2', 'Left');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('frontal (1)', 'Frontal brain region');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('parietal (4)', 'Parietal region');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('temporal (2)', 'Temporal brain region');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorBodySiteLocationQualifier;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -711,11 +735,32 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (
     parsedValue VARCHAR(200)
 );
 
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('occipital (5)', 'Occipital lobe');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('frontal (1)', 'Frontal lobe');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('parietal (4)', 'Parietal lobe');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('temporal (2)', 'Temporal lobe');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorGradeCodeService;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorGradeCodeService (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
     parsedValue VARCHAR(200)
 );
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStageValue;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageValue (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -723,17 +768,26 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageValue (
     parsedValue VARCHAR(200)
 );
 
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupLabTestResultCode;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupLabTestResultCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
     parsedValue VARCHAR(200)
 );
 
-CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage1Code (
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStageCode;
+
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageCode (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
     parsedValue VARCHAR(200)
 );
+
+
+
 
 INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
 VALUES ('0', 'AJCC/UICC 8th T0 Category');
@@ -807,6 +861,18 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupMedicationAdministrationCode (
     parsedValue VARCHAR(200)
 );
 
+INSERT INTO eucaim_etl_aux.LookupMedicationAdministrationCode (originalValue, parsedValue)
+VALUES ('TMZ', 'Temozolomide');
+
+INSERT INTO eucaim_etl_aux.LookupMedicationAdministrationCode (originalValue, parsedValue)
+VALUES ('Fotemustina', 'Fotemustine');
+
+INSERT INTO eucaim_etl_aux.LookupMedicationAdministrationCode (originalValue, parsedValue)
+VALUES ('Unknown', 'Unknown');
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupMedicationAdministrationResponse;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupMedicationAdministrationResponse (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -824,6 +890,9 @@ VALUES ('stable disease', 'Stable disease');
 
 INSERT INTO eucaim_etl_aux.LookupMedicationAdministrationResponse (originalValue, parsedValue)
 VALUES ('progressive disease', 'Progressive disease');
+
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -895,6 +964,9 @@ VALUES ('97', 'Not performed');
 INSERT INTO eucaim_etl_aux.LookupTumorHistologicGrade (originalValue, parsedValue)
 VALUES ('98', 'Not assessable/applicable');
 
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionTopography;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionTopography (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -906,6 +978,9 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionTopography
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
 VALUES ('Malignant neoplasm of the nipple and areola of the right breast', 'Malignant neoplasm: Nipple and areola');
 
+
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupImagingModality;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupImagingModality (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -914,20 +989,17 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupImagingModality (
 
 );
 
+INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-
+VALUES ('CT', 'IMG1000042');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('CT', 'Computed Tomography');
+VALUES ('MG', 'IMG1004455');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('MG', 'Mammography');
-
-INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
-
-VALUES ('MR', 'Magnetic Resonance');
+VALUES ('MR', 'IMG1000038');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -935,15 +1007,15 @@ VALUES ('SEG', 'Segmentation');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('PT', 'Positron emission tomography (PET)');
+VALUES ('PT', 'IMG1000062');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('ST', 'Single-photon emission computed tomography (SPECT)');
+VALUES ('ST', 'IMG1000061');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('US', 'Ultrasound');
+VALUES ('US', 'IMG1000035');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -955,7 +1027,7 @@ VALUES ('OT', 'Other');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('NM', 'Nuclear Medicine');
+VALUES ('NM', 'IMG1000071');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -963,7 +1035,7 @@ VALUES ('ANN', 'Annotation');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('AS', 'Angioscopy');
+VALUES ('AS', 'IMG1004462');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -1003,7 +1075,7 @@ VALUES ('CD', 'Color flow Doppler');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('CR', 'Computed Radiography');
+VALUES ('CR', 'IMG1000024');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -1039,11 +1111,11 @@ VALUES ('DF', 'Digital fluoroscopy');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('DM', 'Digital microscopy');
+VALUES ('DM', 'IMG1004458');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('DX', 'Digital Radiography');
+VALUES ('DX', 'IMG1000028');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -1099,7 +1171,7 @@ VALUES ('FS', 'Fundoscopy');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('GM', 'General Microscopy');
+VALUES ('GM', 'IMG1004457');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -1123,7 +1195,7 @@ VALUES ('IVOCT', 'Intravascular Optical Coherence Tomography');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('IVUS', 'Intravascular Ultrasound');
+VALUES ('IVUS', 'IMG1000035');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -1147,11 +1219,11 @@ VALUES ('LEN', 'Lensometry');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('MA', 'Magnetic resonance angiography');
+VALUES ('MA', 'IMG1004462');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('MS', 'Magnetic resonance spectroscopy');
+VALUES ('MS', 'IMG1000083');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -1219,7 +1291,7 @@ VALUES ('PR', 'Presentation State');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('RF', 'Radio Fluoroscopy');
+VALUES ('RF', 'IMG1000041');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -1271,7 +1343,7 @@ VALUES ('RTRECORD', 'RT Treatment Record');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
-VALUES ('SM', 'Slide Microscopy');
+VALUES ('SM', 'IMG1004456');
 
 INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 
@@ -1306,7 +1378,7 @@ INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
 VALUES ('XAPROTOCOL', 'XA Protocol (Performed)');									 
 
 
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupBodyPartForImaging;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupBodyPartForImaging (
 
@@ -1318,177 +1390,46 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupBodyPartForImaging (
 
 );
 
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('prostate', 'BP1000021');
 
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('brain', 'BP1000051');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ABDOMEN', '818981001');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('heart', 'BP1000075');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ABDOMENPELVIS', '818982008');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('gallbladder', 'BP1000142');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BLADDER', '89837001');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('bronchus', 'BP1000192');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BRAIN', '12738006');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('lung', 'BP1000192');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BREAST', '76752008');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('pancreas', 'BP1000209');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CHEST', '43799004');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('thyroid', 'BP1000286');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CHESTABDOMEN', '416550000');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('cervix uteri', 'BP1000290');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CHESTABDPELVIS', '416775004');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('uterus', 'BP1000291');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('COLON', '71854001');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('kidney', 'BP1000298');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('HEAD', '69536005');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('vagina', 'BP1000299');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('HEADNECK', '774007');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('bladder', 'BP1000301');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('LIVER', '10200004');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('stomach', 'BP1000302');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('LUNG', '39607008');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('esophagus', 'BP1000303');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('OVARY', '15497006');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ovary', 'BP1000340');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('PANCREAS', '15776009');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('colon', 'CLIN1063722');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('PELVIS', '816092008');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('rectum', 'CLIN1063724');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('PELVISLOWEXTREMT', '1231522001');
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('breast', 'CLIN1063727');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('PROSTATE', '41216001');
 
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('RECTUM', '34402009');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('SPINE', '421060004');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('THYROID', '69748006');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('UTERUS', '35039007');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('3RDVENTRICLE', '49841001');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('4THVENTRICLE', '35918002');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ABDOMINALAORTA', '7832008');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ACA', '60176003');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ACJOINT', '85856004');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ADRENAL', '23451007');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('AMNIOTICFLUID', '77012006');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ANKLE', '70258002');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ANTCARDIACV', '194996006');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ANTCOMMA', '8012006');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ANTECUBITALV', '128553008');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ANTSPINALA', '17388009');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ANTTIBIALA', '68053000');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ANUSRECTUMSIGMD', '110612005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('AORTA', '15825003');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('AORTICARCH', '57034009');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('APPENDIX', '66754008');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ARTERY', '51114001');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ASCAORTA', '54247002');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('ASCENDINGCOLON', '9040008');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('AXILLA', '91470000');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('AXILLARYA', '67937003');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('AXILLARYV', '68705008');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('AZYGOSVEIN', '72107004');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BACK', '77568009');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BASILARA', '59011009');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BILEDUCT', '28273000');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BILIARYTRACT', '34707002');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BLADDERURETHRA', '110837003');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BRACHIALA', '17137000');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BRACHIALV', '20115005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BRONCHUS', '955009');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BULB', '21479005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('BUTTOCK', '46862004');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CALCANEUS', '80144004');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CALF', '53840002');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CARDIOVASCSYS', '113257007');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CAROTID', '69105007');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CCA', '32062004');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CELIACA', '57850000');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CEPHALICV', '20699002');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CEREBELLUM', '113305005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CEREBHEMISPHERE', '372073000');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CEREBRALA', '88556005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CERVIX', '71252005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CFA', '181347005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CFV', '397363009');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CHEEK', '60819002');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CHOROIDPLEXUS', '80621003');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CIRCLEOFWILLIS', '11279006');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CLAVICLE', '51299004');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('COCCYX', '64688005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('COMILIACA', '73634005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('COMILIACV', '46027005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('COMMONBILEDUCT', '79741001');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CORNEA', '28726007');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CORONARYARTERY', '41801008');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CORONARYSINUS', '90219004');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CSPINE', '122494005');
-
-INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('CTSPINE', '1217257000');
-
-
-
-
-
-
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupManufacturerAlias;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupManufacturerAlias (
 
@@ -1500,9 +1441,9 @@ CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupManufacturerAlias (
 
 );
 
-
-
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Siemens Healthineers', 'SIEMENS');
+
+INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('SIEMENS', 'SIEMENS');
 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Philips Medical Systems', 'PHILIPS');
 
@@ -1510,7 +1451,11 @@ INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) 
 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Toshiba Medical', 'TOSHIBA');
 
+INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Toshiba Medical', 'TOSHIBA');
 
+INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('FUJIFILM Corporation', 'FUJIFILM');
+
+INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('GE MEDICAL SYSTEMS', 'GENERAL ELECTRIC');
 
 ----------------------------------------------------
 
