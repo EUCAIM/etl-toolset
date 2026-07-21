@@ -52,6 +52,7 @@ services:
       - SHARED_DB_USERNAME=postgres
       - SHARED_DB_PASSWORD=postgres
       - SHARED_DB_PORT=5432
+      - DATASETSLIST=${datasetsList}
     volumes:
       - ./nifi_data/nifi_data:/opt/nifi/nifi-current/data
       - ./nifi_data/nifi_database_repository:/opt/nifi/nifi-current/database_repository
