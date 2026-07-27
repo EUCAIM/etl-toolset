@@ -41,6 +41,8 @@ $env:NIFI_USER = "eucaim"
 #Write-Host "Nifi password: $env:NIFI_PASSWORD"
 $env:NIFI_PASSWORD = "eucaim123456789"
 
+$env:datasetsList = ""
+
 # Run Docker Compose
 docker compose down -t 1
 docker compose up -d
