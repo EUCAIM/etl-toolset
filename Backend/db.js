@@ -1,7 +1,7 @@
 const { Pool } = require("pg");
 require("dotenv").config();
 const host = process.env.SHARED_DB_HOST || 'localhost';
-const database = process.env.SHARED_DB_NAME || "eucaim-etl-db";
+const database = process.env.SHARED_DB_NAME || "project-P1-P1";
 const user = process.env.SHARED_DB_USERNAME || "postgres";
 const password = process.env.SHARED_DB_PASSWORD || "postgres";
 const port =  process.env.SHARED_DB_PORT || 5432
