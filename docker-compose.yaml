@@ -52,6 +52,7 @@ services:
       - SHARED_DB_USERNAME=postgres
       - SHARED_DB_PASSWORD=postgres
       - SHARED_DB_PORT=5432
+      - DATASETSLIST=${datasetsList}
     volumes:
       - ./nifi_data/nifi_data:/opt/nifi/nifi-current/data
       - ./nifi_data/nifi_database_repository:/opt/nifi/nifi-current/database_repository
@@ -103,7 +104,7 @@ services:
     depends_on:
       nifi-postgres:
         condition: service_healthy
-    image: apache/nifi-registry:latest
+    image: apache/nifi-registry:2.3.0
     container_name: nifi_registry
     ports:
       - "18080:18080"

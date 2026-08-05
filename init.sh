@@ -56,6 +56,56 @@ registry=$(curl -X POST -k \
     }
     }" \
 https://nifi:8443/nifi-api/controller/registry-clients)
+
+
+# Download flows
+# Repository URL
+REPO_URL="https://github.com/EUCAIM/etl-mappings"
+
+# Extract owner and repo from URL
+OWNER=$(echo "$REPO_URL" | awk -F'github.com/' '{print $2}' | cut -d'/' -f1)
+REPO=$(echo "$REPO_URL" | awk -F'github.com/' '{print $2}' | cut -d'/' -f2)
+
+# Get default branch
+DEFAULT_BRANCH=$(curl -s "https://api.github.com/repos/${OWNER}/${REPO}" \
+    | jq -r '.default_branch')
+
+echo "Repository: ${OWNER}/${REPO}"
+echo "Branch: ${DEFAULT_BRANCH}"
+
+# Convert datasetsList to array
+IFS=',' read -r -a DATASETS <<< "$DATASETSLIST"
+
+
+if [ -z "$DATASETSLIST" ]; then
+    echo "DATASETSLIST está vacía. No se descargará ningún fichero."
+else
+
+	# Get file list
+	curl -s \
+	  "https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${DEFAULT_BRANCH}?recursive=1" \
+	  | jq -r '.tree[] | select(.type=="blob") | .path' |
+	while read -r FILE; do
+
+		BASENAME=$(basename "$FILE")
+		
+		for DATASET in "${DATASETS[@]}"; do
+		
+			if [[ "$BASENAME" == "${DATASET}"* ]]; then
+				echo "Downloading: $FILE"
+
+				curl -L -o "/flows/${BASENAME}" \
+				  "https://raw.githubusercontent.com/${OWNER}/${REPO}/${DEFAULT_BRANCH}/${FILE}"
+
+				break
+			fi
+		done
+	done
+fi
+
+echo "Download flows ended"
+
+
 #Add flows to registry
 FOLDER="/flows"
 index=0
