@@ -13,12 +13,21 @@ import {
   Upload,
 } from "lucide-react";
 
-//const backendIp = import.meta.env.VITE_BACKEND_IP || "localhost";
-const backendIp = "192.168.1.128";
+const backendIp = import.meta.env.VITE_BACKEND_IP || "localhost";
 const COMPLETION_RULES: Record<string, number> = {
   clinical_data: 8,
   image_timepoints: 4,
   image_metadata: 3,
+};
+
+const DATASET_ID_HINT =
+  'The filename must start with the Dataset ID followed by "_", e.g. 4fcdd34b95f8eed2a3d07291e4c2173e_mydataset.csv';
+
+// Mirrors the flows, which read the dataset id as the filename prefix up to the
+// first underscore. Returns "" when the file carries no prefix at all.
+const deriveDatasetId = (filename: string) => {
+  const [prefix, ...rest] = filename.split("_");
+  return rest.length > 0 ? prefix.toLowerCase() : "";
 };
 
 interface Job {
@@ -97,8 +106,10 @@ function App() {
         });
 
         if (!response.ok) {
+          // The backend explains why a file was rejected; statusText alone loses it
+          const detail = await response.json().catch(() => null);
           throw new Error(
-            `Upload failed for ${file.name}: ${response.statusText}`,
+            `Upload failed for ${file.name}: ${detail?.error ?? response.statusText}`,
           );
         }
       }
@@ -187,7 +198,8 @@ function App() {
     try {
       if (!silent) setLoading(true);
       setIsSyncing(true);
-      setError(null);
+      // A background poll must not wipe an upload error the user has not read yet
+      if (!silent) setError(null);
       const response = await fetch(`http://${backendIp}:3000/jobs`);
       if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
       const data = await response.json();
@@ -298,6 +310,19 @@ function App() {
           </button>
         </div>
 
+        {error && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+            <AlertCircle size={18} className="text-red-500 mt-0.5 shrink-0" />
+            <p className="flex-1 text-sm text-red-700">{error}</p>
+            <button
+              onClick={() => setError(null)}
+              className="text-[10px] font-bold uppercase tracking-wider text-red-500 hover:text-red-700"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
         {loading ? (
           <div className="text-center py-20 text-gray-400 font-medium italic">
             Loading...
@@ -320,7 +345,11 @@ function App() {
                 });
                 const files = Array.from(e.dataTransfer.files);
                 if (files.length > 0 && files[0].type === "text/csv") {
-                  const newDatasetId = files[0].name.replace(/\.[^/.]+$/, "");
+                  const newDatasetId = deriveDatasetId(files[0].name);
+                  if (!newDatasetId) {
+                    setError(DATASET_ID_HINT);
+                    return;
+                  }
                   uploadFiles(files, newDatasetId, "clinical_data");
                 } else {
                   setError("Only CSV files are allowed for upload.");
@@ -359,8 +388,12 @@ function App() {
                   onChange={(e) => {
                     const files = Array.from(e.target.files || []);
                     if (files.length > 0 && files[0].type === "text/csv") {
-                      const newDatasetId = files[0].name.replace(/\.[^/.]+$/, "");
-                      uploadFiles(files, newDatasetId, "clinical_data");
+                      const newDatasetId = deriveDatasetId(files[0].name);
+                      if (newDatasetId) {
+                        uploadFiles(files, newDatasetId, "clinical_data");
+                      } else {
+                        setError(DATASET_ID_HINT);
+                      }
                     }
                     e.target.value = "";
                   }}
