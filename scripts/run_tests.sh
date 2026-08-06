@@ -111,6 +111,8 @@ procesar_pipeline_imaging_metadata() {
   sleep $SLEEP_SEC
   sleep $SLEEP_SEC
   sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
 
   echo "Output detected!"
   echo "Files generated:"
@@ -176,6 +178,8 @@ procesar_pipeline_imaging_timepoints() {
     COUNT=$((COUNT+1))
   done
 
+  sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
   sleep $SLEEP_SEC
   sleep $SLEEP_SEC
 
