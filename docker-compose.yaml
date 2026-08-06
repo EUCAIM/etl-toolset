@@ -8,11 +8,14 @@ services:
     - SHARED_DB_USERNAME=postgres
     - SHARED_DB_PASSWORD=postgres
     - SHARED_DB_PORT=5432
+    - ETL_INPUT_DIR=/data/input_data
     ports:
       - "3000:3000"
     working_dir: /app
     volumes:
       - ./Backend:/app
+      # Same host folder the nifi container watches, so uploads reach the pipeline
+      - ./input_data:/data/input_data
     command: sh -c "npm install && npm start"
   frontend:
     image: node:18
