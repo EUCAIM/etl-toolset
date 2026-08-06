@@ -109,6 +109,8 @@ procesar_pipeline_imaging_metadata() {
   sleep $SLEEP_SEC
   sleep $SLEEP_SEC
   sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
 
   echo "Output detected!"
   echo "Files generated:"
@@ -175,6 +177,8 @@ procesar_pipeline_imaging_timepoints() {
 
   sleep $SLEEP_SEC
   sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
+  sleep $SLEEP_SEC
   
   echo "Number of output rows in eucaim_cdm_output.patient table: $TOTAL_ROWS  (Expected rows: $NUMBER_OF_PATIENTS)"
 
@@ -202,6 +206,7 @@ if [ -f $IMAGE_METADATA_TEST_CSV ]; then
 fi
 
 sleep $SLEEP_SEC
+
 
 if [ -f $IMAGING_TIMEPOINTS_TEST_CSV ]; then
   procesar_pipeline_imaging_timepoints
