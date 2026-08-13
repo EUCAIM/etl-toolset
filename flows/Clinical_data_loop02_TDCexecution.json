@@ -35,7 +35,7 @@
                     "HTTP/2 Disabled": "False",
                     "Connection Timeout": "5 secs",
                     "Response Cookie Strategy": "DISABLED",
-                    "Socket Read Timeout": "15 secs",
+                    "Socket Read Timeout": "5 mins",
                     "Socket Idle Connections": "5",
                     "Request Body Enabled": "true",
                     "HTTP URL": "#{TabularDataCurator_URL}",

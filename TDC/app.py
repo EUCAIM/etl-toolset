@@ -788,68 +788,71 @@ def write_curated_dataset(data_org, wb2, pos_metas, features_total, features_sta
                 sheet1.cell(1,j+1,features_total[j])
                 sheet1.cell(1,j+1).fill = style5
             # print("Feature ", str(j))
+            _col_c1 = data_org[:, c1]
+            _mycol_c1 = my_data[:, c1]
+            _outset_c1 = set(outliers_pos[c1]) if outliers_pos[c1] != '-' else ()
             for i in range(r):
-                # print("Feature ", str(j), ", row ", str(i), ", value", str(data_org[:,c1][i]))
+                # print("Feature ", str(j), ", row ", str(i), ", value", str(_col_c1[i]))
                 if(outliers_pos[c1] != '-'):
-                    if((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')):
-                        sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                    if((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')):
+                        sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                         sheet1.cell(i+2,j+1).fill = style1
-                    elif((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
-                        sheet1.cell(i+2,j+1,formatNumber_v3(str(my_data[:,c1][i]).strip()[1:-1]))
+                    elif((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                        sheet1.cell(i+2,j+1,formatNumber_v3(str(_mycol_c1[i]).strip()[1:-1]))
                         sheet1.cell(i+2,j+1).fill = style1
-                    elif((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
-                        sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                    elif((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
+                        sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                         sheet1.cell(i+2,j+1).fill = style1
-                    elif((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
-                        sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                    elif((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                        sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                         sheet1.cell(i+2,j+1).fill = style1
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')&(var_type_final[c1]!='string')&(var_type_final[c1]!='unknown')):
-                        sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                    elif((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')&(var_type_final[c1]!='string')&(var_type_final[c1]!='unknown')):
+                        sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                         sheet1.cell(i+2,j+1).fill = style2
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
-                        sheet1.cell(i+2,j+1,formatNumber_v3(str(my_data[:,c1][i]).strip()[1:-1]))
+                    elif((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                        sheet1.cell(i+2,j+1,formatNumber_v3(str(_mycol_c1[i]).strip()[1:-1]))
                         sheet1.cell(i+2,j+1).fill = style2
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
-                        sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
-                        sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                    elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
+                        sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
+                    elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                        sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                 else:
                     # print(str(c1)+","+str(i))
                     try:
-                        if((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')&(var_type_final[c1]!='string')&(var_type_final[c1]!='unknown')):
-                            sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                        if((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')&(var_type_final[c1]!='string')&(var_type_final[c1]!='unknown')):
+                            sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                             sheet1.cell(i+2,j+1).fill = style2
-                        elif((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')):
-                            sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                        elif((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')):
+                            sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                             sheet1.cell(i+2,j+1).fill = style2
-                        elif((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                        elif((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
                             if(incomp_pos[c1] == '-'):
-                                sheet1.cell(i+2,j+1,formatNumber_v3(str(my_data[:,c1][i]).strip()[1:-1]))
+                                sheet1.cell(i+2,j+1,formatNumber_v3(str(_mycol_c1[i]).strip()[1:-1]))
                                 sheet1.cell(i+2,j+1).fill = style2
                             else:
-                                sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                                sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                                 sheet1.cell(i+2,j+1).fill = style2
-                        elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
+                        elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
                             if(i in list(incomp_pos[c1])):
-                                sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
-                                if(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]) == '?'):
+                                sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
+                                if(formatNumber_v3(str(_col_c1[i]).strip()[1:-1]) == '?'):
                                     sheet1.cell(i+2,j+1).fill = style2
                                 else:
                                     sheet1.cell(i+2,j+1).fill = style6
                             else:
-                                sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
-                                if(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]) == '?'):
+                                sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
+                                if(formatNumber_v3(str(_col_c1[i]).strip()[1:-1]) == '?'):
                                     sheet1.cell(i+2,j+1).fill = style2
-                        elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                        elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
                             if(i in list(incomp_pos[c1])):
-                                sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
-                                if(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]) == '?'):
+                                sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
+                                if(formatNumber_v3(str(_col_c1[i]).strip()[1:-1]) == '?'):
                                     sheet1.cell(i+2,j+1).fill = style2
                                 else:
                                     sheet1.cell(i+2,j+1).fill = style6
                             else:
-                                sheet1.cell(i+2,j+1,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
-                                if(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]) == '?'):
+                                sheet1.cell(i+2,j+1,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
+                                if(formatNumber_v3(str(_col_c1[i]).strip()[1:-1]) == '?'):
                                     sheet1.cell(i+2,j+1).fill = style2                                
                     except:
                         sheet1.cell(i+2,j+1,'?')
@@ -967,44 +970,47 @@ def write_curated_dataset_dict(data_org, pos_metas, features_total, features_sta
                 features_states.append(features_total[j]); styless_f.append('blue')
             elif(features_state[c1] == 'good'):
                 features_states.append(features_total[j]); styless_f.append('green')
+            _col_c1 = data_org[:, c1]
+            _mycol_c1 = my_data[:, c1]
+            _outset_c1 = set(outliers_pos[c1]) if outliers_pos[c1] != '-' else ()
             for i in range(r):
                 if(outliers_pos[c1] != '-'):
-                    if((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')):
-                        write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('orange')
-                    elif((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
-                        write_features.append(formatNumber_v3(str(my_data[:,c1][i]).strip()[1:-1])); styless.append('orange')
-                    elif((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
-                        write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('orange')
-                    elif((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
-                        write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('orange')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')&(var_type_final[c1]!='string')&(var_type_final[c1]!='unknown')):
-                        write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('gray')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
-                        write_features.append(formatNumber_v3(str(my_data[:,c1][i]).strip()[1:-1])); styless.append('gray')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
-                        write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('white')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
-                        write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('white')
+                    if((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')):
+                        write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('orange')
+                    elif((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                        write_features.append(formatNumber_v3(str(_mycol_c1[i]).strip()[1:-1])); styless.append('orange')
+                    elif((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
+                        write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('orange')
+                    elif((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                        write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('orange')
+                    elif((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')&(var_type_final[c1]!='string')&(var_type_final[c1]!='unknown')):
+                        write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('gray')
+                    elif((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                        write_features.append(formatNumber_v3(str(_mycol_c1[i]).strip()[1:-1])); styless.append('gray')
+                    elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
+                        write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('white')
+                    elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                        write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('white')
                 else:
-                    if((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')&(var_type_final[c1]!='string')&(var_type_final[c1]!='unknown')):
-                        write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('gray')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')):
-                        write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('gray')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                    if((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')&(var_type_final[c1]!='string')&(var_type_final[c1]!='unknown')):
+                        write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('gray')
+                    elif((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]=='bad')):
+                        write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('gray')
+                    elif((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
                         if(incomp_pos[c1] == '-'):
-                            write_features.append(formatNumber_v3(str(my_data[:,c1][i]).strip()[1:-1])); styless.append('gray')
+                            write_features.append(formatNumber_v3(str(_mycol_c1[i]).strip()[1:-1])); styless.append('gray')
                         else:
-                            write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('gray')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
+                            write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('gray')
+                    elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]=='bad')):
                         if(i in list(incomp_pos[c1])):
-                            write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('red')
+                            write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('red')
                         else:
-                            write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('white')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                            write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('white')
+                    elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
                         if(i in list(incomp_pos[c1])):
-                            write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('red')
+                            write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('red')
                         else:
-                            write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('white')           
+                            write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('white')           
             c1 = c1+1
         elif(j in pos_metas):
             if(features_state_metas[c2] == 'bad'):
@@ -1128,38 +1134,40 @@ def write_curated_dataset_v2(data_org, wb2, pos_metas, features_total, features_
                 c3 = c3+1
                 sheet1.cell(1,c3,features_total[j])
                 sheet1.cell(1,c3).fill = style5
+            _col_c1 = data_org[:, c1]
+            _outset_c1 = set(outliers_pos[c1]) if outliers_pos[c1] != '-' else ()
             for i in range(r):
                 if(outliers_pos[c1] != '-'):
-                    if((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                    if((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
                         sheet1.cell(i+2,c3,'?')
                         sheet1.cell(i+2,c3).fill = style1
-                    elif((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
-                        sheet1.cell(i+2,c3,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                    elif((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                        sheet1.cell(i+2,c3,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                         sheet1.cell(i+2,c3).fill = style1
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                    elif((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
                         sheet1.cell(i+2,c3,'?')
                         sheet1.cell(i+2,c3).fill = style2
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
-                        sheet1.cell(i+2,c3,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                    elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                        sheet1.cell(i+2,c3,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                 else:
                     try:
-                        if((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                        if((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
                             if(incomp_pos[c1] == '-'):
                                 sheet1.cell(i+2,c3,'?')
                                 sheet1.cell(i+2,c3).fill = style2
                             else:
-                                sheet1.cell(i+2,c3,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
+                                sheet1.cell(i+2,c3,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
                                 sheet1.cell(i+2,c3).fill = style2
-                        elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                        elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
                             if(i in list(incomp_pos[c1])):
-                                sheet1.cell(i+2,c3,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
-                                if(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]) == '?'):
+                                sheet1.cell(i+2,c3,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
+                                if(formatNumber_v3(str(_col_c1[i]).strip()[1:-1]) == '?'):
                                     sheet1.cell(i+2,c3).fill = style2
                                 else:
                                     sheet1.cell(i+2,c3).fill = style6
                             else:
-                                sheet1.cell(i+2,c3,formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]))
-                                if(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1]) == '?'):
+                                sheet1.cell(i+2,c3,formatNumber_v3(str(_col_c1[i]).strip()[1:-1]))
+                                if(formatNumber_v3(str(_col_c1[i]).strip()[1:-1]) == '?'):
                                     sheet1.cell(i+2,c3).fill = style2
                     except:
                         sheet1.cell(i+2,c3,'?')
@@ -1254,27 +1262,29 @@ def write_curated_dataset_v2_dict(data_org, pos_metas, features_total, features_
             elif(features_state[c1] == 'good'):
                 c3 = c3+1
                 features_states.append(features_total[j]); styless_f.append('blue')
+            _col_c1 = data_org[:, c1]
+            _outset_c1 = set(outliers_pos[c1]) if outliers_pos[c1] != '-' else ()
             for i in range(r):
                 if(outliers_pos[c1] != '-'):
-                    if((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                    if((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
                         write_features.append('NaN'); styless.append('orange')
-                    elif((i in outliers_pos[c1])&(str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
-                        write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('orange')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                    elif((i in _outset_c1)&(str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                        write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('orange')
+                    elif((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
                         write_features.append('NaN'); styless.append('gray')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
-                        write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('white')
+                    elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                        write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('white')
                 else:
-                    if((str(data_org[:,c1][i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
+                    if((str(_col_c1[i]).strip()[1:-1]=='?')&(features_state[c1]!='bad')):
                         if(incomp_pos[c1] == '-'):
                             write_features.append('NaN'); styless.append('gray')
                         else:
-                            write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('gray')
-                    elif((str(data_org[:,c1][i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
+                            write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('gray')
+                    elif((str(_col_c1[i]).strip()[1:-1]!='?')&(features_state[c1]!='bad')):
                         if(i in list(incomp_pos[c1])):
-                            write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('red')
+                            write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('red')
                         else:
-                            write_features.append(formatNumber_v3(str(data_org[:,c1][i]).strip()[1:-1])); styless.append('white')       
+                            write_features.append(formatNumber_v3(str(_col_c1[i]).strip()[1:-1])); styless.append('white')       
             c1 = c1+1
         elif(j in pos_metas):
             if(features_state_metas[c2] == 'fair'):
@@ -2095,9 +2105,17 @@ def data_annotation(data_org):
                 means.append('-')
                 p = [i for i,x in enumerate(var_type) if ((x=='string')|(x=='unknown'))]
                 incomp_names = [y[k] for k in p]
-                incomp_names_ind = []
-                for m in range(len(incomp_names)):
-                    incomp_names_ind.append([i for i,x in enumerate(data_org[:,j]) if x.list[0]==incomp_names[m]])
+                # Single pass over the rows bucketing by value, instead of one
+                # full pass per distinct value. The latter is quadratic on
+                # columns whose values are nearly all distinct, such as an
+                # anonymised patient id. Ordering of the result is unchanged.
+                _wanted = set(incomp_names)
+                _rows_by_value = {}
+                for i,x in enumerate(data_org[:,j]):
+                    v = x.list[0]
+                    if v in _wanted:
+                        _rows_by_value.setdefault(v, []).append(i)
+                incomp_names_ind = [_rows_by_value.get(nm, []) for nm in incomp_names]
                 incomp_names_ind = list(itertools.chain.from_iterable(incomp_names_ind))
                 incomp_pos.append(incomp_names_ind)
                 incompatibilities.append("yes, unknown type of data")
