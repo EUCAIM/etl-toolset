@@ -3,14 +3,15 @@
 set -e  # fail if any command fails
 echo "==== RUNNING TEST: start main ===="
 
-### run from the script directory, so the relative paths below resolve
-### regardless of the caller's working directory
-cd "$(dirname "${BASH_SOURCE[0]}")"
-
 ### definitions: global parameters
-INPUT_DIR="../input_data"
-OUTPUT_DIR="../output_data"
-POSTGRES_CONTAINER=$(docker compose ps -q nifi-postgres)
+### anchor every path to the repository root, so the script behaves the same
+### no matter which directory it is invoked from
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+INPUT_DIR="$ROOT_DIR/input_data"
+OUTPUT_DIR="$ROOT_DIR/output_data"
+SAMPLE_DIR="$ROOT_DIR/sample_data"
+SCRIPTS_DIR="$ROOT_DIR/scripts"
+POSTGRES_CONTAINER=$(docker compose -f "$ROOT_DIR/docker-compose.yaml" ps -q nifi-postgres)
 
 MAX_RETRIES=60   
 SLEEP_SEC=5      
@@ -188,7 +189,7 @@ procesar_pipeline_imaging_timepoints() {
 
 
 ### executing tests
-tail -n +2 config.csv | while IFS=',' read -r NAME CODE NUMBER_OF_PATIENTS NUMBER_OF_STUDIES DCM
+tail -n +2 "$SCRIPTS_DIR/config.csv" | while IFS=',' read -r NAME CODE NUMBER_OF_PATIENTS NUMBER_OF_STUDIES DCM
 do
 	NAME=${NAME%$'\r'}
 	CODE=${CODE%$'\r'}
@@ -196,11 +197,11 @@ do
 	NUMBER_OF_STUDIES=${NUMBER_OF_STUDIES%$'\r'}
 	DCM=${DCM%$'\r'}
 	declare -p NAME CODE NUMBER_OF_PATIENTS NUMBER_OF_STUDIES DCM
-	CLINICAL_DATA_TEST_CSV="../sample_data/${CODE}_clinical_data_testing.csv"
-	IMAGE_METADATA_TEST_CSV="../sample_data/${CODE}_DICOM_metadata_testing.csv"
-	IMAGING_TIMEPOINTS_TEST_CSV="../sample_data/${CODE}_imaging_timepoints_testing.csv"
+	CLINICAL_DATA_TEST_CSV="$SAMPLE_DIR/${CODE}_clinical_data_testing.csv"
+	IMAGE_METADATA_TEST_CSV="$SAMPLE_DIR/${CODE}_DICOM_metadata_testing.csv"
+	IMAGING_TIMEPOINTS_TEST_CSV="$SAMPLE_DIR/${CODE}_imaging_timepoints_testing.csv"
 
-	CLINICAL_DATA_EXTRA_TEST_SCRIPT="../scripts/${CODE}_run_clinical_data_specific_tests.sh"
+	CLINICAL_DATA_EXTRA_TEST_SCRIPT="$SCRIPTS_DIR/${CODE}_run_clinical_data_specific_tests.sh"
 
 	echo "$CLINICAL_DATA_TEST_CSV"
 
