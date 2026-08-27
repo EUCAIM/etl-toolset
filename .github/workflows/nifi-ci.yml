@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - develop
+      - Local_Node
   pull_request:
     branches:
       - develop
+      - Local_Node
 
 jobs:
   test:
@@ -33,7 +35,7 @@ jobs:
           echo "Init complete ✅"
 
       - name: Run tests
-        run: ./scripts/run_tests.sh
+        run: ./scripts/run_test.sh
 
       - name: Clean environment
         if: always()

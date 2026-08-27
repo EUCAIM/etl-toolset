@@ -3,6 +3,10 @@
 set -e  # fail if any command fails
 echo "==== RUNNING TEST: start main ===="
 
+### run from the script directory, so the relative paths below resolve
+### regardless of the caller's working directory
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
 ### definitions: global parameters
 INPUT_DIR="../input_data"
 OUTPUT_DIR="../output_data"
@@ -15,6 +19,7 @@ COUNT=0
 ### definitions: validations for clinical data
 procesar_pipeline_clinical_data() {
   rm -f $OUTPUT_DIR/*.csv
+  COUNT=0
   cp "$CLINICAL_DATA_TEST_CSV" "$INPUT_DIR/clinical_data/"
   echo "Copied clinical data sample file to $INPUT_DIR"
 
@@ -81,6 +86,7 @@ procesar_pipeline_clinical_data() {
 ### definitions: validations for imaging metadata pipelines
 procesar_pipeline_imaging_metadata() {
   rm -f $OUTPUT_DIR/*.csv
+  COUNT=0
   cp "$IMAGE_METADATA_TEST_CSV" "$INPUT_DIR/image_metadata/"
   echo "Copied imaging metadata sample file to $INPUT_DIR"
 
@@ -147,6 +153,7 @@ procesar_pipeline_imaging_metadata() {
 ### definitions: validations for imaging timepoints pipelines
 procesar_pipeline_imaging_timepoints() {
   rm -f $OUTPUT_DIR/*.csv
+  COUNT=0
   cp "$IMAGING_TIMEPOINTS_TEST_CSV" "$INPUT_DIR/image_timepoints/"
   echo "Copied imaging timepoints sample file to $INPUT_DIR"
 
@@ -208,7 +215,7 @@ do
 
 	sleep $SLEEP_SEC
 	
-	if ["$DCM" -eq 1]; then
+	if [ "$DCM" -eq 1 ]; then
 		if [ -f $IMAGE_METADATA_TEST_CSV ]; then
 		  procesar_pipeline_imaging_metadata
 		fi
