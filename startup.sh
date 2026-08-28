@@ -15,6 +15,28 @@ NIFI_PASSWORD="eucaim123456789"
 export NIFI_USER
 export NIFI_PASSWORD
 
+### node-local configuration, empty in a clean checkout. A value already in the
+### environment, as the CI workflow sets, wins over the file, so a datasetsList
+### committed here by mistake cannot silently override the datasets under test.
+DATASETS_FROM_ENV="$datasetsList"
+if [ -f ./local_env.sh ]; then
+    . ./local_env.sh
+fi
+if [ -n "$DATASETS_FROM_ENV" ]; then
+    datasetsList="$DATASETS_FROM_ENV"
+fi
+
+### datasets whose mappings init.sh pulls from EUCAIM/etl-mappings. Empty on a
+### clean deployment: this node downloads no mapping until its operator selects
+### the datasets it serves. The CI workflow sets it to every dataset covered by
+### the tests.
+export datasetsList
+if [ -z "$datasetsList" ]; then
+    echo "No dataset selected: export datasetsList with a comma separated list of dataset codes to download their mappings"
+else
+    echo "Datasets to be deployed: $datasetsList"
+fi
+
 docker compose down -t 1
 docker compose up -d
 

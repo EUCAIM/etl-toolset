@@ -226,6 +226,11 @@ INSERT INTO eucaim_etl_aux.LookupPatientDiagnosticCategory (originalValue, parse
 VALUES ('Patient with Cancer', 'Patient with Cancer');
 
 
+INSERT INTO eucaim_etl_aux.LookupPatientDiagnosticCategory (originalValue, parsedValue)
+
+VALUES ('Primary Cancer', 'Primary Cancer Condition');
+
+
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupSurgicalProcedureCode;
 
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCode (
@@ -655,6 +660,12 @@ VALUES ('temporal (2)', 'Temporal lobe');
 
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
 VALUES ('Unknown', 'Unknown');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('Temporal', 'Temporal lobe');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('Thalamus - Cingulum', 'Temporal');
 
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorGradeCodeService;
@@ -1238,3 +1249,455 @@ INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) 
 
 ----------------------------------------------------
 
+
+
+-------------------------------------------------------------------------------
+-- Lookup values that only existed in the per-dataset branches (UoA, KI, SAS).
+-- Recovered verbatim from those branches when the datasets were unified here:
+-- without them the SAS_Breast and KI mappings resolve no code at all.
+-------------------------------------------------------------------------------
+
+-- lookupcancerstage1code: recovered from branch KI
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage1Code (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
+VALUES ('0', 'AJCC/UICC 8th T0 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
+VALUES ('5', 'AJCC/UICC 8th Tis Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
+VALUES ('10', 'AJCC/UICC T1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
+VALUES ('20', 'AJCC/UICC T2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
+VALUES ('30', 'AJCC/UICC T3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
+VALUES ('42', 'AJCC/UICC T4a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
+VALUES ('44', 'AJCC/UICC T4b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
+VALUES ('45', 'AJCC/UICC T4c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
+VALUES ('46', 'AJCC/UICC T4d Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
+VALUES ('50', 'AJCC/UICC TX Category');
+
+-- lookupcancerstage2code: recovered from branch KI
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage2Code (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage2Code (originalValue, parsedValue)
+VALUES ('0', 'AJCC/UICC 8th N0 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage2Code (originalValue, parsedValue)
+VALUES ('10', 'AJCC/UICC 8th N1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage2Code (originalValue, parsedValue)
+VALUES ('20', 'AJCC/UICC 8th N2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage2Code (originalValue, parsedValue)
+VALUES ('30', 'AJCC/UICC 8th N3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage2Code (originalValue, parsedValue)
+VALUES ('40', 'AJCC/UICC 8th NX Category');
+
+-- lookupcancerstage3code: recovered from branch KI
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage3Code (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage3Code (originalValue, parsedValue)
+VALUES ('0', 'AJCC/UICC 8th M0 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage3Code (originalValue, parsedValue)
+VALUES ('10', 'AJCC/UICC 8th M1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStage3Code (originalValue, parsedValue)
+VALUES ('20', 'AJCC/UICC 8th MX Category');
+
+-- lookupcancerstagemvalue: recovered from branch SAS
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageMValue (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('0', 'AJCC/UICC 8th clinical M0 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('1', 'AJCC/UICC 8th clinical M1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('1a', 'AJCC/UICC 8th clinical M1a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('1b', 'AJCC/UICC 8th clinical M1b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('1c', 'AJCC/UICC 8th clinical M1c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('1d', 'AJCC/UICC 8th clinical M1d Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
+VALUES ('X', 'AJCC/UICC 8th clinical MX Category');
+
+-- lookupcancerstagenvalue: recovered from branch SAS
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageNValue (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('0', 'AJCC/UICC 8th clinical N0 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('0a', 'AJCC/UICC 8th clinical N0a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('0b', 'AJCC/UICC 8th clinical N0b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1', 'AJCC/UICC 8th clinical N1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1a', 'AJCC/UICC 8th clinical N1a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1b', 'AJCC/UICC 8th clinical N1b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1b1', 'AJCC/UICC 8th clinical N1b1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1b2', 'AJCC/UICC 8th clinical N1b2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1b3', 'AJCC/UICC 8th clinical N1b3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1b4', 'AJCC/UICC 8th clinical N1b4 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1c', 'AJCC/UICC 8th clinical N1c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('1mi', 'AJCC/UICC 8th clinical N1mi Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('2', 'AJCC/UICC 8th clinical N2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('2a', 'AJCC/UICC 8th clinical N2a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('2b', 'AJCC/UICC 8th clinical N2b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('2c', 'AJCC/UICC 8th clinical N2c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('2mi', 'AJCC/UICC 8th clinical N2mi Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('3', 'AJCC/UICC 8th clinical N3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('3a', 'AJCC/UICC 8th clinical N3a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('3b', 'AJCC/UICC 8th clinical N3b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('3c', 'AJCC/UICC 8th clinical N3c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
+VALUES ('X', 'AJCC/UICC 8th clinical NX Category');
+
+-- lookupcancerstagetvalue: recovered from branch SAS
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageTValue (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('0', 'AJCC/UICC 8th clinical T0 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1', 'AJCC/UICC 8th clinical T1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1a', 'AJCC/UICC 8th clinical T1a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1a1', 'AJCC/UICC 8th clinical T1a1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1a2', 'AJCC/UICC 8th clinical T1a2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1b', 'AJCC/UICC 8th clinical T1b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1b1', 'AJCC/UICC 8th clinical T1b1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1b2', 'AJCC/UICC 8th clinical T1b2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1b3', 'AJCC/UICC 8th clinical T1b3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1c', 'AJCC/UICC 8th clinical T1c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1c1', 'AJCC/UICC 8th clinical T1c1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1c2', 'AJCC/UICC 8th clinical T1c2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1c3', 'AJCC/UICC 8th clinical T1c3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1d', 'AJCC/UICC 8th clinical T1d Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('1mi', 'AJCC/UICC 8th clinical T1mi Category');
+
+-- lookuppatientbirthsex: recovered from branch KI
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPatientBirthSex (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    originalValue VARCHAR(200),
+
+    parsedValue VARCHAR(200)
+
+);
+
+INSERT INTO eucaim_etl_aux.LookupPatientBirthSex (originalValue, parsedValue)
+
+VALUES ('F', 'Female');
+
+INSERT INTO eucaim_etl_aux.LookupPatientBirthSex (originalValue, parsedValue)
+
+VALUES ('M', 'Male');
+
+-- lookupprimarycancerconditionhistologymorphologybehaviorinsitu: recovered from branch KI
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInSitu (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInSitu (originalValue, parsedValue)
+VALUES ('10', 'DCIS (Ductal carcinoma in situ) of breast');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInSitu (originalValue, parsedValue)
+VALUES ('20', 'LCIS (lobular carcinoma in situ) of breast');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInSitu (originalValue, parsedValue)
+VALUES ('40', 'Mixed ductal and lobular carcinoma in situ of breast');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInSitu (originalValue, parsedValue)
+VALUES ('50', 'Other carcinoma in situ of breast');
+
+-- lookupprimarycancerconditionhistologymorphologybehaviorinvasive: recovered from branch KI
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInvasive (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInvasive (originalValue, parsedValue)
+VALUES ('10', 'Invasive carcinoma of breast with extensive intraductal component');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInvasive (originalValue, parsedValue)
+VALUES ('20', 'Infiltrating duct and lobular carcinoma');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInvasive (originalValue, parsedValue)
+VALUES ('30', 'DUCT CARCINOMA/ Invasive carcinoma of no special type');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInvasive (originalValue, parsedValue)
+VALUES ('40', 'Invasive carcinoma of breast without extensive intraductal component');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInvasive (originalValue, parsedValue)
+VALUES ('70', 'Invasive carcinoma of breast');
+
+-- lookupsurgicalprocedurecodeaxillary: recovered from branch KI
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    originalValue VARCHAR(200),
+
+    parsedValue VARCHAR(200)
+
+);
+
+
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (originalValue, parsedValue)
+
+VALUES ('1', 'Sentinel lymph node biopsy');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (originalValue, parsedValue)
+
+VALUES ('2', 'Dissection of lymph node');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (originalValue, parsedValue)
+
+VALUES ('3', 'Biopsy of lymph node');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (originalValue, parsedValue)
+
+VALUES ('4', 'Sampling of tissue specimen');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (originalValue, parsedValue)
+
+VALUES ('98', 'Not available');
+
+-- lookupsurgicalprocedurecodebreast: recovered from branch KI
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeBreast (
+
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    originalValue VARCHAR(200),
+
+    parsedValue VARCHAR(200)
+
+);
+
+
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeBreast (originalValue, parsedValue)
+
+VALUES ('1', 'Excision of breast');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeBreast (originalValue, parsedValue)
+
+VALUES ('2', 'Excision of breast');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeBreast (originalValue, parsedValue)
+
+VALUES ('3', 'Breast Conservation Treatment');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeBreast (originalValue, parsedValue)
+
+VALUES ('4', 'Excision of axillary lymph node');
+
+-- lookuptumorhistologicgrade: recovered from branch KI
+CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorHistologicGrade (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    originalValue VARCHAR(200),
+    parsedValue VARCHAR(200)
+);
+
+INSERT INTO eucaim_etl_aux.LookupTumorHistologicGrade (originalValue, parsedValue)
+VALUES ('1', 'Grade 1 tumor');
+
+INSERT INTO eucaim_etl_aux.LookupTumorHistologicGrade (originalValue, parsedValue)
+VALUES ('2', 'Grade 2 tumor');
+
+INSERT INTO eucaim_etl_aux.LookupTumorHistologicGrade (originalValue, parsedValue)
+VALUES ('3', 'Grade 3 tumor');
+
+INSERT INTO eucaim_etl_aux.LookupTumorHistologicGrade (originalValue, parsedValue)
+VALUES ('97', 'Not performed');
+
+INSERT INTO eucaim_etl_aux.LookupTumorHistologicGrade (originalValue, parsedValue)
+VALUES ('98', 'Not assessable/applicable');
+
+
+-- lookupimagingmodality: recovered from branch UoA
+INSERT INTO eucaim_etl_aux.LookupImagingModality (originalValue, parsedValue)
+VALUES ('MRI', 'Magnetic Resonance Imaging');
+
+-- lookuppatientdiagnosticcategory: recovered from branch KI
+INSERT INTO eucaim_etl_aux.LookupPatientDiagnosticCategory (originalValue, parsedValue)
+VALUES ('HEALTHY', 'Healthy patient');
+
+INSERT INTO eucaim_etl_aux.LookupPatientDiagnosticCategory (originalValue, parsedValue)
+VALUES ('DISCUSSION', 'Subject under discussion with suspicious findings');
+
+-- lookupprimarycancerconditionhistologymorphologybehavior: recovered from branch SAS
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('invasive ductal carninoma of breast', 'Invasive ductal carcinoma with an extensive intraductal component');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('invasive ductal carcinoma of breast', 'Invasive ductal carcinoma with an extensive intraductal component');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('small cell carcinoma', 'Neoplasm of lung');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('lung squamous cell carcinoma', 'Squamous cell carcinoma, NOS, of lung, NOS');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('breast cancer', 'Neoplasm of breast');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('thyroid cancer', 'Thyroid cancer');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('lung adenocarcinoma', 'Adenocarcinoma, NOS, of lung, NOS');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('lung small cell carcinoma', 'Neoplasm of lung');
+
+-- lookupsurgicalprocedurecode: recovered from branch SAS
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+VALUES ('mastectomy', 'Excision of breast');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+VALUES ('breast-conserving surgery', 'Breast Conservation Treatment');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+VALUES ('axillary lymph node dissection', 'Biopsy of lymph node');
+
+-- lookuptumorbodysitelateralityqualifier: recovered from branch KI
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('1', 'Right');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('2', 'Left');
+
+-- lookuptumorbodysitelocationqualifier: recovered from branch UoA
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('PZ, TZ', 'PZ+TZ');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('TZ, PZ', 'PZ+TZ');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('TZ, CZ', 'TZ+CZ');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('CZ, TZ', 'TZ+CZ');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES ('Thalamus, Cingulum', 'Thalamus');
+
+-- lookuptumororgancode: recovered from branch SAS
+INSERT INTO eucaim_etl_aux.LookupTumorOrganCode (originalValue, parsedValue)
+VALUES ('lung cancer', 'Neoplasm of lung');

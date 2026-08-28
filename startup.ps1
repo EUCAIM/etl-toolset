@@ -41,7 +41,26 @@ $env:NIFI_USER = "eucaim"
 #Write-Host "Nifi password: $env:NIFI_PASSWORD"
 $env:NIFI_PASSWORD = "eucaim123456789"
 
-$env:datasetsList = "4fcdd34b95f8eed2a3d07291e4c2173e,40dbe9fb-c607-445d-a582-dea531b676b1,73f146b7392d86e14927e0812748fcda,78a35ada399a4300c651a08a8b2479b6,90a34e05855697899fe5e22ad6259c89,1181c8428de05bb98fa8896d281cc0fd,25723aa926bfb0d8e0375bbf3f488dfb,c20e289e8a3a4c4fa4579d346d4ba27f,de3702e869557fc5981859b7811e3eab"
+# Node-local configuration, empty in a clean checkout. A value already in the
+# environment wins over the file, so a datasetsList committed here by mistake
+# cannot silently override an explicit selection.
+$datasetsFromEnv = $env:datasetsList
+if (Test-Path ".\local_env.ps1") {
+    . .\local_env.ps1
+}
+if ($datasetsFromEnv) {
+    $env:datasetsList = $datasetsFromEnv
+}
+
+# Datasets whose mappings init.sh pulls from EUCAIM/etl-mappings. Empty on a
+# clean deployment: this node downloads no mapping until its operator selects
+# the datasets it serves.
+if (-not $env:datasetsList) {
+    $env:datasetsList = ""
+    Write-Host "No dataset selected: set datasetsList to a comma separated list of dataset codes to download their mappings"
+} else {
+    Write-Host "Datasets to be deployed: $env:datasetsList"
+}
 
 # Run Docker Compose
 docker compose down -t 1

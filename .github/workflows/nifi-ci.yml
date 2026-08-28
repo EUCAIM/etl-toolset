@@ -18,6 +18,18 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      # CI covers every dataset the tests know about, unlike a real deployment,
+      # where the operator selects only the ones the node serves
+      - name: Select datasets under test
+        run: |
+          DATASETS=$(tail -n +2 scripts/config.csv | cut -d',' -f2 | tr -d '\r' | paste -sd, -)
+          if [ -z "$DATASETS" ]; then
+            echo "No dataset found in scripts/config.csv"
+            exit 1
+          fi
+          echo "Datasets under test: $DATASETS"
+          echo "datasetsList=$DATASETS" >> "$GITHUB_ENV"
+
       - name: Launch environment
         run: ./startup.sh
 

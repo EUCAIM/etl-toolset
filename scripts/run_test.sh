@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e  # fail if any command fails
+set -o pipefail  # a failing command in a pipeline must not be masked by the last one
 echo "==== RUNNING TEST: start main ===="
 
 ### definitions: global parameters
@@ -24,7 +25,7 @@ procesar_pipeline_clinical_data() {
   cp "$CLINICAL_DATA_TEST_CSV" "$INPUT_DIR/clinical_data/"
   echo "Copied clinical data sample file to $INPUT_DIR"
 
-  until find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" | grep -q .; do
+  until [ -n "$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" -print -quit)" ]; do
     if [ $COUNT -ge $MAX_RETRIES ]; then
       echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
       docker logs nifi-tdc
@@ -47,12 +48,17 @@ procesar_pipeline_clinical_data() {
   echo "Files generated:"
   ls -l "$OUTPUT_DIR"
 
+  ### the output files are per-batch logs of the records written, not a final
+  ### snapshot: a patient is exported again every time the mapping rewrites its
+  ### row, which happens once per source row. Datasets carrying several rows per
+  ### patient therefore span several files with repeated identifiers, so what
+  ### has to match the dataset is the number of distinct identifiers (first
+  ### column) rather than the sum of the rows.
   echo "Validating rows number for clinical data in output files..."
-  TOTAL_ROWS=0
-  for f in $OUTPUT_DIR/patient*.csv; do
-    ROWS=$(($(wc -l < "$f") - 1))
-    TOTAL_ROWS=$((TOTAL_ROWS + ROWS))
-  done
+  TOTAL_ROWS=$(for f in "$OUTPUT_DIR"/patient*.csv; do
+      [ -f "$f" ] || continue   ### an unmatched glob must not abort under pipefail
+      tail -n +2 "$f"
+    done | cut -d',' -f1 | awk 'NF' | sort -u | wc -l)
 
   echo "Number of output rows in patient csv files: $TOTAL_ROWS  (Expected rows: $NUMBER_OF_PATIENTS)"
 
@@ -91,7 +97,7 @@ procesar_pipeline_imaging_metadata() {
   cp "$IMAGE_METADATA_TEST_CSV" "$INPUT_DIR/image_metadata/"
   echo "Copied imaging metadata sample file to $INPUT_DIR"
 
-  until find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" | grep -q .; do
+  until [ -n "$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" -print -quit)" ]; do
     if [ $COUNT -ge $MAX_RETRIES ]; then
       echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
       docker logs nifi-tdc
@@ -114,12 +120,14 @@ procesar_pipeline_imaging_metadata() {
   echo "Files generated:"
   ls -l "$OUTPUT_DIR"
 
+  ### same per-batch logs as for the patients, but here the first column is the
+  ### autoincremental id, so the study is identified by study_uid, the second
+  ### column of the LoadNewImageStudy query
   echo "Validating rows number for imaging metadata in output files..."
-  TOTAL_ROWS=0
-  for f in $OUTPUT_DIR/image_study*.csv; do
-    ROWS=$(($(wc -l < "$f") - 1))
-    TOTAL_ROWS=$((TOTAL_ROWS + ROWS))
-  done
+  TOTAL_ROWS=$(for f in "$OUTPUT_DIR"/image_study*.csv; do
+      [ -f "$f" ] || continue   ### an unmatched glob must not abort under pipefail
+      tail -n +2 "$f"
+    done | cut -d',' -f2 | awk 'NF' | sort -u | wc -l)
 
   echo "Number of output rows in image_study csv files: $TOTAL_ROWS  (Expected rows: $NUMBER_OF_STUDIES)"
 
@@ -168,7 +176,9 @@ procesar_pipeline_imaging_timepoints() {
       docker logs nifi
       exit 1
     fi
-    TOTAL_ROWS=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_output.patient where dataset_id = '${CODE}';" | xargs)
+    ### this query polls a pipeline that is still running, so a transient
+    ### failure means "not ready yet" rather than a test failure
+    TOTAL_ROWS=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_output.patient where dataset_id = '${CODE}';" | xargs) || TOTAL_ROWS=0
     echo "Still waiting..."
     sleep $SLEEP_SEC
     COUNT=$((COUNT+1))
@@ -189,7 +199,15 @@ procesar_pipeline_imaging_timepoints() {
 
 
 ### executing tests
-tail -n +2 "$SCRIPTS_DIR/config.csv" | while IFS=',' read -r NAME CODE NUMBER_OF_PATIENTS NUMBER_OF_STUDIES DCM
+### the config file is redirected instead of piped, so the loop runs in this
+### shell (PIPELINES_RUN survives, and a failing test aborts the script) and a
+### missing config file fails the redirection instead of silently looping zero
+### times
+PIPELINES_RUN=0
+
+{
+read -r _CONFIG_HEADER
+while IFS=',' read -r NAME CODE NUMBER_OF_PATIENTS NUMBER_OF_STUDIES DCM
 do
 	NAME=${NAME%$'\r'}
 	CODE=${CODE%$'\r'}
@@ -202,11 +220,13 @@ do
 	IMAGING_TIMEPOINTS_TEST_CSV="$SAMPLE_DIR/${CODE}_imaging_timepoints_testing.csv"
 
 	CLINICAL_DATA_EXTRA_TEST_SCRIPT="$SCRIPTS_DIR/${CODE}_run_clinical_data_specific_tests.sh"
+	TIMEPOINTS_EXTRA_TEST_SCRIPT="$SCRIPTS_DIR/${CODE}_run_imaging_timepoints_specific_tests.sh"
 
 	echo "$CLINICAL_DATA_TEST_CSV"
 
 	if [ -f $CLINICAL_DATA_TEST_CSV ]; then
 	  procesar_pipeline_clinical_data
+	  PIPELINES_RUN=$((PIPELINES_RUN+1))
 
 	  if [ -f $CLINICAL_DATA_EXTRA_TEST_SCRIPT ]; then
 		echo "Detected additional clinical data tests on: $CLINICAL_DATA_EXTRA_TEST_SCRIPT"
@@ -219,6 +239,7 @@ do
 	if [ "$DCM" -eq 1 ]; then
 		if [ -f $IMAGE_METADATA_TEST_CSV ]; then
 		  procesar_pipeline_imaging_metadata
+		  PIPELINES_RUN=$((PIPELINES_RUN+1))
 		fi
 
 		sleep $SLEEP_SEC
@@ -226,13 +247,29 @@ do
 
 		if [ -f $IMAGING_TIMEPOINTS_TEST_CSV ]; then
 		  procesar_pipeline_imaging_timepoints
+		  PIPELINES_RUN=$((PIPELINES_RUN+1))
+
+		  ### checks that need the output CDM fully populated, so they can only
+		  ### run once the timepoints pipeline has linked studies to procedures
+		  if [ -f $TIMEPOINTS_EXTRA_TEST_SCRIPT ]; then
+			echo "Detected additional imaging timepoints tests on: $TIMEPOINTS_EXTRA_TEST_SCRIPT"
+			source $TIMEPOINTS_EXTRA_TEST_SCRIPT
+		  fi
 		fi
 	fi
 
 done
+} < "$SCRIPTS_DIR/config.csv"
 
 ### closing tests
-echo "Test PASSED"
+### reaching this point having validated nothing means the sample files are
+### missing or misnamed, which must not be reported as a pass
+if [ "$PIPELINES_RUN" -eq 0 ]; then
+  echo "❌ No pipeline was executed: check that $SAMPLE_DIR holds the sample files named after the codes in config.csv"
+  exit 1
+fi
+
+echo "Test PASSED ($PIPELINES_RUN pipelines executed)"
 echo "==== RUNNING TEST: close main ===="
 exit 0
 
