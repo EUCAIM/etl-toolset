@@ -1,4 +1,6 @@
 import org.apache.nifi.controller.ControllerServiceInitializationContext
+import org.apache.nifi.annotation.lifecycle.OnEnabled
+import org.apache.nifi.controller.ConfigurationContext
 import org.apache.nifi.reporting.InitializationException
 import org.apache.nifi.dbcp.DBCPService
 import java.sql.*
@@ -24,7 +26,7 @@ class ImagingIdentifierLookupService implements LookupService<String> {
         log.info("SearchImagingIdentifier.lookup - coordinates values: ${coordinates}")
 
          if (dbcpService == null) {
-            log.error("CodeableConceptsLookupService.lookup - DBCPService not initialized.")
+            log.error("SearchImagingIdentifier.lookup - DBCPService not initialized.")
             return Optional.empty()
         }
 
@@ -34,7 +36,7 @@ class ImagingIdentifierLookupService implements LookupService<String> {
         Connection conn = dbcpService.getConnection()
         if (conn == null) {
             log.error("SearchImagingIdentifier.lookup - Connection not initialized.")
-            return Optional.empty()['lookup_batch']
+            return Optional.empty()
         }
 
         try {
@@ -126,7 +128,8 @@ class ImagingIdentifierLookupService implements LookupService<String> {
        ID
     }
 
-    def onEnabled(configurationContext) {
+    @OnEnabled
+    void onEnabled(final ConfigurationContext configurationContext) {
         log.info("SearchImagingIdentifier.onEnabled")
 
         dbcpService = configurationContext.getProperty(DBCP_SERVICE)?.asControllerService(DBCPService)
