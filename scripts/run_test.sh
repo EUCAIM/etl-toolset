@@ -44,6 +44,11 @@ diagnosticar_atasco() {
     SELECT 'cancerpatient=' || count(*) FROM eucaim_cdm_ingestion.cancerpatient
     WHERE datasetidentifier='${CODE}';" 2>/dev/null | xargs || true
 
+  ### init.sh runs when the container boots, so its output sits at the top of
+  ### the log and a plain tail never reaches it
+  echo "-------- mapping download (init.sh, start of the nifi log)"
+  docker logs nifi 2>&1 | grep -E "Repository:|Branch:|Downloading:|DATASETSLIST|Download flows ended|Flow insertion outcome" || echo "  (no trace of the download)"
+
   echo "-------- last 60 log lines of each container"
   docker logs --tail 60 nifi-tdc 2>&1 || true
   docker logs --tail 60 nifi 2>&1 || true
