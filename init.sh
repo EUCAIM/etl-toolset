@@ -115,8 +115,10 @@ else
 			if [[ "$BASENAME" == "${DATASET}"* ]]; then
 				echo "Downloading: $FILE"
 
-				curl -L -o "/flows/${BASENAME}" \
-				  "https://raw.githubusercontent.com/${OWNER}/${REPO}/${DEFAULT_BRANCH}/${FILE}"
+				if ! curl -sSL --fail -o "/flows/${BASENAME}" \
+				  "https://raw.githubusercontent.com/${OWNER}/${REPO}/${DEFAULT_BRANCH}/${FILE}"; then
+					echo "ERROR: could not download ${BASENAME} into /flows"
+				fi
 
 				break
 			fi
@@ -126,10 +128,7 @@ fi
 
 echo "Download flows ended"
 
-# Verify that every requested dataset got its mapping. Without it the clinical
-# chain stops after the TDC step: the curated file piles up in staging and no
-# output is ever written, which used to surface only as a 300 second timeout in
-# the tests, with no clue about the cause
+# Verify that every requested dataset got its mapping
 if [ -n "$DATASETSLIST" ]; then
     MISSING=""
     for DATASET in "${DATASETS[@]}"; do

@@ -7,6 +7,8 @@ mkdir -m 777 -p ./staging_data/curated_as_csv/clinical_data ./staging_data/input
 mkdir -m 777 -p ./TDC_Output
 mkdir -m 777 -p ./output_data ./output_data/mapping_logs
 mkdir -m 777 -p ./registry/database ./registry/flow-storage
+mkdir -p ./flows
+chmod 777 ./flows
 
 LOCAL_IP=$(hostname -I | awk '{print $1}')
 export LOCAL_IP
