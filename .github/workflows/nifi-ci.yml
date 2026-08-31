@@ -31,6 +31,11 @@ jobs:
           echo "datasetsList=$DATASETS" >> "$GITHUB_ENV"
 
       - name: Launch environment
+        # runners share their IP, so the 60 calls per hour the GitHub API grants
+        # to anonymous callers are usually already spent by someone else and the
+        # mapping download fails. The token raises that to 1000
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./startup.sh
 
       - name: Waiting for nifi pipelines full initialization
@@ -39,7 +44,23 @@ jobs:
 
           echo "Waiting for: init.sh"
 
+          # init.sh runs in the background while NiFi keeps going, so when it
+          # aborts nothing changes from out here. Without these two exits the
+          # loop waits forever, which is what a failed mapping download looked
+          # like: an endless "Not ready yet..."
+          DEADLINE=$(( SECONDS + 600 ))
           until docker exec $CONTAINER sh -c '[ -f /tmp/init_done ]'; do
+            if docker exec $CONTAINER sh -c '[ -f /tmp/init_failed ]'; then
+              echo "❌ init.sh aborted. Its output:"
+              docker logs $CONTAINER 2>&1 | grep -E "Repository:|Branch:|Downloading:|Mappings verified|ERROR:" || true
+              exit 1
+            fi
+            if [ $SECONDS -ge $DEADLINE ]; then
+              echo "❌ init.sh neither finished nor reported a failure in 600 seconds."
+              echo "   It is probably stuck enabling a controller service. Its output:"
+              docker logs $CONTAINER 2>&1 | grep -E "Repository:|Branch:|Downloading:|Mappings verified|ERROR:|Checking Status" | tail -20 || true
+              exit 1
+            fi
             echo "Not ready yet..."
             sleep 5
           done

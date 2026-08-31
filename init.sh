@@ -88,6 +88,9 @@ if [ -z "$DEFAULT_BRANCH" ] || [ "$DEFAULT_BRANCH" = "null" ]; then
     echo "ERROR: could not resolve the default branch of ${OWNER}/${REPO}."
     echo "       The GitHub API answered:"
     curl -s "${AUTH_HEADER[@]}" "https://api.github.com/repos/${OWNER}/${REPO}" | head -5
+    ### this script runs in the background while NiFi keeps going, so aborting
+    ### is invisible from outside: leave a marker for whoever is waiting
+    touch /tmp/init_failed
     exit 1
 fi
 
@@ -139,6 +142,7 @@ if [ -n "$DATASETSLIST" ]; then
         echo "       Repository ${OWNER}/${REPO}, branch ${DEFAULT_BRANCH}."
         echo "       Files currently in /flows:"
         ls -1 /flows | sed 's/^/         /'
+        touch /tmp/init_failed
         exit 1
     fi
     echo "Mappings verified: every dataset in DATASETSLIST has its flow"

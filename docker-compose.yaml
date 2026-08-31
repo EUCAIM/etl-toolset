@@ -56,6 +56,9 @@ services:
       - SHARED_DB_PASSWORD=postgres
       - SHARED_DB_PORT=5432
       - DATASETSLIST=${datasetsList}
+      # optional: raises the GitHub API cap from 60 to 1000 calls per hour while
+      # init.sh downloads the mappings. Empty on a local deployment, set by CI
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
     volumes:
       - ./nifi_data/nifi_data:/opt/nifi/nifi-current/data
       - ./nifi_data/nifi_database_repository:/opt/nifi/nifi-current/database_repository
