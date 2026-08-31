@@ -14,9 +14,42 @@ SAMPLE_DIR="$ROOT_DIR/sample_data"
 SCRIPTS_DIR="$ROOT_DIR/scripts"
 POSTGRES_CONTAINER=$(docker compose -f "$ROOT_DIR/docker-compose.yaml" ps -q nifi-postgres)
 
-MAX_RETRIES=60   
-SLEEP_SEC=5      
+MAX_RETRIES=60
+SLEEP_SEC=5
 COUNT=0
+
+
+diagnosticar_atasco() {
+  echo ""
+  echo "======== DIAGNOSIS: pipeline stalled on ${NAME:-?} (${CODE:-?}) ========"
+
+  echo "-------- services: a container that is not Up explains everything"
+  docker compose -f "$ROOT_DIR/docker-compose.yaml" ps 2>/dev/null || true
+
+  echo "-------- flows loaded into NiFi: the loop03 of this dataset must be here"
+  docker exec nifi sh -c 'ls -1 /flows' 2>/dev/null || echo "  (cannot read /flows)"
+
+  echo "-------- stage by stage (empty marks where it stopped)"
+  for d in "$INPUT_DIR/clinical_data" \
+           "$ROOT_DIR/staging_data/input_as_csv/clinical_data" \
+           "$ROOT_DIR/TDC_Output" \
+           "$ROOT_DIR/staging_data/curated_as_csv/clinical_data" \
+           "$OUTPUT_DIR"; do
+    n=$(find "$d" -maxdepth 1 -type f 2>/dev/null | wc -l)
+    printf '  %-52s %s files\n' "${d#$ROOT_DIR/}" "$n"
+  done
+
+  echo "-------- rows already ingested for this dataset"
+  docker exec "$POSTGRES_CONTAINER" psql -U postgres -d eucaim-etl-db -t -c "
+    SELECT 'cancerpatient=' || count(*) FROM eucaim_cdm_ingestion.cancerpatient
+    WHERE datasetidentifier='${CODE}';" 2>/dev/null | xargs || true
+
+  echo "-------- last 60 log lines of each container"
+  docker logs --tail 60 nifi-tdc 2>&1 || true
+  docker logs --tail 60 nifi 2>&1 || true
+  echo "======== END OF DIAGNOSIS ========"
+  echo ""
+}
 
 ### definitions: validations for clinical data
 procesar_pipeline_clinical_data() {
@@ -28,8 +61,7 @@ procesar_pipeline_clinical_data() {
   until [ -n "$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" -print -quit)" ]; do
     if [ $COUNT -ge $MAX_RETRIES ]; then
       echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
-      docker logs nifi-tdc
-      docker logs nifi
+      diagnosticar_atasco
       exit 1
     fi
 
@@ -100,8 +132,7 @@ procesar_pipeline_imaging_metadata() {
   until [ -n "$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" -print -quit)" ]; do
     if [ $COUNT -ge $MAX_RETRIES ]; then
       echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
-      docker logs nifi-tdc
-      docker logs nifi
+      diagnosticar_atasco
       exit 1
     fi
 
@@ -172,8 +203,7 @@ procesar_pipeline_imaging_timepoints() {
   until [ "$TOTAL_ROWS" -ne 0 ]; do
     if [ $COUNT -ge $MAX_RETRIES ]; then
       echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
-      docker logs nifi-tdc
-      docker logs nifi
+      diagnosticar_atasco
       exit 1
     fi
     ### this query polls a pipeline that is still running, so a transient
