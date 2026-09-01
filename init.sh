@@ -66,41 +66,57 @@ REPO_URL="https://github.com/EUCAIM/etl-mappings"
 OWNER=$(echo "$REPO_URL" | awk -F'github.com/' '{print $2}' | cut -d'/' -f1)
 REPO=$(echo "$REPO_URL" | awk -F'github.com/' '{print $2}' | cut -d'/' -f2)
 
-# Authenticate when a token is available: unauthenticated calls to the GitHub
-# API are capped at 60 per hour and per IP, and CI runners share their IP, so
-# the cap is often already spent by someone else
-AUTH_HEADER=()
-if [ -n "$GITHUB_TOKEN" ]; then
-    AUTH_HEADER=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
-    echo "Using an authenticated GitHub API"
-fi
-
-# Get default branch
-DEFAULT_BRANCH=$(curl -s "${AUTH_HEADER[@]}" "https://api.github.com/repos/${OWNER}/${REPO}" \
-    | jq -r '.default_branch')
-
-echo "Repository: ${OWNER}/${REPO}"
-echo "Branch: ${DEFAULT_BRANCH}"
-
-# A failed API call yields "null" here, the tree request below then 404s and the
-# whole download loop ends up doing nothing while returning success
-if [ -z "$DEFAULT_BRANCH" ] || [ "$DEFAULT_BRANCH" = "null" ]; then
-    echo "ERROR: could not resolve the default branch of ${OWNER}/${REPO}."
-    echo "       The GitHub API answered:"
-    curl -s "${AUTH_HEADER[@]}" "https://api.github.com/repos/${OWNER}/${REPO}" | head -5
-    ### this script runs in the background while NiFi keeps going, so aborting
-    ### is invisible from outside: leave a marker for whoever is waiting
-    touch /tmp/init_failed
-    exit 1
-fi
+### Whether to pull the mappings from the repository at all. Defaults to true,
+### which is the behaviour every existing deployment already has.
+###
+### The download overwrites /flows, which is bind-mounted to ./flows, so a
+### mapping edited locally goes back to the published version on the next
+### start. Turning this off keeps whatever is already in ./flows, which is what
+### you want while adjusting a mapping, and on a node with no access to GitHub.
+case "$(printf '%s' "${DOWNLOAD_FLOWS:-true}" | tr '[:upper:]' '[:lower:]')" in
+    false|no|0|off) DOWNLOAD_FLOWS=false ;;
+    *)              DOWNLOAD_FLOWS=true  ;;
+esac
 
 # Convert datasetsList to array
 IFS=',' read -r -a DATASETS <<< "$DATASETSLIST"
 
-
-if [ -z "$DATASETSLIST" ]; then
-    echo "DATASETSLIST está vacía. No se descargará ningún fichero."
+if [ "$DOWNLOAD_FLOWS" != true ]; then
+    echo "Flow download disabled (DOWNLOAD_FLOWS=false): using the mappings already in /flows"
 else
+
+    # Authenticate when a token is available: unauthenticated calls to the GitHub
+    # API are capped at 60 per hour and per IP, and CI runners share their IP, so
+    # the cap is often already spent by someone else
+    AUTH_HEADER=()
+    if [ -n "$GITHUB_TOKEN" ]; then
+        AUTH_HEADER=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+        echo "Using an authenticated GitHub API"
+    fi
+
+    # Get default branch
+    DEFAULT_BRANCH=$(curl -s "${AUTH_HEADER[@]}" "https://api.github.com/repos/${OWNER}/${REPO}" \
+        | jq -r '.default_branch')
+
+    echo "Repository: ${OWNER}/${REPO}"
+    echo "Branch: ${DEFAULT_BRANCH}"
+
+    # A failed API call yields "null" here, the tree request below then 404s and the
+    # whole download loop ends up doing nothing while returning success
+    if [ -z "$DEFAULT_BRANCH" ] || [ "$DEFAULT_BRANCH" = "null" ]; then
+        echo "ERROR: could not resolve the default branch of ${OWNER}/${REPO}."
+        echo "       The GitHub API answered:"
+        curl -s "${AUTH_HEADER[@]}" "https://api.github.com/repos/${OWNER}/${REPO}" | head -5
+        echo "       Set DOWNLOAD_FLOWS=false to start from the mappings already in ./flows."
+        ### this script runs in the background while NiFi keeps going, so aborting
+        ### is invisible from outside: leave a marker for whoever is waiting
+        touch /tmp/init_failed
+        exit 1
+    fi
+
+    if [ -z "$DATASETSLIST" ]; then
+        echo "DATASETSLIST está vacía. No se descargará ningún fichero."
+    else
 
 	# Get file list
 	curl -s "${AUTH_HEADER[@]}" \
@@ -109,9 +125,9 @@ else
 	while read -r FILE; do
 
 		BASENAME=$(basename "$FILE")
-		
+
 		for DATASET in "${DATASETS[@]}"; do
-		
+
 			if [[ "$BASENAME" == "${DATASET}"* ]]; then
 				echo "Downloading: $FILE"
 
@@ -124,11 +140,13 @@ else
 			fi
 		done
 	done
+    fi
 fi
 
 echo "Download flows ended"
 
-# Verify that every requested dataset got its mapping
+### Runs whether or not the mappings were downloaded: with the download off it
+### is the check that the operator did put every selected mapping in ./flows.
 if [ -n "$DATASETSLIST" ]; then
     MISSING=""
     for DATASET in "${DATASETS[@]}"; do
@@ -137,8 +155,14 @@ if [ -n "$DATASETSLIST" ]; then
         fi
     done
     if [ -n "$MISSING" ]; then
-        echo "ERROR: no mapping was downloaded for:${MISSING}"
-        echo "       Repository ${OWNER}/${REPO}, branch ${DEFAULT_BRANCH}."
+        if [ "$DOWNLOAD_FLOWS" = true ]; then
+            echo "ERROR: no mapping was downloaded for:${MISSING}"
+            echo "       Repository ${OWNER}/${REPO}, branch ${DEFAULT_BRANCH}."
+        else
+            echo "ERROR: no mapping is present in ./flows for:${MISSING}"
+            echo "       The download is disabled (DOWNLOAD_FLOWS=false), so every dataset"
+            echo "       in datasetsList must already have its mapping file in ./flows."
+        fi
         echo "       Files currently in /flows:"
         ls -1 /flows | sed 's/^/         /'
         touch /tmp/init_failed

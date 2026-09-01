@@ -29,8 +29,7 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 
     @Override
     Optional<Map<String, Object>> lookup(Map<String, Object> coordinates) {
-        log.info("CodeableConceptsLookupService.lookup")
-        log.info("CodeableConceptsLookupService.lookup - coordinates values: ${coordinates}")
+        log.debug("CodeableConceptsLookupService.lookup - coordinates values: ${coordinates}")
 
          if (dbcpService == null) {
             log.error("CodeableConceptsLookupService.lookup - DBCPService not initialized.")
@@ -42,15 +41,17 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 
         Connection conn = dbcpService.getConnection()
         if (conn == null) {
+            // used to be Optional.empty()['lookup_batch'], which throws instead
+            // of returning, hiding the real cause behind a Groovy error
             log.error("CodeableConceptsLookupService.lookup - Connection not initialized.")
-            return Optional.empty()['lookup_batch']
+            return Optional.empty()
         }
 
         try {
             input.each { property, value ->
                 if (!value) {
                     result["${property}"] = null
-                    log.info("CodeableConceptsLookupService.lookup - Checked null value ")
+                    log.debug("CodeableConceptsLookupService.lookup - null value for property '${property}'")
                 } else if (value.startsWith("code:")){
                     result["${property}"] = value
                 } else {
@@ -60,21 +61,23 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                     WHERE c.concept_name = ?
                     """
 
-                    log.info(sql)
-
                     def pstmt = conn.prepareStatement(sql)
                     pstmt.setString(1, value.toString())
                     def rs = pstmt.executeQuery()
 
-                    log.info("CodeableConceptsLookupService.lookup - Executed query with value: " + value.toString())
+                    log.debug("CodeableConceptsLookupService.lookup - property '${property}', value '${value}'")
 
                     if (rs.next()) {
-                        log.info("CodeableConceptsLookupService.lookup - Parsing one result")
                         def code = rs.getString("concept_code")
                         result["${property}"] = code
                     } else {
+                        // this is the silent mapping failure: the literal string
+                        // below travels downstream as if it were a valid code
+                        log.warn("CodeableConceptsLookupService.lookup - NO MATCH for property " +
+                            "'${property}' with value '${value}'. It is stored as NOT FOUND. " +
+                            "Add the term to eucaim_hyperontology_codes.concept or correct the mapping.")
                         result["${property}"] = "NOT FOUND"
-                    }   
+                    }
                 rs.close()
                 pstmt.close()
                 }
@@ -82,13 +85,14 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                 
             }
         } catch (Exception e) {
-            log.error("CodeableConceptsLookupService.lookup - Lookup error: {}", [e.message])
+            log.error("CodeableConceptsLookupService.lookup - ${e.class.simpleName}: ${e.message}. " +
+                "Coordinates were: ${coordinates}", e)
             return Optional.empty()
         } finally {
             if (conn != null) conn.close()
         }
 
-        log.info("CodeableConceptsLookupService.lookup - result values: ${result}")
+        log.debug("CodeableConceptsLookupService.lookup - result values: ${result}")
 
         return result.isEmpty() ? Optional.empty() : Optional.of(result)
     }

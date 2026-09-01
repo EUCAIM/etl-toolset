@@ -15,3 +15,12 @@
 # Several datasets are separated by commas, with no spaces:
 #
 # $env:datasetsList = "de3702e869557fc5981859b7811e3eab,c20e289e8a3a4c4fa4579d346d4ba27f"
+#
+# On every start init.sh pulls the selected mappings from EUCAIM/etl-mappings
+# into .\flows, overwriting whatever is there. Set downloadFlows to false to
+# skip that and use the files already in .\flows, which is what you want while
+# adjusting a mapping locally, or on a node with no access to GitHub. The
+# mappings for every dataset in datasetsList must then already be in .\flows.
+# Defaults to true.
+#
+# $env:downloadFlows = "false"

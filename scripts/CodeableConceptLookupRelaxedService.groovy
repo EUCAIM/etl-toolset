@@ -29,11 +29,10 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 
     @Override
     Optional<Map<String, Object>> lookup(Map<String, Object> coordinates) {
-        log.info("CodeableConceptsLookupService.lookup")
-        log.info("CodeableConceptsLookupService.lookup - coordinates values: ${coordinates}")
+        log.debug("CodeableConceptsLookupRelaxedService.lookup - coordinates values: ${coordinates}")
 
          if (dbcpService == null) {
-            log.error("CodeableConceptsLookupService.lookup - DBCPService not initialized.")
+            log.error("CodeableConceptsLookupRelaxedService.lookup - DBCPService not initialized.")
             return Optional.empty()
         }
 
@@ -42,37 +41,51 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 
         Connection conn = dbcpService.getConnection()
         if (conn == null) {
-            log.error("CodeableConceptsLookupService.lookup - Connection not initialized.")
-            return Optional.empty()['lookup_batch']
+            // used to be Optional.empty()['lookup_batch'], which throws instead
+            // of returning, hiding the real cause behind a Groovy error
+            log.error("CodeableConceptsLookupRelaxedService.lookup - Connection not initialized.")
+            return Optional.empty()
         }
 
         try {
             input.each { property, value ->
                 if (!value) {
                     result["${property}"] = null
-                    log.info("CodeableConceptsLookupService.lookup - Checked null value ")
+                    log.debug("CodeableConceptsLookupRelaxedService.lookup - null value for property '${property}'")
                 } else {
+                    // concept_name is selected so the substring match that was
+                    // actually applied can be reported, not just its code
                     def sql = """
-                    SELECT c.concept_code
+                    SELECT c.concept_code, c.concept_name
                     FROM eucaim_hyperontology_codes.concept c
                     WHERE upper(c.concept_name) LIKE ?
                     """
-
-                    log.info(sql)
 
                     def pstmt = conn.prepareStatement(sql)
                     pstmt.setString(1, "%" + value.toString().toUpperCase() + "%")
                     def rs = pstmt.executeQuery()
 
-                    log.info("CodeableConceptsLookupService.lookup - Executed query with value: " + value.toString())
+                    log.debug("CodeableConceptsLookupRelaxedService.lookup - property '${property}', value '${value}'")
 
                     if (rs.next()) {
-                        log.info("CodeableConceptsLookupService.lookup - Parsing one result")
                         def code = rs.getString("concept_code")
+                        def matched = rs.getString("concept_name")
                         result["${property}"] = code
+                        // a relaxed match is a guess: say what it resolved to so a
+                        // wrong code can be spotted without re-running the pipeline
+                        if (!matched.equalsIgnoreCase(value.toString())) {
+                            log.warn("CodeableConceptsLookupRelaxedService.lookup - RELAXED MATCH for " +
+                                "property '${property}': value '${value}' resolved to concept " +
+                                "'${matched}' (${code}) by substring match. Confirm this is correct.")
+                        }
                     } else {
+                        // this is the silent mapping failure: the literal string
+                        // below travels downstream as if it were a valid code
+                        log.warn("CodeableConceptsLookupRelaxedService.lookup - NO MATCH for property " +
+                            "'${property}' with value '${value}'. It is stored as NOT FOUND. " +
+                            "Add the term to eucaim_hyperontology_codes.concept or correct the mapping.")
                         result["${property}"] = "NOT FOUND"
-                    }   
+                    }
                 rs.close()
                 pstmt.close()
                 }
@@ -80,13 +93,14 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                 
             }
         } catch (Exception e) {
-            log.error("CodeableConceptsLookupService.lookup - Lookup error: {}", [e.message])
+            log.error("CodeableConceptsLookupRelaxedService.lookup - ${e.class.simpleName}: ${e.message}. " +
+                "Coordinates were: ${coordinates}", e)
             return Optional.empty()
         } finally {
             if (conn != null) conn.close()
         }
 
-        log.info("CodeableConceptsLookupService.lookup - result values: ${result}")
+        log.debug("CodeableConceptsLookupRelaxedService.lookup - result values: ${result}")
 
         return result.isEmpty() ? Optional.empty() : Optional.of(result)
     }

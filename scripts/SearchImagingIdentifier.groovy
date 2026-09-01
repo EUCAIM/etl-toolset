@@ -22,8 +22,7 @@ class ImagingIdentifierLookupService implements LookupService<String> {
 
     @Override
     Optional<Map<String, String>> lookup(Map<String, String> coordinates) {
-        log.info("SearchImagingIdentifier.lookup")
-        log.info("SearchImagingIdentifier.lookup - coordinates values: ${coordinates}")
+        log.debug("SearchImagingIdentifier.lookup - coordinates values: ${coordinates}")
 
          if (dbcpService == null) {
             log.error("SearchImagingIdentifier.lookup - DBCPService not initialized.")
@@ -46,10 +45,8 @@ class ImagingIdentifierLookupService implements LookupService<String> {
             def datasetID = input.DatasetID
             def imagingTimepoint = Integer.parseInt(input.ImagingTimepoint)
 
-            log.info("studyUID: " + studyUID)
-            log.info("patientID: " + patientID)
-            log.info("datasetID: " + datasetID)
-            log.info("imagingTimepoint: " + imagingTimepoint)
+            log.debug("SearchImagingIdentifier.lookup - studyUID=${studyUID}, patientID=${patientID}, " +
+                "datasetID=${datasetID}, imagingTimepoint=${imagingTimepoint}")
 
             def sql = """
                     SELECT  i.procedureidentifier 
@@ -59,8 +56,6 @@ class ImagingIdentifierLookupService implements LookupService<String> {
                     WHERE lower(cp.DatasetIdentifier) = ? and pcc.Patientidentifier = ? and i.ImagingTimepoint = ?; 
                 """
 
-            log.info(sql)
-
             def pstmt = conn.prepareStatement(sql)
             pstmt.setString(1, datasetID.toString())
             pstmt.setString(2, patientID.toString())
@@ -68,10 +63,13 @@ class ImagingIdentifierLookupService implements LookupService<String> {
             def rs = pstmt.executeQuery()
 
             if (rs.next()) {
-                log.info("SearchImagingIdentifier.lookup - Parsing result")
                 def identifier = rs.getString("procedureidentifier")
                 result["imagingIdentifier"] = identifier
             } else {
+                log.warn("SearchImagingIdentifier.lookup - NO MATCH for datasetID='${datasetID}', " +
+                    "patientID='${patientID}', imagingTimepoint=${imagingTimepoint} " +
+                    "(studyUID='${studyUID}'). The timepoint is stored as NOT FOUND. Check that the " +
+                    "clinical data and the DICOM metadata for this patient were ingested first.")
                 result["imagingIdentifier"] = "NOT FOUND"
             }
 
@@ -79,13 +77,16 @@ class ImagingIdentifierLookupService implements LookupService<String> {
             pstmt.close()
 
         } catch (Exception e) {
-            log.warn("SearchImagingIdentifier.lookup - Lookup error: {}", [e.message])
+            // a lookup error and a genuinely absent record both used to end up as
+            // "NOT FOUND" at WARN, which made them impossible to tell apart
+            log.error("SearchImagingIdentifier.lookup - ${e.class.simpleName}: ${e.message}. " +
+                "This is a lookup FAILURE, not an absent record. Coordinates were: ${coordinates}", e)
             result["imagingIdentifier"] = "NOT FOUND"
         } finally {
             if (conn != null) conn.close()
         }
 
-        log.info("SearchImagingIdentifier.lookup - result values: ${result}")
+        log.debug("SearchImagingIdentifier.lookup - result values: ${result}")
 
         return result.isEmpty() ? Optional.empty() : Optional.of(result)
     }

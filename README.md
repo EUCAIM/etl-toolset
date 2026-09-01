@@ -96,7 +96,27 @@ If you see the "Permission denied" message, the solution is to ensure that the f
 Please check the csv file containing the imaging timepoints includes the expected header, with at least the columns **Timepoint** (also "ImagingTimepoint" is valid as column name), **StudyInstanceUID** and **PatientID** (column names no case sensitive).
 
 
-### 3. The initilization of the nifi-postgres container (the internal ETL database) fails, when it was previously working
+### 3. A mapping placed by hand in `flows` is replaced every time the ETL is started
+
+On every start the setup script downloads the mappings of the selected datasets from
+[EUCAIM/etl-mappings](https://github.com/EUCAIM/etl-mappings) into the **flows** directory,
+overwriting whatever is there. This is what keeps a node aligned with the published mappings.
+
+While a mapping is being adjusted, or on a machine with no access to GitHub, the download can be
+turned off. In `local_env.sh` (Linux and macOS) or `local_env.ps1` (Windows), set:
+
+```bash
+downloadFlows="false"
+```
+
+The mappings already present in **flows** are then used as they are. Every dataset listed in
+`datasetsList` must have its mapping file in that directory, otherwise the startup stops and
+reports which ones are missing.
+
+Remember to set it back to `true`, or remove the line, to resume receiving mapping updates.
+
+
+### 4. The initilization of the nifi-postgres container (the internal ETL database) fails, when it was previously working
 
 Unfortunatly, updating from any release prior to 0.3.X to these or later releases, renders the database storage not compatible. If it s absolutely necessary to preserve previously ingested data, change the version in the docker-compose or contact with us for help. If you can afford to re-ingest the dataset files, please run only the first time after upgrading the ETL:
 

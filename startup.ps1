@@ -45,11 +45,15 @@ $env:NIFI_PASSWORD = "eucaim123456789"
 # environment wins over the file, so a datasetsList committed here by mistake
 # cannot silently override an explicit selection.
 $datasetsFromEnv = $env:datasetsList
+$downloadFromEnv = $env:downloadFlows
 if (Test-Path ".\local_env.ps1") {
     . .\local_env.ps1
 }
 if ($datasetsFromEnv) {
     $env:datasetsList = $datasetsFromEnv
+}
+if ($downloadFromEnv) {
+    $env:downloadFlows = $downloadFromEnv
 }
 
 # Datasets whose mappings init.sh pulls from EUCAIM/etl-mappings. Empty on a
@@ -60,6 +64,15 @@ if (-not $env:datasetsList) {
     Write-Host "No dataset selected: set datasetsList to a comma separated list of dataset codes to download their mappings"
 } else {
     Write-Host "Datasets to be deployed: $env:datasetsList"
+}
+
+# The download overwrites .\flows on every start, so a mapping being adjusted
+# locally is lost unless this is turned off. Defaults to the usual behaviour.
+if (-not $env:downloadFlows) {
+    $env:downloadFlows = "true"
+}
+if ($env:downloadFlows.ToLower() -in @("false", "no", "0", "off")) {
+    Write-Host "Mapping download disabled: the flows already in .\flows will be used as they are"
 }
 
 # Run Docker Compose

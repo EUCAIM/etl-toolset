@@ -7,15 +7,22 @@ import java.util.regex.Pattern
 def flowFile = session.get()
 if(!flowFile) return
 
+def filename = flowFile.getAttribute('filename') ?: 'unknown file'
+def datasetId = flowFile.getAttribute('datasetId') ?: 'unknown dataset'
+
 try {
     def rowsNumber = flowFile.getAttribute('rowsNumber')
     if (!rowsNumber) {
-        log.warn("Atributo 'rowsNumber' no encontrado, se omite el FlowFile.")
+        def missing = ("${filename}: attribute 'rowsNumber' is missing, so the header " +
+            "cannot be cleaned. Dataset ${datasetId} is most likely not registered in " +
+            "eucaim_etl_aux.LookupHeaderRowsToRemove.").toString()
+        log.error(missing)
+        flowFile = session.putAttribute(flowFile, "log_message", missing)
         session.transfer(flowFile, REL_FAILURE)
         return
     }
     if (rowsNumber == 'null'){
-        log.warn("Atributo 'rowsNumber' es null, NO se modifica el FlowFile.")
+        log.debug("${filename}: 'rowsNumber' is null, the FlowFile is passed through unchanged.")
         session.transfer(flowFile, REL_SUCCESS)
         return
     }
@@ -47,6 +54,8 @@ try {
 	// reconstruir: primera línea + tail
 	def result = ([lines[0]] + tail).join('\n')
 
+	log.debug("${filename}: dropped ${rows} row(s) after the header, ${tail.size()} data rows kept")
+
     flowFile = session.write(flowFile, new OutputStreamCallback() {
         @Override
         void process(OutputStream outputStream) throws IOException {
@@ -57,6 +66,9 @@ try {
     session.transfer(flowFile, REL_SUCCESS)
 
 } catch (Exception e) {
-    log.error("Error procesando el FlowFile: ${e.message}", e)
+    def detail = ("Header cleaning failed on ${filename} - " +
+        "${e.class.simpleName}: ${e.message}").toString()
+    log.error(detail, e)
+    flowFile = session.putAttribute(flowFile, "log_message", detail)
     session.transfer(flowFile, REL_FAILURE)
 }

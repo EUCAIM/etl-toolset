@@ -21,11 +21,15 @@ export NIFI_PASSWORD
 ### environment, as the CI workflow sets, wins over the file, so a datasetsList
 ### committed here by mistake cannot silently override the datasets under test.
 DATASETS_FROM_ENV="$datasetsList"
+DOWNLOAD_FROM_ENV="$downloadFlows"
 if [ -f ./local_env.sh ]; then
     . ./local_env.sh
 fi
 if [ -n "$DATASETS_FROM_ENV" ]; then
     datasetsList="$DATASETS_FROM_ENV"
+fi
+if [ -n "$DOWNLOAD_FROM_ENV" ]; then
+    downloadFlows="$DOWNLOAD_FROM_ENV"
 fi
 
 ### datasets whose mappings init.sh pulls from EUCAIM/etl-mappings. Empty on a
@@ -38,6 +42,16 @@ if [ -z "$datasetsList" ]; then
 else
     echo "Datasets to be deployed: $datasetsList"
 fi
+
+### the download overwrites ./flows on every start, so a mapping being adjusted
+### locally is lost unless this is turned off. Defaults to the usual behaviour.
+downloadFlows="${downloadFlows:-true}"
+export downloadFlows
+case "$(printf '%s' "$downloadFlows" | tr '[:upper:]' '[:lower:]')" in
+    false|no|0|off)
+        echo "Mapping download disabled: the flows already in ./flows will be used as they are"
+        ;;
+esac
 
 docker compose down -t 1
 docker compose up -d
