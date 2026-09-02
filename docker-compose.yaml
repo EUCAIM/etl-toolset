@@ -77,6 +77,7 @@ services:
       - ./truststore.jks:/truststore.jks
       - ./keystore.jks:/keystore.jks
       - ./scripts/:/mnt/persistent-home/ETL-files/scripts
+      - ./nifi_conf/logback.xml:/opt/nifi/nifi-current/conf/logback.xml:ro
       - ./init.sh:/scripts/init.sh
     entrypoint: ["sh","-c","tr -d '\r' < /scripts/init.sh > /tmp/init.sh ; chmod +x /tmp/init.sh ; /tmp/init.sh & exec /opt/nifi/scripts/start.sh"]
   nifi-postgres:

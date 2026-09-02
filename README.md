@@ -51,7 +51,11 @@ Additional output to support the review of the mapping process is written here:
 - `output_data\mapping_logs` 
 
 Additional output with info and error logs for the pipelines steps being processed is written here:
-- `output_data\mapping_logs` 
+- `output_data\etl_process_logs`
+
+That same folder holds **`etl-errors.log`**, which collects every warning and error raised while the
+pipelines run, with the full detail of the underlying failure. It is the first file to look at when a
+dataset is not processed, and the one to attach when reporting a problem.
 
 
 ## License ##

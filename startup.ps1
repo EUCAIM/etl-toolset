@@ -14,6 +14,7 @@ $dirs = @(
     "staging_data\input_as_csv\image_timepoints",
     "output_data",
 	"output_data\mapping_logs",
+    "output_data\etl_process_logs",
     "registry\database",
     "registry\flow-storage",
     "TDC_Output"
@@ -73,6 +74,32 @@ if (-not $env:downloadFlows) {
 }
 if ($env:downloadFlows.ToLower() -in @("false", "no", "0", "off")) {
     Write-Host "Mapping download disabled: the flows already in .\flows will be used as they are"
+}
+
+# loop04 writes one CSV per export run, so these folders reach hundreds of files
+# in a few weeks and stop being readable. The rows they contain stay in the
+# ingestion database, which is what the export reads from, so dropping the old
+# files loses nothing. Only the files loop04 generates are matched: etl-errors.log
+# and its rotations are logback's business, and anything the operator put there by
+# hand is left alone. Set to 0 to keep everything.
+if (-not $env:logsRetentionDays) { $env:logsRetentionDays = "30" }
+$retention = 0
+if ([int]::TryParse($env:logsRetentionDays, [ref]$retention) -and $retention -gt 0) {
+    $cutoff = (Get-Date).AddDays(-$retention)
+    $patterns = @("output_data\mapping_logs\mapping_results_*_records.csv",
+                  "output_data\etl_process_logs\process_logs_*_records.csv")
+    $removed = 0
+    foreach ($pattern in $patterns) {
+        $old = Get-ChildItem -Path $pattern -File -ErrorAction SilentlyContinue |
+               Where-Object { $_.LastWriteTime -lt $cutoff }
+        $removed += @($old).Count
+        $old | Remove-Item -Force -ErrorAction SilentlyContinue
+    }
+    if ($removed -gt 0) {
+        Write-Host "Removed $removed exported log files older than $retention days"
+    }
+} elseif ($env:logsRetentionDays -ne "0") {
+    Write-Host "logsRetentionDays is not a number, skipping the cleanup"
 }
 
 # Run Docker Compose

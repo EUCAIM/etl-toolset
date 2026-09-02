@@ -24,3 +24,11 @@
 # Defaults to true.
 #
 # $env:downloadFlows = "false"
+#
+# Every export run of the last pipeline leaves one CSV in output_data, so those
+# folders reach hundreds of files in a few weeks. On each launch the startup
+# script deletes the ones older than this many days. The rows stay in the
+# ingestion database the export reads from, so nothing is lost. Set it to 0 to
+# delete nothing. Defaults to 30.
+#
+# $env:logsRetentionDays = "30"
