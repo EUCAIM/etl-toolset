@@ -25,7 +25,7 @@
 ### mappings for every dataset in datasetsList must then already be in ./flows.
 ### Defaults to true.
 ###
-downloadFlows="false"
+### downloadFlows="false"
 ###
 ### Every export run of the last pipeline leaves one CSV in output_data, so those
 ### folders reach hundreds of files in a few weeks. On each launch the startup

@@ -295,6 +295,76 @@ for file in "$FOLDER"/*.json; do
     ((index+=450))
 done
 
+### Reporting task that records in ProcessLog every file the ETL discarded.
+###
+### It lives at the controller level, not inside any process group, so it adds
+### nothing to the mappings. NiFi keeps reporting tasks in conf/flow.json.gz,
+### which is not a mounted volume, so it has to be recreated on every start just
+### like the bucket and the registry client above.
+REPORTING_TASK_NAME="ProvenanceToProcessLog"
+### literal, not ${ETL_RESOURCES}: whether that property resolves Expression
+### Language in a reporting task has not been confirmed, and the path is fixed
+### by the volume in docker-compose anyway
+ETL_FILES="/mnt/persistent-home/ETL-files"
+
+existing=$(curl -s -k -H "Authorization: Bearer $token" \
+    https://nifi:8443/nifi-api/flow/controller/reporting-tasks \
+    | jq -r --arg n "$REPORTING_TASK_NAME" \
+      '.reportingTasks[]? | select(.component.name==$n) | .id')
+
+if [ -n "$existing" ]; then
+    echo "Reporting task ${REPORTING_TASK_NAME} already present"
+else
+    created=$(curl -s -X POST -k -H 'Content-Type: application/json' \
+        -H "Authorization: Bearer $token" -d "{
+        \"revision\": {\"clientId\": \"1\", \"version\": 0},
+        \"disconnectedNodeAcknowledged\": false,
+        \"component\": {
+            \"type\": \"org.apache.nifi.reporting.script.ScriptedReportingTask\",
+            \"bundle\": {\"group\": \"org.apache.nifi\", \"artifact\": \"nifi-scripting-nar\", \"version\": \"2.3.0\"},
+            \"name\": \"${REPORTING_TASK_NAME}\"
+        }}" https://nifi:8443/nifi-api/controller/reporting-tasks)
+
+    taskID=$(echo "$created" | jq -r '.id')
+    taskVersion=$(echo "$created" | jq -r '.revision.version')
+
+    if [ -z "$taskID" ] || [ "$taskID" = "null" ]; then
+        echo "ERROR: could not create the ${REPORTING_TASK_NAME} reporting task."
+        echo "       NiFi answered: $(echo "$created" | head -c 300)"
+        echo "       The pipelines still run: what is lost is the record of the files they discard."
+    else
+        configured=$(curl -s -X PUT -k -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $token" -d "{
+            \"revision\": {\"clientId\": \"1\", \"version\": ${taskVersion}},
+            \"disconnectedNodeAcknowledged\": false,
+            \"component\": {
+                \"id\": \"${taskID}\",
+                \"name\": \"${REPORTING_TASK_NAME}\",
+                \"schedulingStrategy\": \"TIMER_DRIVEN\",
+                \"schedulingPeriod\": \"30 sec\",
+                \"properties\": {
+                    \"Script Engine\": \"Groovy\",
+                    \"Script File\": \"${ETL_FILES}/scripts/ProvenanceToProcessLog.groovy\",
+                    \"Module Directory\": \"${ETL_FILES}/postgresql-42.7.4.jar\"
+                }
+            }}" https://nifi:8443/nifi-api/reporting-tasks/${taskID})
+
+        newVersion=$(echo "$configured" | jq -r '.revision.version')
+        started=$(curl -s -X PUT -k -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $token" -d "{
+            \"revision\": {\"clientId\": \"1\", \"version\": ${newVersion}},
+            \"disconnectedNodeAcknowledged\": false,
+            \"state\": \"RUNNING\"
+            }" https://nifi:8443/nifi-api/reporting-tasks/${taskID}/run-status)
+
+        state=$(echo "$started" | jq -r '.component.state // .status.runStatus // "UNKNOWN"')
+        echo "Reporting task ${REPORTING_TASK_NAME} created and set to ${state}"
+        if [ "$state" != "RUNNING" ]; then
+            echo "       It did not start. NiFi answered: $(echo "$started" | head -c 300)"
+        fi
+    fi
+fi
+
 #create flag file to mark as completed
 touch /tmp/init_done
 

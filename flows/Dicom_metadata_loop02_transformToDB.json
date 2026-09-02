@@ -2646,7 +2646,7 @@
                     "database-session-autocommit": "false",
                     "JDBC Connection Pool": "896a4a36-7cc4-3592-b1a9-8a5d5589d4a3",
                     "Obtain Generated Keys": "false",
-                    "putsql-sql-statement": "CALL eucaim_etl_aux.insert_log_v001('${filename}', '${datasetId}', '${log_datasettype}', '${log_pipelinestage}', '${log_stepnumber}', '${log_stepname}', '${log_level}', '${log_status}' ,'${log_message}');",
+                    "putsql-sql-statement": "CALL eucaim_etl_aux.insert_log_v001(?,?,?,?,?,?,?,?,?);",
                     "rollback-on-failure": "false",
                     "Support Fragmented Transactions": "true",
                     "Transaction Timeout": null
@@ -3128,7 +3128,25 @@
                     "log_stepname": "write_to_ingestion_db",
                     "log_stepnumber": "3",
                     "Stateful Variables Initial Value": null,
-                    "Store State": "Do not store state"
+                    "Store State": "Do not store state",
+                    "sql.args.1.type": "12",
+                    "sql.args.1.value": "${filename}",
+                    "sql.args.2.type": "12",
+                    "sql.args.2.value": "${filename:substringBefore(\"_\"):toLower()}",
+                    "sql.args.3.type": "12",
+                    "sql.args.3.value": "image_metadata",
+                    "sql.args.4.type": "12",
+                    "sql.args.4.value": "loop02",
+                    "sql.args.5.type": "12",
+                    "sql.args.5.value": "3",
+                    "sql.args.6.type": "12",
+                    "sql.args.6.value": "write_to_ingestion_db",
+                    "sql.args.7.type": "12",
+                    "sql.args.7.value": "INFO",
+                    "sql.args.8.type": "12",
+                    "sql.args.8.value": "OK",
+                    "sql.args.9.type": "12",
+                    "sql.args.9.value": "Writing transformed data to ingestion db following EUCAIM CDM"
                 },
                 "propertyDescriptors": {
                     "canonical-value-lookup-cache-size": {
@@ -3214,6 +3232,132 @@
                         "identifiesControllerService": false,
                         "name": "Store State",
                         "sensitive": false
+                    },
+                    "sql.args.1.type": {
+                        "name": "sql.args.1.type",
+                        "displayName": "sql.args.1.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.1.value": {
+                        "name": "sql.args.1.value",
+                        "displayName": "sql.args.1.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.2.type": {
+                        "name": "sql.args.2.type",
+                        "displayName": "sql.args.2.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.2.value": {
+                        "name": "sql.args.2.value",
+                        "displayName": "sql.args.2.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.3.type": {
+                        "name": "sql.args.3.type",
+                        "displayName": "sql.args.3.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.3.value": {
+                        "name": "sql.args.3.value",
+                        "displayName": "sql.args.3.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.4.type": {
+                        "name": "sql.args.4.type",
+                        "displayName": "sql.args.4.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.4.value": {
+                        "name": "sql.args.4.value",
+                        "displayName": "sql.args.4.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.5.type": {
+                        "name": "sql.args.5.type",
+                        "displayName": "sql.args.5.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.5.value": {
+                        "name": "sql.args.5.value",
+                        "displayName": "sql.args.5.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.6.type": {
+                        "name": "sql.args.6.type",
+                        "displayName": "sql.args.6.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.6.value": {
+                        "name": "sql.args.6.value",
+                        "displayName": "sql.args.6.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.7.type": {
+                        "name": "sql.args.7.type",
+                        "displayName": "sql.args.7.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.7.value": {
+                        "name": "sql.args.7.value",
+                        "displayName": "sql.args.7.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.8.type": {
+                        "name": "sql.args.8.type",
+                        "displayName": "sql.args.8.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.8.value": {
+                        "name": "sql.args.8.value",
+                        "displayName": "sql.args.8.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.9.type": {
+                        "name": "sql.args.9.type",
+                        "displayName": "sql.args.9.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.9.value": {
+                        "name": "sql.args.9.value",
+                        "displayName": "sql.args.9.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
                     }
                 },
                 "retriedRelationships": [],
@@ -3608,7 +3752,7 @@
                     "database-session-autocommit": "false",
                     "JDBC Connection Pool": "896a4a36-7cc4-3592-b1a9-8a5d5589d4a3",
                     "Obtain Generated Keys": "false",
-                    "putsql-sql-statement": "CALL eucaim_etl_aux.insert_log_v001('${filename}', '${datasetId}', '${log_datasettype}', '${log_pipelinestage}', '${log_stepnumber}', '${log_stepname}', '${log_level}', '${log_status}' ,'${log_message}');",
+                    "putsql-sql-statement": "CALL eucaim_etl_aux.insert_log_v001(?,?,?,?,?,?,?,?,?);",
                     "rollback-on-failure": "false",
                     "Support Fragmented Transactions": "true",
                     "Transaction Timeout": null
@@ -4483,7 +4627,25 @@
                     "log_stepname": "apply_mapping_structural",
                     "log_stepnumber": "2",
                     "Stateful Variables Initial Value": null,
-                    "Store State": "Do not store state"
+                    "Store State": "Do not store state",
+                    "sql.args.1.type": "12",
+                    "sql.args.1.value": "${filename}",
+                    "sql.args.2.type": "12",
+                    "sql.args.2.value": "${filename:substringBefore(\"_\"):toLower()}",
+                    "sql.args.3.type": "12",
+                    "sql.args.3.value": "image_metadata",
+                    "sql.args.4.type": "12",
+                    "sql.args.4.value": "loop02",
+                    "sql.args.5.type": "12",
+                    "sql.args.5.value": "2",
+                    "sql.args.6.type": "12",
+                    "sql.args.6.value": "apply_mapping_structural",
+                    "sql.args.7.type": "12",
+                    "sql.args.7.value": "INFO",
+                    "sql.args.8.type": "12",
+                    "sql.args.8.value": "OK",
+                    "sql.args.9.type": "12",
+                    "sql.args.9.value": "Reading curated json from staging and applying structural mapping"
                 },
                 "propertyDescriptors": {
                     "canonical-value-lookup-cache-size": {
@@ -4569,6 +4731,132 @@
                         "identifiesControllerService": false,
                         "name": "Store State",
                         "sensitive": false
+                    },
+                    "sql.args.1.type": {
+                        "name": "sql.args.1.type",
+                        "displayName": "sql.args.1.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.1.value": {
+                        "name": "sql.args.1.value",
+                        "displayName": "sql.args.1.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.2.type": {
+                        "name": "sql.args.2.type",
+                        "displayName": "sql.args.2.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.2.value": {
+                        "name": "sql.args.2.value",
+                        "displayName": "sql.args.2.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.3.type": {
+                        "name": "sql.args.3.type",
+                        "displayName": "sql.args.3.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.3.value": {
+                        "name": "sql.args.3.value",
+                        "displayName": "sql.args.3.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.4.type": {
+                        "name": "sql.args.4.type",
+                        "displayName": "sql.args.4.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.4.value": {
+                        "name": "sql.args.4.value",
+                        "displayName": "sql.args.4.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.5.type": {
+                        "name": "sql.args.5.type",
+                        "displayName": "sql.args.5.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.5.value": {
+                        "name": "sql.args.5.value",
+                        "displayName": "sql.args.5.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.6.type": {
+                        "name": "sql.args.6.type",
+                        "displayName": "sql.args.6.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.6.value": {
+                        "name": "sql.args.6.value",
+                        "displayName": "sql.args.6.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.7.type": {
+                        "name": "sql.args.7.type",
+                        "displayName": "sql.args.7.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.7.value": {
+                        "name": "sql.args.7.value",
+                        "displayName": "sql.args.7.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.8.type": {
+                        "name": "sql.args.8.type",
+                        "displayName": "sql.args.8.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.8.value": {
+                        "name": "sql.args.8.value",
+                        "displayName": "sql.args.8.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.9.type": {
+                        "name": "sql.args.9.type",
+                        "displayName": "sql.args.9.type",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
+                    },
+                    "sql.args.9.value": {
+                        "name": "sql.args.9.value",
+                        "displayName": "sql.args.9.value",
+                        "identifiesControllerService": false,
+                        "sensitive": false,
+                        "dynamic": true
                     }
                 },
                 "retriedRelationships": [],
