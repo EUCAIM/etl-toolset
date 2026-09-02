@@ -1,6 +1,5 @@
 import org.apache.nifi.components.state.Scope
 import org.apache.nifi.provenance.ProvenanceEventType
-import java.sql.DriverManager
 
 /**
  * Records in ProcessLog every file the ETL threw away.
@@ -134,9 +133,19 @@ events.each { event ->
 if (rows) {
     def url = "jdbc:postgresql://${System.getenv('SHARED_DB_HOST')}:" +
               "${System.getenv('SHARED_DB_PORT')}/${System.getenv('SHARED_DB_NAME')}"
-    Class.forName('org.postgresql.Driver')
-    def connection = DriverManager.getConnection(url, System.getenv('SHARED_DB_USERNAME'),
-                                                 System.getenv('SHARED_DB_PASSWORD'))
+
+    // The driver comes from Module Directory, so it lives in a class loader of
+    // its own. DriverManager only accepts drivers visible to its caller and
+    // answers "No suitable driver found" for this one, however well it loaded.
+    // Asking the driver to connect directly sidesteps that registry.
+    def driver = Class.forName('org.postgresql.Driver').getDeclaredConstructor().newInstance()
+    def credentials = new Properties()
+    credentials.setProperty('user', System.getenv('SHARED_DB_USERNAME') ?: '')
+    credentials.setProperty('password', System.getenv('SHARED_DB_PASSWORD') ?: '')
+    def connection = driver.connect(url, credentials)
+    if (connection == null) {
+        throw new IllegalStateException("the PostgreSQL driver did not accept ${url}")
+    }
     try {
         connection.autoCommit = false
         def call = connection.prepareStatement(
