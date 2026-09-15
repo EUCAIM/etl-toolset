@@ -2110,10 +2110,19 @@
                 },
                 "properties": {
                     "/BodyPartExamined_parsed": "",
+                    "/Columns": "${field.value:replaceAll('^[ ]*([-+]?[0-9]+)([.][0-9]+)?[ ]*$', '$1'):replaceAll('^(?![ ]*[-+]?[0-9]+[ ]*$).*$', ''):trim()}",
                     "/DatasetID": "${datasetId}",
+                    "/EchoTime": "${field.value:replaceAll('^(?![ ]*[-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?[ ]*$).*$', ''):trim()}",
+                    "/Exposure": "${field.value:replaceAll('^[ ]*([-+]?[0-9]+)([.][0-9]+)?[ ]*$', '$1'):replaceAll('^(?![ ]*[-+]?[0-9]+[ ]*$).*$', ''):trim()}",
+                    "/ExposureTime": "${field.value:replaceAll('^[ ]*([-+]?[0-9]+)([.][0-9]+)?[ ]*$', '$1'):replaceAll('^(?![ ]*[-+]?[0-9]+[ ]*$).*$', ''):trim()}",
+                    "/KVP": "${field.value:replaceAll('^(?![ ]*[-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?[ ]*$).*$', ''):trim()}",
                     "/Manufacturer_parsed": "",
                     "/Modality_parsed": "",
-                    "/SeriesNumber": "${field.value:replaceAll('^\\s*(-?\\d+)(\\.\\d+)?\\s*$', '$1')}",
+                    "/NumberOfSeriesRelatedInstances": "${field.value:replaceAll('^[ ]*([-+]?[0-9]+)([.][0-9]+)?[ ]*$', '$1'):replaceAll('^(?![ ]*[-+]?[0-9]+[ ]*$).*$', ''):trim()}",
+                    "/Rows": "${field.value:replaceAll('^[ ]*([-+]?[0-9]+)([.][0-9]+)?[ ]*$', '$1'):replaceAll('^(?![ ]*[-+]?[0-9]+[ ]*$).*$', ''):trim()}",
+                    "/SeriesNumber": "${field.value:replaceAll('^[ ]*([-+]?[0-9]+)([.][0-9]+)?[ ]*$', '$1'):replaceAll('^(?![ ]*[-+]?[0-9]+[ ]*$).*$', ''):trim()}",
+                    "/SliceThickness": "${field.value:replaceAll('^(?![ ]*[-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?[ ]*$).*$', ''):trim()}",
+                    "/XRayTubeCurrent": "${field.value:replaceAll('^[ ]*([-+]?[0-9]+)([.][0-9]+)?[ ]*$', '$1'):replaceAll('^(?![ ]*[-+]?[0-9]+[ ]*$).*$', ''):trim()}",
                     "Record Reader": "4bc6caeb-04a4-3ff5-a418-5c3e0930f65d",
                     "Record Writer": "9c609a6f-495b-3ea5-9381-a06b75643a88",
                     "Replacement Value Strategy": "literal-value"
@@ -2126,11 +2135,46 @@
                         "name": "/BodyPartExamined_parsed",
                         "sensitive": false
                     },
+                    "/Columns": {
+                        "displayName": "/Columns",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/Columns",
+                        "sensitive": false
+                    },
                     "/DatasetID": {
                         "displayName": "/DatasetID",
                         "dynamic": true,
                         "identifiesControllerService": false,
                         "name": "/DatasetID",
+                        "sensitive": false
+                    },
+                    "/EchoTime": {
+                        "displayName": "/EchoTime",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/EchoTime",
+                        "sensitive": false
+                    },
+                    "/Exposure": {
+                        "displayName": "/Exposure",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/Exposure",
+                        "sensitive": false
+                    },
+                    "/ExposureTime": {
+                        "displayName": "/ExposureTime",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/ExposureTime",
+                        "sensitive": false
+                    },
+                    "/KVP": {
+                        "displayName": "/KVP",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/KVP",
                         "sensitive": false
                     },
                     "/Manufacturer_parsed": {
@@ -2147,11 +2191,39 @@
                         "name": "/Modality_parsed",
                         "sensitive": false
                     },
+                    "/NumberOfSeriesRelatedInstances": {
+                        "displayName": "/NumberOfSeriesRelatedInstances",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/NumberOfSeriesRelatedInstances",
+                        "sensitive": false
+                    },
+                    "/Rows": {
+                        "displayName": "/Rows",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/Rows",
+                        "sensitive": false
+                    },
                     "/SeriesNumber": {
                         "displayName": "/SeriesNumber",
                         "dynamic": true,
                         "identifiesControllerService": false,
                         "name": "/SeriesNumber",
+                        "sensitive": false
+                    },
+                    "/SliceThickness": {
+                        "displayName": "/SliceThickness",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/SliceThickness",
+                        "sensitive": false
+                    },
+                    "/XRayTubeCurrent": {
+                        "displayName": "/XRayTubeCurrent",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/XRayTubeCurrent",
                         "sensitive": false
                     },
                     "Record Reader": {

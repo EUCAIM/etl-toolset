@@ -12,6 +12,7 @@ CLINICAL_DATA_TEST_CSV="sample_data/de3702e869557fc5981859b7811e3eab_SAMPLE_KI.c
 NUMBER_OF_PATIENTS=20
 IMAGE_METADATA_TEST_CSV="sample_data/de3702e869557fc5981859b7811e3eab_SAMPLE_KI_DICOM_metadata.csv"
 NUMBER_OF_STUDIES=3
+NUMBER_OF_SERIES=3
 IMAGING_TIMEPOINTS_TEST_CSV="sample_data/de3702e869557fc5981859b7811e3eab_SAMPLE_KI_imaging_timepoints.csv"
 
 CLINICAL_DATA_EXTRA_TEST_SCRIPT="scripts/run_clinical_data_specific_tests.sh"
@@ -150,6 +151,33 @@ procesar_pipeline_imaging_metadata() {
 
   if [ "$TOTAL_ROWS" -ne $NUMBER_OF_STUDIES ]; then
     echo "❌ Output seems not correct"
+    exit 1
+  fi
+
+  TOTAL_ROWS=0
+  TOTAL_ROWS=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.ImageTags;" | xargs)
+
+  echo "Number of output rows in eucaim_cdm_ingestion.ImageTags table: $TOTAL_ROWS  (Expected rows: $NUMBER_OF_SERIES)"
+
+  if [ "$TOTAL_ROWS" -ne $NUMBER_OF_SERIES ]; then
+    echo "❌ Output seems not correct"
+    exit 1
+  fi
+
+  # The sample file carries non numeric placeholders ('UNKNOWN') in numeric DICOM tags:
+  # they must reach the database as NULL, and the valid values must be kept untouched.
+  echo "Validating non numeric values in numeric imaging tags..."
+  TOTAL_ROWS=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.ImageTags WHERE SliceThickness IS NULL AND ImageRows IS NULL;" | xargs)
+
+  if [ "$TOTAL_ROWS" -ne 1 ]; then
+    echo "❌ Non numeric values are not stored as null (expected 1 row, found $TOTAL_ROWS)"
+    exit 1
+  fi
+
+  TOTAL_ROWS=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.ImageTags WHERE SliceThickness = 1.5;" | xargs)
+
+  if [ "$TOTAL_ROWS" -ne 1 ]; then
+    echo "❌ Numeric values are not stored as expected (expected 1 row, found $TOTAL_ROWS)"
     exit 1
   fi
 }
