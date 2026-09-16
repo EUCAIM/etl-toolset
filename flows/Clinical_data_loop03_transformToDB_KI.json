@@ -3815,6 +3815,7 @@
                     "y": -592.0
                 },
                 "properties": {
+                    "/*": "${field.value:replaceAll('^[?]$', '')}",
                     "/Dataset_Description": "VAIB core-dataset is consist of cancer output, radiologist assessment and also clinical information from 3 different regions of Sweden. In addition, VAIB core-dataset is targeting to validate AI for Breast imaging in various perspective. ",
                     "/Dataset_Identifier": "de3702e869557fc5981859b7811e3eab",
                     "/Dataset_Title": "VAIB Core-dataset",
@@ -3829,6 +3830,13 @@
                     "Replacement Value Strategy": "literal-value"
                 },
                 "propertyDescriptors": {
+                    "/*": {
+                        "displayName": "/*",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/*",
+                        "sensitive": false
+                    },
                     "/Dataset_Description": {
                         "displayName": "/Dataset_Description",
                         "dynamic": true,
@@ -5214,8 +5222,8 @@
                     "y": -320.0
                 },
                 "properties": {
-                    "/PrimaryCancerCondition_AssertedDate": "format(toDate(/\"original_data.a_diag_dat\", \"yyyy-MM-dd\"), \"yyyy-MM-dd\")",
-                    "/SurgicalProcedure_PerformedDate": "format(toDate(/original_data.op_kir_dat, \"yyyyMMdd\"), \"yyyy-MM-dd\")",
+                    "/PrimaryCancerCondition_AssertedDate": "replaceRegex(replaceRegex(replaceRegex(/\"original_data.a_diag_dat\", '^([0-9]{4})-?([0-9]{2})-?([0-9]{2})$', '$1-$2-$3'), '-00$', '-01'), '^(?![0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$).*$', '')",
+                    "/SurgicalProcedure_PerformedDate": "replaceRegex(replaceRegex(replaceRegex(/\"original_data.op_kir_dat\", '^([0-9]{4})-?([0-9]{2})-?([0-9]{2})$', '$1-$2-$3'), '-00$', '-01'), '^(?![0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$).*$', '')",
                     "Record Reader": "92a4a0ba-9ed7-31b5-9448-444980c3d608",
                     "Record Writer": "17e7a1ff-9ba8-354b-9e9d-fa4cfbb4574d",
                     "Replacement Value Strategy": "record-path-value"
@@ -7118,7 +7126,7 @@
                     "dbf-default-scale": "0",
                     "entity: ImagingProcedure": "SELECT \t\"ImagingProcedure_Identifier\" AS ProcedureIdentifier,\n\t\t\"Patient_Identifier\" AS PatientIdentifier,\n\t\t\"ImagingProcedure_PrimaryCancerConditionIdentifier\" AS PrimaryCancerConditionIdentifier,\n\t\t1 AS ImagingTimepoint,\n\t\t'IMG1000030' AS ImagingProcedureEUCAIM,\n\t\t'Mammography' AS ImagingProcedureOriginal,\n\t\t'IMG1005453' AS ImagingProcedureCategoryCodeEUCAIM,\n\t\t'Imaging (Procedure)' AS ImagingProcedureCategoryCodeOriginal,\n\t\t'0' AS Processed\nFROM FLOWFILE",
                     "entity: Primary Cancer Condition": "SELECT \t\"Dataset_Identifier\" AS DatasetIdentifier,\n\t\t\"Patient_Identifier\" AS PatientIdentifier,\n\t\t\"PrimaryCancerCondition_Identifier\" AS Identifier,\n\t\tCAST(REPLACE(\"PrimaryCancerCondition_AgeAtDiagnosis\", ',', '.') AS DOUBLE) AS AgeOfDiagnosis,\n\t\t'Year' AS AgeUnitOriginal,\n\t\tCASE\n        \tWHEN \"PrimaryCancerCondition_HistologyMorphologyBehaviorInSitu\" IN ('10', '20', '40', '50')\n        \tTHEN \"PrimaryCancerCondition_HistologyMorphologyBehaviorInSitu\"\n        \tELSE \"PrimaryCancerCondition_HistologyMorphologyBehaviorInvasive\"\n    \tEND AS histologymorphologybehavioureucaim,\n\t\tCASE\n        \tWHEN \"PrimaryCancerCondition_HistologyMorphologyBehaviorInSitu\" IN ('10', '20', '40', '50')\n        \tTHEN \"original_data.op_pad_insitusnomed\"\n        \tELSE \"original_data.op_pad_invasivsnomed\"\n    \tEND AS histologymorphologybehaviouroriginal,\n\t\t\"PrimaryCancerCondition_AssertedDate\" AS AssertedDate,\n\t\t'0' AS Processed\nFROM FLOWFILE",
-                    "entity: SurgicalProcedure ": "SELECT \t\"Dataset_Identifier\" AS DatasetIdentifier,\n\t\t\"Patient_Identifier\" AS PatientIdentifier,\n\t\t\"SurgicalProcedure_Identifier\" AS TreatmentIdentifier,\n\t\tCASE\n        \tWHEN \"SurgicalProcedure_CodeAxillary\" IN ('1', '2', '3', '4', '98')\n        \tTHEN \"SurgicalProcedure_CodeAxillary\"\n        \tELSE \"SurgicalProcedure_CodeBreast\"\n    \tEND AS procedureeucaim,\n\t\tCASE\n        \tWHEN \"SurgicalProcedure_CodeAxillary\" IN ('1', '2', '3', '4', '98')\n        \tTHEN \"original_data.op_kir_axill\"\n        \tELSE \"original_data.op_kir_brost\"\n    \tEND AS procedureoriginal,\n\t\t'0' AS Processed\nFROM FLOWFILE",
+                    "entity: SurgicalProcedure ": "SELECT \t\"Dataset_Identifier\" AS DatasetIdentifier,\n\t\t\"Patient_Identifier\" AS PatientIdentifier,\n\t\t\"SurgicalProcedure_Identifier\" AS TreatmentIdentifier,\n\t\tCASE\n        \tWHEN \"SurgicalProcedure_CodeAxillary\" IN ('1', '2', '3', '4', '98')\n        \tTHEN \"SurgicalProcedure_CodeAxillary\"\n        \tELSE \"SurgicalProcedure_CodeBreast\"\n    \tEND AS procedureeucaim,\n\t\tCASE\n        \tWHEN \"SurgicalProcedure_CodeAxillary\" IN ('1', '2', '3', '4', '98')\n        \tTHEN \"original_data.op_kir_axill\"\n        \tELSE \"original_data.op_kir_brost\"\n    \tEND AS procedureoriginal,\n\t\t\"SurgicalProcedure_PerformedDate\" AS PerformedDate,\n\t\t'0' AS Processed\nFROM FLOWFILE",
                     "entity:Dataset": "SELECT \t\"Dataset_Identifier\" AS Identifier,\n\t\t\"Dataset_Title\" AS Title,\n\t\t\"Dataset_Description\" AS Description,\n\t\t'0' as Processed\nFROM FLOWFILE",
                     "entity:Patient": "SELECT \t\"Dataset_Identifier\" AS DatasetIdentifier,\n\t\t\"Patient_Identifier\" AS Identifier,\n\t\t\"decision\" AS\tDiagnosticCategoryOriginal,\n\t\t\"Patient_DiagnosticCategory\" AS DiagnosticCategoryEucaim,\n\t\t\"dicom_tags.PatientSex.Value\" AS BirthSexOriginal,\n        \"Patient_BirthSex\" AS BirthSexEucaim,\n\t\t'0' AS Processed\nFROM FLOWFILE",
                     "entity:Tumor": "SELECT \t\"Dataset_Identifier\" AS DatasetIdentifier,\n\t\t\"Patient_Identifier\" || '_tumor_1' as Identifier,\n\t\t\"PrimaryCancerCondition_Identifier\" AS PrimaryCancerConditionIdentifier,\n\t\t'Breast' AS BodySiteOriginal,\n\t\t\"Tumor_BodySiteCode\" AS BodySiteEUCAIM,\n\t\t\"Tumor_BodySiteLaterality\" AS BodySiteLateralityQualifierEUCAIM,\n\t\t\"original_data.a_pat_sida\" AS BodySiteLateralityQualifierOriginal,\n\t\t\"Tumor_HistologicGrade\" AS HistologicGradeEUCAIM,\n\t\t\"original_data.op_pad_nhg\" AS HistologicGradeOriginal,\n\t\t'0' AS Processed\nFROM FLOWFILE",
