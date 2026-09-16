@@ -1,7 +1,8 @@
 ## Installation Instructions
 
 1. Download and unzip the file from the [Releases](https://scm.cloud-bahiasoftware.es/rpalpal/Eucaim_ETL/releases) section.
-2. Run the startup script:
+2. Select the datasets this node will process, as described in [Node configuration](#node-configuration).
+3. Run the startup script:
    - **Linux:** `startup.sh`
    - **Windows:** `startup.ps1`
 
@@ -12,6 +13,35 @@
 
 -  Docker
 -  Docker compose
+
+## Node configuration ##
+
+A clean deployment serves no dataset: it downloads no mapping until it is told which
+datasets this node processes. Uncomment and edit the `datasetsList` line in:
+
+- **Linux and macOS:** `local_env.sh`
+- **Windows:** `local_env.ps1`
+
+```bash
+datasetsList="40dbe9fb-c607-445d-a582-dea531b676b1"
+```
+
+Each code is the Dataset ID from the [EUCAIM catalogue](https://catalogue.eucaim.cancerimage.eu),
+the same one used as prefix of the input files. Several datasets are separated by commas,
+with no spaces.
+
+On every start the mappings of the selected datasets are downloaded from
+[EUCAIM/etl-mappings](https://github.com/EUCAIM/etl-mappings) into the **flows** directory.
+If any selected dataset has no mapping there, the startup stops and reports which ones are
+missing.
+
+The same file holds two optional settings:
+
+- `downloadFlows="false"` uses the mappings already in **flows** instead of downloading
+  them, which is what you want while adjusting a mapping locally (see FAQ 3)
+- `logsRetentionDays="30"` is the number of days the exported log CSV files are kept in
+  **output_data**; older ones are deleted on each launch. The rows stay in the internal
+  database, so nothing is lost. Set it to 0 to delete nothing
 
 ## Basic usage ##
 
@@ -53,6 +83,9 @@ Additional output to support the review of the mapping process is written here:
 Additional output with info and error logs for the pipelines steps being processed is written here:
 - `output_data\etl_process_logs`
 
+Each **`process_logs_*_records.csv`** holds one row per pipeline step, with the dataset, the
+stage, the result and a message. Files the ETL discarded, and the reason, are recorded there too.
+
 That same folder holds **`etl-errors.log`**, which collects every warning and error raised while the
 pipelines run, with the full detail of the underlying failure. It is the first file to look at when a
 dataset is not processed, and the one to attach when reporting a problem.
@@ -82,7 +115,11 @@ limitations under the License.
 
 ### 1. After the input file is copied into `input_data\clinical_data`, nothing happens and the file remains there, seemingly not being processed
 
-If this happens, most likely the setup script **init.sh** is not being properly executed.  
+First check that the dataset is selected: the file is only processed if its Dataset ID prefix is
+listed in `datasetsList` (see [Node configuration](#node-configuration)). The startup script prints
+`No dataset selected` or the list of datasets it is deploying.
+
+If the dataset is selected, most likely the setup script **init.sh** is not being properly executed.  
 In some instances, due to permission issues, this file cannot run inside the NiFi Docker container.  
 
 To check if this is the case, try:
@@ -118,6 +155,11 @@ The mappings already present in **flows** are then used as they are. Every datas
 reports which ones are missing.
 
 Remember to set it back to `true`, or remove the line, to resume receiving mapping updates.
+
+> **Note:**
+> The GitHub API allows 60 calls per hour and IP address. If the download fails because that
+> limit is spent, set `GITHUB_TOKEN` in the environment with a personal access token, or set
+> `downloadFlows="false"` and place the mappings in **flows** by hand.
 
 
 ### 4. The initilization of the nifi-postgres container (the internal ETL database) fails, when it was previously working
