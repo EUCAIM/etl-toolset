@@ -1701,3 +1701,58 @@ VALUES ('Thalamus, Cingulum', 'Thalamus');
 -- lookuptumororgancode: recovered from branch SAS
 INSERT INTO eucaim_etl_aux.LookupTumorOrganCode (originalValue, parsedValue)
 VALUES ('lung cancer', 'Neoplasm of lung');
+
+
+-------------------------------------------------------------------------------------------
+-- SAS_NHL (8e92d702a8874791869c37a4b17157dc): non-Hodgkin lymphoma treated with CAR-T.
+--
+-- Only data-driven values need a row here. Values that are already spelled like a
+-- EUCAIM concept (Female, Male, Patient with cancer) and the constants set in
+-- AddConstantValues (PET-CT, Biopsy, Imaging (Procedure), day, year, Diagnosis,
+-- Treatment) go straight to the concept lookup.
+--
+-- The histological subtypes, the Ann Arbor classification and the CAR-T products
+-- have no concept in the hyperontology yet, so they are deliberately left without a
+-- row: the lookup misses, the EUCAIM column stays null and the original value is
+-- still persisted. Adding the concepts upstream turns this into a data-only change.
+
+INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
+VALUES ('nhl', '0');
+
+INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
+VALUES ('8e92d702a8874791869c37a4b17157dc', '0');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionCode (originalValue, parsedValue)
+VALUES ('NHL', 'Non-Hodgkin''s lymphoma (clinical)');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionTopography (originalValue, parsedValue)
+VALUES ('Lymph node', 'Structure of lymph node');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionTopography (originalValue, parsedValue)
+VALUES ('Bone marrow', 'Bone marrow structure');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionTopography (originalValue, parsedValue)
+VALUES ('Abdomen', 'Abdomen');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionTopography (originalValue, parsedValue)
+VALUES ('Skin', 'Skin structure');
+
+-- Nasopharynx is a documented topography of this dataset but has no concept in the
+-- hyperontology, so it is left unmapped on purpose.
+
+-- The index tumor reuses the parsed Topography, and each involvement row carries a
+-- constant concept name set in AddConstantValues, so LookupTumorBodySiteCode needs
+-- no row. Hepatosplenic and Other extranodal involvement have no concept at all
+-- (there is a Liver structure but no spleen), so those rows keep only the original
+-- value.
+
+INSERT INTO eucaim_etl_aux.LookupTumorSizeDimensionUnit (originalValue, parsedValue)
+VALUES ('mm', 'millimeter');
+
+-- Family history arrives as a single free-text column ("Mother, colon cancer"); the
+-- flow splits it on the comma, the relationship half already matches a concept name.
+INSERT INTO eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
+VALUES ('colon cancer', 'Carcinoma of colon');
+
+INSERT INTO eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
+VALUES ('pancreatic cancer', 'Carcinoma of pancreas');

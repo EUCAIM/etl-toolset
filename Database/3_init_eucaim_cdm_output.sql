@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.procedure (
     procedure_code VARCHAR(50),
     procedure_category VARCHAR(50),
     procedure_evaluation_finding VARCHAR(150),
-    procedure_offset_from_diagnosis DECIMAL(5,2),
+    procedure_offset_from_diagnosis DECIMAL(8,2),
     procedure_offset_unit VARCHAR(50),
     procedure_date DATE,
     ImagingTimepoint INTEGER,
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.body_site (
     body_site_code VARCHAR(150),
     body_site_location VARCHAR(150),
     body_site_laterality VARCHAR(50),
-    body_site_volume DECIMAL(5,2),
+    body_site_volume DECIMAL(8,2),
     body_site_volume_unit VARCHAR(50)
 );
 
@@ -159,11 +159,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor (
     Identifier VARCHAR(150),
 	tumor_is_index BOOLEAN,
 	tumor_histology_morphology VARCHAR(50),
-	tumor_volume DECIMAL(5,2),
+	tumor_volume DECIMAL(8,2),
     tumor_volume_unit VARCHAR(50),
 	tumor_size_method VARCHAR(50),
-	tumor_size_maximum_dimension DECIMAL(5,2),
-	tumor_size_other_dimension DECIMAL(5,2),
+	tumor_size_maximum_dimension DECIMAL(8,2),
+	tumor_size_other_dimension DECIMAL(8,2),
 	tumor_size_dimension_unit VARCHAR (15),
     tumor_body_site VARCHAR(50),
     tumor_body_site_location VARCHAR(150),
@@ -274,9 +274,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.episode (
 	episode_number INTEGER,
     episode_start_date DATE,
     episode_end_date DATE,
-    start_offset_from_diagnosis DECIMAL(5,2),
+    start_offset_from_diagnosis DECIMAL(8,2),
     start_offset_unit VARCHAR(50),
-    end_offset_from_diagnosis DECIMAL(5,2),
+    end_offset_from_diagnosis DECIMAL(8,2),
     end_offset_unit VARCHAR(50),
     episode_parent_id INTEGER REFERENCES eucaim_cdm_output.episode(episode_id)
 );
@@ -300,7 +300,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_study (
     study_number_of_series INTEGER,
     study_number_of_instances INTEGER,
     study_access_uri VARCHAR(150),
-    study_offset_from_diagnosis DECIMAL(5,2),
+    study_offset_from_diagnosis DECIMAL(8,2),
     study_offset_unit VARCHAR(20)
 );
 

@@ -90,6 +90,11 @@ services:
       POSTGRES_DB: eucaim-etl-db
       POSTGRES_USER: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
+    # Every process group deployed in NiFi owns a DBCPConnectionPool that holds up
+    # to 8 connections and never evicts the idle ones, so a node serving several
+    # datasets goes well past the 100 connections Postgres allows by default and
+    # everything else, tests included, gets "sorry, too many clients already".
+    command: ["postgres", "-c", "max_connections=300"]
     healthcheck:
       test: [
         "CMD-SHELL",
