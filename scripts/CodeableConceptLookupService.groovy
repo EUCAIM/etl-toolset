@@ -55,10 +55,12 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                 } else if (value.startsWith("code:")){
                     result["${property}"] = value
                 } else {
+        
                     def sql = """
                     SELECT c.concept_code
                     FROM eucaim_hyperontology_codes.concept c
                     WHERE c.concept_name = ?
+                    ORDER BY c.concept_id
                     """
 
                     def pstmt = conn.prepareStatement(sql)
@@ -70,6 +72,12 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                     if (rs.next()) {
                         def code = rs.getString("concept_code")
                         result["${property}"] = code
+                        if (rs.next()) {
+                            log.warn("CodeableConceptsLookupService.lookup - AMBIGUOUS term " +
+                                "'${value}' for property '${property}': it resolves to more than " +
+                                "one concept_code. Using '${code}', the first one loaded. " +
+                                "Disambiguate it in eucaim_hyperontology_codes.concept.")
+                        }
                     } else {
                         // this is the silent mapping failure: the literal string
                         // below travels downstream as if it were a valid code

@@ -6043,7 +6043,7 @@
                     "esqlrecord-normalize": "false",
                     "esqlrecord-record-writer": "17e7a1ff-9ba8-354b-9e9d-fa4cfbb4574d",
                     "Max Wait Time": "0 seconds",
-                    "SQL Query": "SELECT Identifier, HealthStatusEUCAIM as assessment_code, ValueAsConceptEUCAIM as assesment_value_as_concept, ValueAsNumber as assesment_value_as_number, ValueAsConceptUnitEUCAIM as assesment_value_unit\nfrom eucaim_cdm_ingestion.healthstatus\nWHERE processed = FALSE;",
+                    "SQL Query": "SELECT Identifier, HealthStatusEUCAIM as health_status_assessment_code, ValueAsConceptEUCAIM as health_status_assessment_value_as_concept, ValueAsNumber as health_status_assessment_value_as_number, ValueAsConceptUnitEUCAIM as health_status_assessment_value_unit\nfrom eucaim_cdm_ingestion.healthstatus\nWHERE processed = FALSE;",
                     "sql-post-query": null,
                     "sql-pre-query": null
                 },
@@ -6764,7 +6764,7 @@
                     "esqlrecord-normalize": "false",
                     "esqlrecord-record-writer": "17e7a1ff-9ba8-354b-9e9d-fa4cfbb4574d",
                     "Max Wait Time": "0 seconds",
-                    "SQL Query": "SELECT Identifier, TumorMarkerEUCAIM as tumor_marker_test_code, ValueAsNumber as tumor_marker_test_as_number, ValueAsConceptEUCAIM as tumor_marker_test_as_concept, ValueAsConceptUnitEUCAIM as tumor_marker_test_as_unit, DateOfMarker as tumor_marker_date\nfrom eucaim_cdm_ingestion.tumormarkertest\nWHERE processed = FALSE;",
+                    "SQL Query": "SELECT Identifier, TumorMarkerEUCAIM as tumor_marker_test_code, ValueAsNumber as tumor_marker_test_value_as_number, ValueAsConceptEUCAIM as tumor_marker_test_value_as_concept, ValueAsConceptUnitEUCAIM as tumor_marker_test_value_unit, DateOfMarker as tumor_marker_test_date\nfrom eucaim_cdm_ingestion.tumormarkertest\nWHERE processed = FALSE;",
                     "sql-post-query": null,
                     "sql-pre-query": null
                 },
@@ -7614,7 +7614,7 @@
                     "esqlrecord-normalize": "false",
                     "esqlrecord-record-writer": "17e7a1ff-9ba8-354b-9e9d-fa4cfbb4574d",
                     "Max Wait Time": "0 seconds",
-                    "SQL Query": "SELECT Identifier, ManagingOrganization as patient_managing_organization, DiagnosticCategoryEucaim as patient_diagnostic_category, BirthSexEucaim as patient_birth_sex\nFROM eucaim_cdm_ingestion.cancerpatient WHERE processed = FALSE;",
+                    "SQL Query": "SELECT Identifier, ManagingOrganization as patient_managing_organization_id, DiagnosticCategoryEucaim as patient_diagnostic_category, BirthSexEucaim as patient_birth_sex\nFROM eucaim_cdm_ingestion.cancerpatient WHERE processed = FALSE;",
                     "sql-post-query": null,
                     "sql-pre-query": null
                 },
@@ -9956,7 +9956,7 @@
                     "esqlrecord-normalize": "false",
                     "esqlrecord-record-writer": "17e7a1ff-9ba8-354b-9e9d-fa4cfbb4574d",
                     "Max Wait Time": "0 seconds",
-                    "SQL Query": "SELECT Identifier, AssertedDate as cancer_condition_asserted_date, AgeOfDiagnosis as cancer_condition_age_at_diagnosis, AgeUnitEUCAIM as cancer_condition_age_unit, PrimaryCancerConditionEUCAIM as cancer_condition_code, HistologyMorphologyBehaviourEUCAIM as cancer_condition_histology_morphology\nfrom eucaim_cdm_ingestion.PrimaryCancerCondition\nWHERE processed = false;",
+                    "SQL Query": "SELECT Identifier, AssertedDate as cancer_condition_asserted_date, AgeOfDiagnosis as cancer_condition_age_at_diagnosis, AgeUnitEUCAIM as cancer_condition_age_unit, PrimaryCancerConditionEUCAIM as cancer_condition_code, HistologyMorphologyBehaviourEUCAIM as cancer_condition_histology_morphology_behavior\nfrom eucaim_cdm_ingestion.PrimaryCancerCondition\nWHERE processed = false;",
                     "sql-post-query": null,
                     "sql-pre-query": null
                 },
@@ -15824,7 +15824,7 @@
                     "esqlrecord-normalize": "false",
                     "esqlrecord-record-writer": "17e7a1ff-9ba8-354b-9e9d-fa4cfbb4574d",
                     "Max Wait Time": "0 seconds",
-                    "SQL Query": "SELECT Identifier, CancerStageCodeEUCAIM as cancer_stage_code, CancerStageValueEUCAIM as cancer_stage_as_concept\nfrom eucaim_cdm_ingestion.cancerstage\nWHERE processed = FALSE;",
+                    "SQL Query": "SELECT Identifier, CancerStageCodeEUCAIM as cancer_stage_code, CancerStageValueEUCAIM as cancer_stage_value_as_concept\nfrom eucaim_cdm_ingestion.cancerstage\nWHERE processed = FALSE;",
                     "sql-post-query": null,
                     "sql-pre-query": null
                 },

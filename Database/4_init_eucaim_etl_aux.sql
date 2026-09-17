@@ -191,7 +191,9 @@ VALUES ('lung adenocarcinoma', 'Adenocarcinoma, NOS, of lung, NOS');
 
 INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
 
-VALUES ('lung small cell carcinoma', 'Small cell carcinoma of lung, NOS');
+-- 'Small cell carcinoma of lung, NOS' no existe en la hiperontología; se usa la
+-- morfología genérica, ya que la topografía viaja en su propio campo.
+VALUES ('lung small cell carcinoma', 'Small cell carcinoma, NOS');
 
 INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
 VALUES ('occipital (5)', 'Occipital region');
@@ -364,7 +366,7 @@ VALUES ('4', 'Parietal brain region');
 
 INSERT INTO eucaim_etl_aux.LookupTumorLocationCode (originalValue, parsedValue)
 
-VALUES ('5', 'Occipital bran region');
+VALUES ('5', 'Occipital brain region');
 
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorGradeCode;
@@ -664,8 +666,10 @@ VALUES ('Unknown', 'Unknown');
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
 VALUES ('Temporal', 'Temporal lobe');
 
+-- Estaba mapeado a 'Temporal', que es el originalValue de la fila anterior y no existe
+-- como concept_name, así que el servicio de conceptos lo convertía en 'NOT FOUND'.
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
-VALUES ('Thalamus - Cingulum', 'Temporal');
+VALUES ('Thalamus - Cingulum', 'Thalamus');
 
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorGradeCodeService;
@@ -1280,16 +1284,16 @@ INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
 VALUES ('30', 'AJCC/UICC T3 Category');
 
 INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
-VALUES ('42', 'AJCC/UICC T4a Category');
+VALUES ('42', 'AJCC/UICC 8th T4a Category');
 
 INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
-VALUES ('44', 'AJCC/UICC T4b Category');
+VALUES ('44', 'AJCC/UICC 8th T4b Category');
 
 INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
-VALUES ('45', 'AJCC/UICC T4c Category');
+VALUES ('45', 'AJCC/UICC 8th T4c Category');
 
 INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
-VALUES ('46', 'AJCC/UICC T4d Category');
+VALUES ('46', 'AJCC/UICC 8th T4d Category');
 
 INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
 VALUES ('50', 'AJCC/UICC TX Category');

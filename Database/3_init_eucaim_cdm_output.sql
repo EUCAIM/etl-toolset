@@ -1,4 +1,12 @@
 -- Step 3 Eucaim CDM Schema definition: output
+--
+-- Alineado con el diccionario oficial publicado en https://eucaim-cdm.ics.forth.gr/
+--   entidades clínicas  v4.2  (dictionary id 69a9563e5e565c14b7a514c2)
+--   entidades de imagen v4.1  (dictionary id 69a6cf295e565c14b7a51492)
+--
+-- Los nombres de columna siguen los del diccionario. Se conservan, marcadas como
+-- extensión, unas pocas columnas propias que el diccionario no recoge pero que el ETL
+-- necesita: dataset_id, los *Identifier de origen, Episode e ImagingTimepoint.
 CREATE SCHEMA IF NOT EXISTS eucaim_cdm_output;
 
 
@@ -17,7 +25,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.patient (
     patient_gender VARCHAR(50),
     patient_race VARCHAR(50),
     patient_ethnicity VARCHAR(50),
-	patient_managing_organization VARCHAR(150),
+    patient_managing_organization_id VARCHAR(150),
     patient_diagnostic_category VARCHAR(50),
     patient_deceased boolean DEFAULT false,
     patient_date_of_last_contact DATE,
@@ -54,45 +62,48 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.cancer_condition (
     cancer_condition_code VARCHAR(50),
     cancer_condition_type VARCHAR(50),
     cancer_condition_clinical_status VARCHAR(50),
-    cancer_condition_histology_morphology VARCHAR(150),
+    cancer_condition_histology_morphology_behavior VARCHAR(150),
     cancer_condition_topography VARCHAR(150),
-    Episode INTEGER
+    related_primary_cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id),
+    Episode INTEGER                     -- extensión, no está en v4.2
 );
 
 
 -- Entities related with CancerPatient directly: Health Status Assessment, Tumor Marker Test, Family Member History, Lab Test Result, Medical History
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.health_status_assessment (
-    assessment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    health_status_assessment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    assessment_code VARCHAR(50),
-    assesment_value_as_number DECIMAL(5,2),
-    assesment_value_as_concept VARCHAR(50),
-    assesment_value_unit VARCHAR(50),
-    assesment_interpretation VARCHAR(250)
+    health_status_assessment_code VARCHAR(50),
+    health_status_assessment_value_as_number DECIMAL(12,3),
+    health_status_assessment_value_as_concept VARCHAR(50),
+    health_status_assessment_value_unit VARCHAR(50),
+    health_status_assessment_interpretation VARCHAR(250)   -- extensión, no está en v4.2
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor_marker_test (
     tumor_marker_test_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
+    procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id),
     tumor_marker_test_category VARCHAR(50),
     tumor_marker_test_code VARCHAR(50),
-    tumor_marker_test_as_number DECIMAL(5,2),
-    tumor_marker_test_as_concept VARCHAR(50),
-    tumor_marker_test_as_unit VARCHAR(50),
-    tumor_marker_date DATE,
-    tumor_marker_offset_from_diagnosis INTEGER,
-    tumor_marker_offset_unit VARCHAR(50)
+    -- Un PSA puede superar los 1.000 ng/mL, así que DECIMAL(5,2) desbordaba.
+    tumor_marker_test_value_as_number DECIMAL(12,3),
+    tumor_marker_test_value_as_concept VARCHAR(50),
+    tumor_marker_test_value_unit VARCHAR(50),
+    tumor_marker_test_date DATE,
+    tumor_marker_test_offset_from_diagnosis INTEGER,
+    tumor_marker_test_offset_unit VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.family_member_history (
     family_member_history_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    family_member_relationship VARCHAR(100),
-    family_member_condition_code VARCHAR(50),
-    family_member_condition_present boolean,
-    family_member_onset_age INTEGER,
-    family_member_onset_age_unit VARCHAR(50)
+    family_member_history_relationship VARCHAR(100),
+    family_member_history_condition_code VARCHAR(50),
+    family_member_history_condition_present boolean,
+    family_member_history_onset_age INTEGER,
+    family_member_history_onset_age_unit VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.lab_test_result (
@@ -100,7 +111,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.lab_test_result (
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     lab_test_code VARCHAR(100),
     lab_test_value_as_concept VARCHAR(150),
-    lab_test_value_as_number DECIMAL(5,2),
+    lab_test_value_as_number DECIMAL(12,3),
     lab_test_value_unit VARCHAR(50),
     lab_test_date DATE,
     lab_test_offset_from_diagnosis INTEGER,
@@ -112,11 +123,21 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.medical_history (
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     medical_history_code VARCHAR(50),
     medical_history_category VARCHAR(50),
-    medical_history_onset_age DECIMAL(4,1),
+    medical_history_present boolean,
+    medical_history_onset_age DECIMAL(5,1),
     medical_history_onset_age_unit VARCHAR(50),
     medical_history_value_as_concept VARCHAR(100),
-    medical_history_value_as_number DECIMAL(5,2),
+    medical_history_value_as_number DECIMAL(12,3),
     medical_history_value_unit VARCHAR(50)
+);
+
+
+-- Comorbidities: entidad del CDM v4.2 que hasta ahora no existía en el esquema.
+CREATE TABLE IF NOT EXISTS eucaim_cdm_output.comorbidities (
+    comorbidities_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
+    comorbidities_code VARCHAR(50),
+    comorbidities_present boolean
 );
 
 
@@ -135,9 +156,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.cancer_stage (
     cancer_stage_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,  -- deprecated?
-	cancer_stage_code VARCHAR(50),
-	cancer_stage_scoring_system VARCHAR(50),
-	cancer_stage_as_concept VARCHAR(50)
+    procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id),
+    cancer_stage_code VARCHAR(50),
+    cancer_stage_method VARCHAR(50),
+    cancer_stage_value_as_concept VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.body_site (
@@ -155,8 +177,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor (
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id) ON DELETE CASCADE,
     histologic_grade_id INTEGER REFERENCES eucaim_cdm_output.histologic_grade(histologic_grade_id) ON DELETE CASCADE,
-    body_site_id INTEGER REFERENCES eucaim_cdm_output.body_site(body_site_id) ON DELETE CASCADE,
-    Identifier VARCHAR(150),
+    tumor_body_site_id INTEGER REFERENCES eucaim_cdm_output.body_site(body_site_id) ON DELETE CASCADE,
+    tumor_identifier VARCHAR(150),
 	tumor_is_index BOOLEAN,
 	tumor_histology_morphology VARCHAR(50),
 	tumor_volume DECIMAL(8,2),
@@ -176,6 +198,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.risk_assessment (
     risk_assessment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     tumor_id INTEGER REFERENCES eucaim_cdm_output.tumor(tumor_id) ON DELETE CASCADE,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
+    procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id),
 	risk_assessment_code VARCHAR(150),
 	risk_assessment_value_unit VARCHAR (15),
     risk_assessment_value_as_concept VARCHAR(50),
@@ -212,6 +235,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.treatment (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.radiotherapy (
     treatment_id INTEGER PRIMARY KEY REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
+    patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     radiotherapy_modality VARCHAR(150),
     radiotherapy_technique VARCHAR(150),
     radiotherapy_start_date DATE,
@@ -219,8 +243,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.radiotherapy (
     radiotherapy_offset_from_diagnosis INTEGER,
     radiotherapy_offset_unit VARCHAR(50),
     radiotherapy_number_of_sessions INTEGER,
-    radiotherapy_dose_delivered_to_volume DECIMAL(5,2),
-    radiotherapy_total_dose_delivered DECIMAL(5,2),
+    -- Las dosis se expresan también en cGy, donde DECIMAL(5,2) se quedaba corto.
+    radiotherapy_dose_delivered_to_volume DECIMAL(12,3),
+    radiotherapy_total_dose_delivered DECIMAL(12,3),
     radiotherapy_fractions_delivered INTEGER,
     radiotherapy_dose_unit VARCHAR(50),
     radiotherapy_body_site_id VARCHAR(200),
@@ -229,6 +254,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.radiotherapy (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.surgical_procedure (
     treatment_id INTEGER PRIMARY KEY REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
+    patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     surgical_procedure_code VARCHAR(100),
     surgical_procedure_body_site_code VARCHAR(100),
     surgical_procedure_body_site_location VARCHAR(100),
@@ -243,26 +269,39 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.surgical_procedure (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.medication_administration (
     treatment_id INTEGER REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
+    patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     medication_code VARCHAR(50),
     medication_id INTEGER,
     medication_start_date DATE,
     medication_end_date DATE,
-    medication_offset_from_diagnosis INTEGER,
-    medication_offset_unit VARCHAR(50),
-    medication_number_of_sessions INTEGER,
-    medication_total_dose DECIMAL(5,2),
+    start_offset_from_diagnosis INTEGER,
+    start_offset_from_diagnosis_unit VARCHAR(50),
+    end_offset_from_diagnosis INTEGER,
+    end_offset_from_diagnosis_unit VARCHAR(50),
+    medication_dose DECIMAL(12,3),
     medication_dose_unit VARCHAR(50),
-    medication_effective_period DECIMAL(4,1),
+    medication_dose_per_period DECIMAL(12,3),
+    medication_period_unit VARCHAR(50),
+    medication_effective_period DECIMAL(8,1),
     medication_effective_period_unit VARCHAR(50),
-    Episode INTEGER,
+    medication_number_of_sessions INTEGER,   -- extensión, no está en v4.2
+    Episode INTEGER,                         -- extensión, no está en v4.2
     PRIMARY KEY (treatment_id)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.adverse_event (
-    adverse_event_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+    adverse_event_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     treatment_id INTEGER REFERENCES eucaim_cdm_output.treatment(treatment_id) ON DELETE CASCADE,
-    adverse_event_resulting_effect VARCHAR(200),
-    adverse_event_date DATE
+    patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
+    resulting_effect VARCHAR(200),
+    adverse_event_start_date DATE,
+    adverse_event_end_date DATE,
+    start_offset_from_diagnosis INTEGER,
+    start_offset_unit VARCHAR(50),
+    end_offset_from_diagnosis INTEGER,
+    end_offset_unit VARCHAR(50),
+    adverse_event_effective INTEGER,
+    adverse_event_effective_unit VARCHAR(50)
 );
 
 
@@ -278,6 +317,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.episode (
     start_offset_unit VARCHAR(50),
     end_offset_from_diagnosis DECIMAL(8,2),
     end_offset_unit VARCHAR(50),
+    episode_effective INTEGER,
+    episode_effective_unit VARCHAR(50),
     episode_parent_id INTEGER REFERENCES eucaim_cdm_output.episode(episode_id)
 );
 
@@ -312,7 +353,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
     series_body_site VARCHAR(150),
     series_number INTEGER,
     series_description VARCHAR(170),
-	series_manufacturer VARCHAR(70),
+    series_manufacturer_name VARCHAR(70),
+    series_number_of_instances INTEGER,
+    series_access_uri VARCHAR(150),
     series_acquisition_date DATE,
     series_modality VARCHAR(70)
 );
@@ -323,8 +366,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_modality (
     study_uid VARCHAR(150) NOT NULL,
     series_id INTEGER  REFERENCES eucaim_cdm_output.image_series(series_id) ON DELETE CASCADE,
     acquisition_parameter_code VARCHAR(50),
-    acquisition_parameter_value_as_code VARCHAR(50),
-    acquisition_parameter_value_as_number DECIMAL(15,4),
+    acquisition_parameter_value_code VARCHAR(50),
+    acquisition_parameter_value_number DECIMAL(15,4),
     acquisition_parameter_value_unit VARCHAR(50)
 );
 
@@ -332,7 +375,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_modality (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.segmentation_series (
     segmentation_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     segmentation_series_uid VARCHAR(150) NOT NULL,
-    series_uid VARCHAR(150) NOT NULL,
+    source_series_uid VARCHAR(150) NOT NULL,
     study_uid VARCHAR(150) NOT NULL,
     segmentation_algorithm_type VARCHAR(50) NOT NULL,
     segmentation_annotation_type VARCHAR(50),

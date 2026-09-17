@@ -1783,7 +1783,7 @@
                     "esqlrecord-normalize": "false",
                     "esqlrecord-record-writer": "3ac5c03a-6dea-3d98-8f97-d3dc634019de",
                     "Max Wait Time": "0 seconds",
-                    "SQL Query": "SELECT id, ImageSeriesUID as series_uid, ImageSeriesNumber as series_number, Description as series_description, Manufacturer as series_manufacturer\nFROM eucaim_cdm_ingestion.imageseries WHERE processed = FALSE;",
+                    "SQL Query": "SELECT id, ImageSeriesUID as series_uid, ImageSeriesNumber as series_number, Description as series_description, Manufacturer as series_manufacturer_name\nFROM eucaim_cdm_ingestion.imageseries WHERE processed = FALSE;",
                     "sql-post-query": null,
                     "sql-pre-query": null
                 },
