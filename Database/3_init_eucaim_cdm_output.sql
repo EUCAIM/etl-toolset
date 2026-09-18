@@ -1,12 +1,8 @@
 -- Step 3 Eucaim CDM Schema definition: output
 --
--- Alineado con el diccionario oficial publicado en https://eucaim-cdm.ics.forth.gr/
---   entidades clínicas  v4.2  (dictionary id 69a9563e5e565c14b7a514c2)
---   entidades de imagen v4.1  (dictionary id 69a6cf295e565c14b7a51492)
---
--- Los nombres de columna siguen los del diccionario. Se conservan, marcadas como
--- extensión, unas pocas columnas propias que el diccionario no recoge pero que el ETL
--- necesita: dataset_id, los *Identifier de origen, Episode e ImagingTimepoint.
+-- Alligned with https://eucaim-cdm.ics.forth.gr/
+--   clinical data  v4.2  (dictionary id 69a9563e5e565c14b7a514c2)
+--   imaging metadata v4.1  (dictionary id 69a6cf295e565c14b7a51492)
 CREATE SCHEMA IF NOT EXISTS eucaim_cdm_output;
 
 
@@ -44,7 +40,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.procedure (
     procedure_offset_unit VARCHAR(50),
     procedure_date DATE,
     ImagingTimepoint INTEGER,
-    Episode INTEGER
+    Episode INTEGER,
+    UNIQUE (patient_id, ProcedureIdentifier)
 );
 
 
@@ -65,7 +62,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.cancer_condition (
     cancer_condition_histology_morphology_behavior VARCHAR(150),
     cancer_condition_topography VARCHAR(150),
     related_primary_cancer_condition_id INTEGER REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id),
-    Episode INTEGER                     -- extensión, no está en v4.2
+    Episode INTEGER,                    -- extensión, no está en v4.2
+    UNIQUE (patient_id, Identifier)
 );
 
 
@@ -87,7 +85,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor_marker_test (
     procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id),
     tumor_marker_test_category VARCHAR(50),
     tumor_marker_test_code VARCHAR(50),
-    -- Un PSA puede superar los 1.000 ng/mL, así que DECIMAL(5,2) desbordaba.
     tumor_marker_test_value_as_number DECIMAL(12,3),
     tumor_marker_test_value_as_concept VARCHAR(50),
     tumor_marker_test_value_unit VARCHAR(50),
@@ -162,8 +159,12 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.cancer_stage (
     cancer_stage_value_as_concept VARCHAR(50)
 );
 
+-- body_site_id es VARCHAR y no un entero generado porque el diccionario lo define como
+-- xsd:string, y porque surgical_procedure y radiotherapy lo referencian con cardinalidad
+-- 0..* mediante una lista separada por '|': un entero no puede representar eso.
+-- Al no autogenerarse, el identificador lo aporta el ETL cuando se pueble la entidad.
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.body_site (
-    body_site_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    body_site_id VARCHAR(150) PRIMARY KEY,
     body_site_code VARCHAR(150),
     body_site_location VARCHAR(150),
     body_site_laterality VARCHAR(50),
@@ -177,7 +178,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor (
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     procedure_id INTEGER REFERENCES eucaim_cdm_output.procedure(procedure_id) ON DELETE CASCADE,
     histologic_grade_id INTEGER REFERENCES eucaim_cdm_output.histologic_grade(histologic_grade_id) ON DELETE CASCADE,
-    tumor_body_site_id INTEGER REFERENCES eucaim_cdm_output.body_site(body_site_id) ON DELETE CASCADE,
+    tumor_body_site_id VARCHAR(150) REFERENCES eucaim_cdm_output.body_site(body_site_id) ON DELETE CASCADE,
     tumor_identifier VARCHAR(150),
 	tumor_is_index BOOLEAN,
 	tumor_histology_morphology VARCHAR(50),
@@ -189,7 +190,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor (
 	tumor_size_dimension_unit VARCHAR (15),
     tumor_body_site VARCHAR(50),
     tumor_body_site_location VARCHAR(150),
-    tumor_body_site_laterality VARCHAR(50)
+    tumor_body_site_laterality VARCHAR(50),
+    UNIQUE (patient_id, tumor_identifier)
 );
 
 
@@ -202,7 +204,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.risk_assessment (
 	risk_assessment_code VARCHAR(150),
 	risk_assessment_value_unit VARCHAR (15),
     risk_assessment_value_as_concept VARCHAR(50),
-    risk_assessment_value_as_number INTEGER
+    risk_assessment_value_as_number DECIMAL(12,3)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor_observation (
@@ -212,7 +214,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor_observation (
 	tumor_observation_code VARCHAR(150),
 	tumor_observation_value_unit VARCHAR(15),
     tumor_observation_value_as_concept VARCHAR(50),
-    tumor_observation_Value_as_number INTEGER
+    tumor_observation_Value_as_number DECIMAL(12,3)
 );
 
 
@@ -230,7 +232,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.treatment (
     end_offset_from_diagnosis INTEGER,
     end_offset_unit VARCHAR(50),
     TreatmentIdentifier VARCHAR(200),
-    Episode INTEGER
+    Episode INTEGER,
+    UNIQUE (patient_id, TreatmentIdentifier)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.radiotherapy (
@@ -243,8 +246,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.radiotherapy (
     radiotherapy_offset_from_diagnosis INTEGER,
     radiotherapy_offset_unit VARCHAR(50),
     radiotherapy_number_of_sessions INTEGER,
-    -- Las dosis se expresan también en cGy, donde DECIMAL(5,2) se quedaba corto.
-    radiotherapy_dose_delivered_to_volume DECIMAL(12,3),
+    radiotherapy_dose_delivered_to_volume VARCHAR(150),
     radiotherapy_total_dose_delivered DECIMAL(12,3),
     radiotherapy_fractions_delivered INTEGER,
     radiotherapy_dose_unit VARCHAR(50),
@@ -261,7 +263,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.surgical_procedure (
     surgical_procedure_body_site_laterality VARCHAR(100),
     surgical_procedure_offset_from_diagnosis INTEGER,
     surgical_procedure_offset_from_diagnosis_unit VARCHAR(50),
-    surgical_procedure_date DATE,	
+    surgical_procedure_date DATE,
     surgical_procedure_body_site_id VARCHAR(200),
     surgical_procedure_histopathology_finding VARCHAR(100),
     Episode INTEGER
@@ -342,7 +344,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_study (
     study_number_of_instances INTEGER,
     study_access_uri VARCHAR(150),
     study_offset_from_diagnosis DECIMAL(8,2),
-    study_offset_unit VARCHAR(20)
+    study_offset_unit VARCHAR(20),
+    UNIQUE (study_uid)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
@@ -357,7 +360,8 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_series (
     series_number_of_instances INTEGER,
     series_access_uri VARCHAR(150),
     series_acquisition_date DATE,
-    series_modality VARCHAR(70)
+    series_modality VARCHAR(70),
+    UNIQUE (series_uid)
 );
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.image_modality (

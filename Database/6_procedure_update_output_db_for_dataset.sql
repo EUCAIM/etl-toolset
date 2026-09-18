@@ -4,6 +4,12 @@ SET search_path = eucaim_etl_aux, eucaim_cdm_ingestion, eucaim_cdm_output
 AS $$
 BEGIN
 
+    -- Los joins contra las tablas de salida se acotan siempre al paciente del dataset en
+    -- curso. Las tablas de salida acumulan todos los datasets del nodo, y los
+    -- identificadores de origen (Identifier, ProcedureIdentifier, tumor_identifier) solo
+    -- son únicos dentro de su proveedor: sin ese filtro, dos datasets que reutilicen el
+    -- mismo identificador se enlazaban entre sí y duplicaban filas.
+
     -- Clealing output tables or given dataset ID  (CASCADE)
     DELETE FROM eucaim_cdm_output.dataset
     WHERE dataset_id = p_dataset_id;
@@ -105,7 +111,8 @@ BEGIN
 	JOIN eucaim_cdm_output.cancer_condition opcc ON ihg.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON ihg.PrimaryCancerConditionIdentifier = ipcc.Identifier
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
-	WHERE icp.DatasetIdentifier = p_dataset_id;
+	WHERE icp.DatasetIdentifier = p_dataset_id
+	  AND opcc.patient_id = icp.Identifier;
 	
 	INSERT INTO eucaim_cdm_output.cancer_stage(cancer_condition_id, patient_id, cancer_stage_code, cancer_stage_value_as_concept)
 	SELECT opcc.cancer_condition_id, opcc.patient_id, CancerStageCodeEUCAIM, CancerStageValueEUCAIM
@@ -113,7 +120,8 @@ BEGIN
 	JOIN eucaim_cdm_output.cancer_condition opcc ON ics.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON ics.PrimaryCancerConditionIdentifier = ipcc.Identifier
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
-	WHERE icp.DatasetIdentifier = p_dataset_id;
+	WHERE icp.DatasetIdentifier = p_dataset_id
+	  AND opcc.patient_id = icp.Identifier;
 
 	INSERT INTO eucaim_cdm_output.procedure(patient_id, cancer_condition_id, ProcedureIdentifier, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
 	SELECT opcc.patient_id, opcc.cancer_condition_id, ProcedureIdentifier, ImagingProcedureEUCAIM, iip.OffsetFromDiagnosis, iip.OffsetUnitEUCAIM, cast(PerformedDate as date), ImagingProcedureCategoryCodeEUCAIM
@@ -121,8 +129,15 @@ BEGIN
 	JOIN eucaim_cdm_output.cancer_condition opcc ON iip.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON iip.PrimaryCancerConditionIdentifier = ipcc.Identifier
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
-	JOIN eucaim_cdm_ingestion.imagestudy iit on iip.procedureidentifier  = iit.imagingprocedureidentifier 
-	WHERE icp.DatasetIdentifier = p_dataset_id;
+	WHERE icp.DatasetIdentifier = p_dataset_id
+	  AND opcc.patient_id = icp.Identifier
+	  -- Antes era un JOIN contra imagestudy. Como un mismo ImagingProcedure agrupa todos los
+	  -- estudios de un paciente en un timepoint, ese join duplicaba la fila de procedure una
+	  -- vez por estudio, y luego image_study volvía a multiplicarse contra esos duplicados.
+	  -- Como filtro (EXISTS) hace lo mismo que se pretendía sin alterar la cardinalidad.
+	  AND EXISTS (SELECT 1
+	              FROM eucaim_cdm_ingestion.imagestudy iit
+	              WHERE iit.imagingprocedureidentifier = iip.procedureidentifier);
 
 	INSERT INTO eucaim_cdm_output.procedure(patient_id, cancer_condition_id, ProcedureIdentifier, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
 	SELECT opcc.patient_id, opcc.cancer_condition_id, ProcedureIdentifier, ProcedureEUCAIM, OffsetFromDiagnosis, OffsetUnitEUCAIM, cast(PerformedDate as date), ProcedureCategoryCodeEUCAIM
@@ -130,22 +145,18 @@ BEGIN
 	JOIN eucaim_cdm_output.cancer_condition opcc ON crp.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON crp.PrimaryCancerConditionIdentifier = ipcc.Identifier
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
-	WHERE icp.DatasetIdentifier = p_dataset_id;
+	WHERE icp.DatasetIdentifier = p_dataset_id
+	  AND opcc.patient_id = icp.Identifier;
 
-	-- La lista de columnas estaba desplazada: 'volume' se escribía en tumor_volume_unit y
-	-- tumor_volume no se rellenaba nunca. Además faltaba patient_id, lo que dejaba todos
-	-- los tumores huérfanos, sin forma de llegar a ellos desde su paciente.
 	INSERT INTO eucaim_cdm_output.tumor(tumor_identifier, patient_id, tumor_is_index, tumor_histology_morphology, tumor_volume, tumor_size_method, tumor_size_maximum_dimension, tumor_size_other_dimension, tumor_size_dimension_unit, tumor_body_site, tumor_body_site_location, tumor_body_site_laterality)
 	SELECT it.Identifier, opcc.patient_id, isIndex, morphologyEUCAIM, volume, sizeMethodEUCAIM, sizeMaximumDimension, sizeOtherDimension, it.sizeDimensionUnit, it.BodySiteEUCAIM, it.BodySiteLocationQualifierEUCAIM, it.BodySiteLateralityQualifierEUCAIM
 	FROM eucaim_cdm_ingestion.Tumor it
 	JOIN eucaim_cdm_output.cancer_condition opcc ON it.PrimaryCancerConditionIdentifier = opcc.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON it.PrimaryCancerConditionIdentifier = ipcc.Identifier
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
-	WHERE icp.DatasetIdentifier = p_dataset_id;
+	WHERE icp.DatasetIdentifier = p_dataset_id
+	  AND opcc.patient_id = icp.Identifier;
 
-	-- El CDM exige cancer_condition.procedure_id, pero los procedimientos se insertan
-	-- después de la condición, así que el enlace se cierra aquí: se apunta al primer
-	-- procedimiento registrado para esa condición.
 	UPDATE eucaim_cdm_output.cancer_condition occ
 	SET procedure_id = first_procedure.procedure_id
 	FROM (
@@ -167,7 +178,8 @@ BEGIN
 	JOIN eucaim_cdm_ingestion.Tumor it ON ira.TumorIdentifier = it.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON it.PrimaryCancerConditionIdentifier = ipcc.Identifier
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
-	WHERE icp.DatasetIdentifier = p_dataset_id;
+	WHERE icp.DatasetIdentifier = p_dataset_id
+	  AND ot.patient_id = icp.Identifier;
 
 	INSERT INTO eucaim_cdm_output.tumor_observation(tumor_id, patient_id, tumor_observation_code, tumor_observation_value_unit, tumor_observation_value_as_concept, tumor_observation_Value_as_number)
 	SELECT ot.tumor_id, ot.patient_id, codeEUCAIM, valueUnit, valueAsConcept, ValueAsNumber
@@ -176,13 +188,15 @@ BEGIN
 	JOIN eucaim_cdm_ingestion.Tumor it ON ito.TumorIdentifier = it.Identifier
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON it.PrimaryCancerConditionIdentifier = ipcc.Identifier
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
-	WHERE icp.DatasetIdentifier = p_dataset_id;
+	WHERE icp.DatasetIdentifier = p_dataset_id
+	  AND ot.patient_id = icp.Identifier;
 
 	-- Update entities for DICOM metadata
 	INSERT INTO eucaim_cdm_output.image_study(procedure_id, patient_id, study_uid, ImagingTimepoint, study_offset_from_diagnosis, study_offset_unit, study_acquisition_date, study_number_of_series, study_number_of_instances)
     SELECT op.procedure_id, op.patient_id, ImageStudyUID, iis.ImagingTimepoint, iis.OffsetFromDiagnosis, iis.OffsetUnitEUCAIM, cast(iis.AcquisitionDate as date), iis.NumberOfSeries, iis.NumberOfInstances
     FROM eucaim_cdm_ingestion.ImageStudy iis
 	JOIN eucaim_cdm_output.procedure op ON iis.ImagingProcedureIdentifier = op.ProcedureIdentifier
+	                                       AND op.patient_id = iis.PatientIdentifier
 	WHERE iis.DatasetIdentifier = p_dataset_id;
 
 	INSERT INTO eucaim_cdm_output.image_series(study_id, study_uid, series_uid, series_number, series_description, series_manufacturer_name, series_acquisition_date, series_modality, series_body_site)

@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HealthStatus (
     PatientIdentifier VARCHAR(150) NOT NULL,
     HealthStatusEUCAIM VARCHAR(50),
     HealthStatusOriginal VARCHAR(50),
-    ValueAsNumber DECIMAL(5,2),
+    ValueAsNumber DECIMAL(12,3),
     ValueAsConcept INTEGER,
     ValueAsConceptEUCAIM VARCHAR(50),
     ValueAsConceptOriginal VARCHAR(50),
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorMarkerTest (
     CategoryOriginal VARCHAR(50),
     TumorMarkerEUCAIM VARCHAR(50),
     TumorMarkerOriginal VARCHAR(50),
-    ValueAsNumber DECIMAL(5,2),
+    ValueAsNumber DECIMAL(12,3),
     ValueAsConceptEUCAIM VARCHAR(50),
     ValueAsConceptOriginal VARCHAR(50),
     ValueAsConceptUnitEUCAIM VARCHAR(50),
@@ -286,7 +286,9 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.LabTestResult (
     PatientIdentifier VARCHAR(150) NOT NULL,
     codeOriginal VARCHAR(150),
     codeEUCAIM VARCHAR(150),
-    ValueAsNumber DECIMAL(5,2),
+    -- Se ensancha igual que en el esquema de salida: con DECIMAL(5,2) un PSA por
+    -- encima de 999,99 ng/mL desbordaba ya en la ingesta, antes de llegar a la salida.
+    ValueAsNumber DECIMAL(12,3),
     ValueAsConceptEUCAIM VARCHAR(50),
     ValueAsConceptOriginal VARCHAR(50),
     ValueUnitEUCAIM VARCHAR(50),
@@ -309,7 +311,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.RiskAssessment (
 	codeEUCAIM VARCHAR(150),
 	valueUnit VARCHAR (15),
     valueAsConcept VARCHAR(50),
-    ValueAsNumber Integer,
+    ValueAsNumber DECIMAL(12,3),
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -321,7 +323,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorObservation (
 	codeEUCAIM VARCHAR(150),
 	valueUnit VARCHAR (15),
     valueAsConcept VARCHAR(50),
-    ValueAsNumber Integer,
+    ValueAsNumber DECIMAL(12,3),
     processed BOOLEAN DEFAULT FALSE	  
 );
 

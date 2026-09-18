@@ -12,6 +12,25 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 
    DBCPService dbcpService
     ComponentLog log
+    ControllerServiceInitializationContext initContext = null
+
+    // NiFi re-evaluates this script on every validation pass (BaseScriptedLookupService.customValidate
+    // always calls setup()), which builds a brand new instance of this class and calls initialize() on
+    // it, but never onEnabled() again. The DBCPService injected when the service was enabled was
+    // therefore lost on the first validation that ran after the enabling, and from then on every lookup
+    // failed with "DBCPService not initialized". The service resolved in onEnabled is published in a
+    // JVM-wide registry keyed by the component id, so a reloaded instance recovers it in initialize().
+    static final String DBCP_CACHE_PREFIX = "eucaim.nifi.dbcpService."
+
+    private static void cacheDbcpService(String componentId, DBCPService service) {
+        if (componentId && service != null) {
+            System.getProperties().put(DBCP_CACHE_PREFIX + componentId, service)
+        }
+    }
+
+    private static DBCPService cachedDbcpService(String componentId) {
+        componentId ? (DBCPService) System.getProperties().get(DBCP_CACHE_PREFIX + componentId) : null
+    }
 
     static final PropertyDescriptor DBCP_SERVICE = new PropertyDescriptor.Builder()
             .name(dbcpServiceName)
@@ -23,6 +42,7 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
     void onEnabled(final ConfigurationContext context) {
         dbcpService = context.getProperty(DBCP_SERVICE)
                              .asControllerService(DBCPService)
+        cacheDbcpService(initContext?.identifier, dbcpService)
 
         log.info("DBCPService initialized: ${dbcpService != null}")
     }
@@ -31,7 +51,12 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
     Optional<Map<String, Object>> lookup(Map<String, Object> coordinates) {
         log.debug("CodeableConceptsLookupService.lookup - coordinates values: ${coordinates}")
 
-         if (dbcpService == null) {
+        if (dbcpService == null) {
+            // onEnabled ran on an instance that a later script reload has replaced
+            dbcpService = cachedDbcpService(initContext?.identifier)
+        }
+
+        if (dbcpService == null) {
             log.error("CodeableConceptsLookupService.lookup - DBCPService not initialized.")
             return Optional.empty()
         }
@@ -116,7 +141,10 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 
     @Override
     void initialize(ControllerServiceInitializationContext ctx) {
-        log.info("CodeableConceptsLookupService.initialize")
+        initContext = ctx
+        // this instance is brand new, so take back the service the component already resolved
+        dbcpService = cachedDbcpService(ctx?.identifier)
+        log.info("CodeableConceptsLookupService.initialize - dbcpService recovered from a previous enable: ${dbcpService != null}")
     }
 
     @Override
