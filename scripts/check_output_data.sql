@@ -38,8 +38,8 @@ SELECT
     COUNT(DISTINCT pr.procedure_id) AS procedures,
     COUNT(DISTINCT cc.cancer_condition_id) AS cancer_conditions,
     COUNT(DISTINCT t.treatment_id) AS treatments,
-    COUNT(DISTINCT st.study_id)    AS studies,
-    COUNT(DISTINCT se.series_id)   AS series,
+    COUNT(DISTINCT st.study_uid)   AS studies,
+    COUNT(DISTINCT se.series_uid)  AS series,
     COUNT(DISTINCT im.modality_id) AS acquisition_params
 FROM eucaim_cdm_output.dataset d
 LEFT JOIN eucaim_cdm_output.patient p           ON p.dataset_id = d.dataset_id
@@ -47,8 +47,8 @@ LEFT JOIN eucaim_cdm_output.procedure pr        ON pr.patient_id = p.patient_id
 LEFT JOIN eucaim_cdm_output.cancer_condition cc ON cc.patient_id = p.patient_id
 LEFT JOIN eucaim_cdm_output.treatment t         ON t.patient_id = p.patient_id
 LEFT JOIN eucaim_cdm_output.image_study st      ON st.patient_id = p.patient_id
-LEFT JOIN eucaim_cdm_output.image_series se     ON se.study_id = st.study_id
-LEFT JOIN eucaim_cdm_output.image_modality im   ON im.series_id = se.series_id
+LEFT JOIN eucaim_cdm_output.image_series se     ON se.study_uid = st.study_uid
+LEFT JOIN eucaim_cdm_output.image_modality im   ON im.series_uid = se.series_uid
 WHERE :dataset IS NULL OR d.dataset_id = :dataset
 GROUP BY d.dataset_id, d.dataset_title
 ORDER BY d.dataset_id;
@@ -88,7 +88,7 @@ SELECT
     COUNT(*)                      AS series,
     COUNT(DISTINCT se.series_body_site) AS distinct_body_sites
 FROM eucaim_cdm_output.image_series se
-JOIN eucaim_cdm_output.image_study st ON st.study_id = se.study_id
+JOIN eucaim_cdm_output.image_study st ON st.study_uid = se.study_uid
 JOIN eucaim_cdm_output.patient p      ON p.patient_id = st.patient_id
 WHERE :dataset IS NULL OR p.dataset_id = :dataset
 GROUP BY se.series_modality
@@ -102,18 +102,19 @@ UNION ALL
 SELECT 'studies without any series', COUNT(*)
 FROM eucaim_cdm_output.image_study st
 WHERE NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.image_series se
-                  WHERE se.study_id = st.study_id)
+                  WHERE se.study_uid = st.study_uid)
 UNION ALL
-SELECT 'orphan series (study_id NULL)', COUNT(*)
-FROM eucaim_cdm_output.image_series WHERE study_id IS NULL
-UNION ALL
+-- desde que study_uid/series_uid son la clave y la FK, estas dos ya no pueden
+-- fallar; se mantienen porque documentan la invariante
 SELECT 'series with dangling study_uid', COUNT(*)
 FROM eucaim_cdm_output.image_series se
 WHERE NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.image_study st
                   WHERE st.study_uid = se.study_uid)
 UNION ALL
 SELECT 'orphan acquisition params', COUNT(*)
-FROM eucaim_cdm_output.image_modality WHERE series_id IS NULL
+FROM eucaim_cdm_output.image_modality im
+WHERE NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.image_series se
+                  WHERE se.series_uid = im.series_uid)
 UNION ALL
 SELECT 'patients without dataset', COUNT(*)
 FROM eucaim_cdm_output.patient WHERE dataset_id IS NULL;
@@ -122,12 +123,12 @@ FROM eucaim_cdm_output.patient WHERE dataset_id IS NULL;
 -- 6. Clinical <-> imaging crossover: how many patients have both halves.
 SELECT
     d.dataset_id,
-    COUNT(*) FILTER (WHERE st.study_id IS NOT NULL) AS patients_with_imaging,
-    COUNT(*) FILTER (WHERE st.study_id IS NULL)     AS patients_clinical_only
+    COUNT(*) FILTER (WHERE st.has_study IS NOT NULL) AS patients_with_imaging,
+    COUNT(*) FILTER (WHERE st.has_study IS NULL)     AS patients_clinical_only
 FROM eucaim_cdm_output.dataset d
 JOIN eucaim_cdm_output.patient p ON p.dataset_id = d.dataset_id
 LEFT JOIN LATERAL (
-    SELECT 1 AS study_id FROM eucaim_cdm_output.image_study s
+    SELECT 1 AS has_study FROM eucaim_cdm_output.image_study s
     WHERE s.patient_id = p.patient_id LIMIT 1
 ) st ON true
 WHERE :dataset IS NULL OR d.dataset_id = :dataset
