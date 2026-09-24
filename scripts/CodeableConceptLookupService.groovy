@@ -78,7 +78,10 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                     result["${property}"] = null
                     log.debug("CodeableConceptsLookupService.lookup - null value for property '${property}'")
                 } else if (value.startsWith("code:")){
-                    result["${property}"] = value
+                    // escape hatch for source codes with no hyperontology concept yet
+                    // (e.g. the Ann Arbor staging system): the "code:" marker is an ETL
+                    // convention, only what follows it travels to the CDM
+                    result["${property}"] = value.substring("code:".length())
                 } else {
         
                     def sql = """
