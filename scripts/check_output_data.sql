@@ -1,7 +1,4 @@
--- Generic checks for eucaim_cdm_output schema (implementation of EUCAIM CDM).
--- They answer "do we have clinical data and imaging metadata ingested?",
--- without depending on any particular dataset or patient.
---
+
 -- Usage:
 --   docker exec -i $(docker compose ps -q nifi-postgres) \
 --     psql -U postgres -d eucaim-etl-db -f - < scripts/check_output_data.sql
@@ -15,7 +12,7 @@
 \endif
 
 
--- 1. Global traffic light: one row, PASS/FAIL per block.
+-- 1. Global checks, one row each
 SELECT
     (SELECT COUNT(*) FROM eucaim_cdm_output.dataset)     AS datasets,
     (SELECT COUNT(*) FROM eucaim_cdm_output.patient)     AS patients,
@@ -28,34 +25,68 @@ SELECT
          THEN 'PASS' ELSE 'FAIL' END AS imaging_metadata;
 
 
--- 2. Breakdown per dataset: volume of each main entity.
---    A 0 under patients means loop03 never wrote anything; a 0 only under
---    studies/series points at a missing DICOM half.
+-- 2. Breakdown per dataset
+WITH patients AS (
+    SELECT dataset_id, COUNT(*) AS patients
+    FROM eucaim_cdm_output.patient
+    GROUP BY dataset_id
+), procedures AS (
+    SELECT p.dataset_id, COUNT(*) AS procedures
+    FROM eucaim_cdm_output.procedure pr
+    JOIN eucaim_cdm_output.patient p ON p.patient_id = pr.patient_id
+    GROUP BY p.dataset_id
+), cancer_conditions AS (
+    SELECT p.dataset_id, COUNT(*) AS cancer_conditions
+    FROM eucaim_cdm_output.cancer_condition cc
+    JOIN eucaim_cdm_output.patient p ON p.patient_id = cc.patient_id
+    GROUP BY p.dataset_id
+), treatments AS (
+    SELECT p.dataset_id, COUNT(*) AS treatments
+    FROM eucaim_cdm_output.treatment t
+    JOIN eucaim_cdm_output.patient p ON p.patient_id = t.patient_id
+    GROUP BY p.dataset_id
+), studies AS (
+    SELECT p.dataset_id, COUNT(*) AS studies
+    FROM eucaim_cdm_output.image_study st
+    JOIN eucaim_cdm_output.patient p ON p.patient_id = st.patient_id
+    GROUP BY p.dataset_id
+), series AS (
+    SELECT p.dataset_id, COUNT(*) AS series
+    FROM eucaim_cdm_output.image_series se
+    JOIN eucaim_cdm_output.image_study st ON st.study_uid = se.study_uid
+    JOIN eucaim_cdm_output.patient p     ON p.patient_id = st.patient_id
+    GROUP BY p.dataset_id
+), acquisition_params AS (
+    SELECT p.dataset_id, COUNT(*) AS acquisition_params
+    FROM eucaim_cdm_output.image_modality im
+    JOIN eucaim_cdm_output.image_series se ON se.series_uid = im.series_uid
+    JOIN eucaim_cdm_output.image_study st  ON st.study_uid = se.study_uid
+    JOIN eucaim_cdm_output.patient p       ON p.patient_id = st.patient_id
+    GROUP BY p.dataset_id
+)
 SELECT
     d.dataset_id,
     d.dataset_title,
-    COUNT(DISTINCT p.patient_id)   AS patients,
-    COUNT(DISTINCT pr.procedure_id) AS procedures,
-    COUNT(DISTINCT cc.cancer_condition_id) AS cancer_conditions,
-    COUNT(DISTINCT t.treatment_id) AS treatments,
-    COUNT(DISTINCT st.study_uid)   AS studies,
-    COUNT(DISTINCT se.series_uid)  AS series,
-    COUNT(DISTINCT im.modality_id) AS acquisition_params
+    COALESCE(patients.patients, 0)                     AS patients,
+    COALESCE(procedures.procedures, 0)                 AS procedures,
+    COALESCE(cancer_conditions.cancer_conditions, 0)   AS cancer_conditions,
+    COALESCE(treatments.treatments, 0)                 AS treatments,
+    COALESCE(studies.studies, 0)                       AS studies,
+    COALESCE(series.series, 0)                         AS series,
+    COALESCE(acquisition_params.acquisition_params, 0) AS acquisition_params
 FROM eucaim_cdm_output.dataset d
-LEFT JOIN eucaim_cdm_output.patient p           ON p.dataset_id = d.dataset_id
-LEFT JOIN eucaim_cdm_output.procedure pr        ON pr.patient_id = p.patient_id
-LEFT JOIN eucaim_cdm_output.cancer_condition cc ON cc.patient_id = p.patient_id
-LEFT JOIN eucaim_cdm_output.treatment t         ON t.patient_id = p.patient_id
-LEFT JOIN eucaim_cdm_output.image_study st      ON st.patient_id = p.patient_id
-LEFT JOIN eucaim_cdm_output.image_series se     ON se.study_uid = st.study_uid
-LEFT JOIN eucaim_cdm_output.image_modality im   ON im.series_uid = se.series_uid
+LEFT JOIN patients            ON patients.dataset_id = d.dataset_id
+LEFT JOIN procedures          ON procedures.dataset_id = d.dataset_id
+LEFT JOIN cancer_conditions   ON cancer_conditions.dataset_id = d.dataset_id
+LEFT JOIN treatments          ON treatments.dataset_id = d.dataset_id
+LEFT JOIN studies             ON studies.dataset_id = d.dataset_id
+LEFT JOIN series              ON series.dataset_id = d.dataset_id
+LEFT JOIN acquisition_params  ON acquisition_params.dataset_id = d.dataset_id
 WHERE :dataset IS NULL OR d.dataset_id = :dataset
-GROUP BY d.dataset_id, d.dataset_title
 ORDER BY d.dataset_id;
 
 
--- 3. Clinical data: fill rate of the fields that should never come back all NULL.
---    filled = 0 over rows > 0 is the usual symptom of a broken mapping or lookup.
+-- 3. Clinical & imaging data
 SELECT * FROM (
     SELECT 'patient.patient_birth_sex' AS field, COUNT(*) AS rows,
            COUNT(p.patient_birth_sex) AS filled
@@ -77,6 +108,22 @@ SELECT * FROM (
     FROM eucaim_cdm_output.procedure pr
     JOIN eucaim_cdm_output.patient p ON p.patient_id = pr.patient_id
     WHERE :dataset IS NULL OR p.dataset_id = :dataset
+    UNION ALL
+    SELECT 'treatment.treatment_type', COUNT(*), COUNT(t.treatment_type)
+    FROM eucaim_cdm_output.treatment t
+    JOIN eucaim_cdm_output.patient p ON p.patient_id = t.patient_id
+    WHERE :dataset IS NULL OR p.dataset_id = :dataset
+    UNION ALL
+    SELECT 'image_study.study_acquisition_date', COUNT(*), COUNT(st.study_acquisition_date)
+    FROM eucaim_cdm_output.image_study st
+    JOIN eucaim_cdm_output.patient p ON p.patient_id = st.patient_id
+    WHERE :dataset IS NULL OR p.dataset_id = :dataset
+    UNION ALL
+    SELECT 'image_series.series_modality', COUNT(*), COUNT(se.series_modality)
+    FROM eucaim_cdm_output.image_series se
+    JOIN eucaim_cdm_output.image_study st ON st.study_uid = se.study_uid
+    JOIN eucaim_cdm_output.patient p      ON p.patient_id = st.patient_id
+    WHERE :dataset IS NULL OR p.dataset_id = :dataset
 ) f
 ORDER BY field;
 
@@ -95,17 +142,19 @@ GROUP BY se.series_modality
 ORDER BY series DESC;
 
 
--- 5. Referential integrity of the imaging side: every row here must be 0.
+-- 5. Referential integrity of the imaging side
 SELECT 'studies without patient'          AS check_name, COUNT(*) AS offenders
 FROM eucaim_cdm_output.image_study WHERE patient_id IS NULL
 UNION ALL
 SELECT 'studies without any series', COUNT(*)
 FROM eucaim_cdm_output.image_study st
-WHERE NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.image_series se
+JOIN eucaim_cdm_output.patient p ON p.patient_id = st.patient_id
+WHERE (:dataset IS NULL OR p.dataset_id = :dataset)
+  AND NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.image_series se
                   WHERE se.study_uid = st.study_uid)
 UNION ALL
 -- desde que study_uid/series_uid son la clave y la FK, estas dos ya no pueden
--- fallar; se mantienen porque documentan la invariante
+-- fallar; se mantienen porque documentan la invariante (global, no admite :dataset)
 SELECT 'series with dangling study_uid', COUNT(*)
 FROM eucaim_cdm_output.image_series se
 WHERE NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.image_study st
