@@ -79,15 +79,12 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                     log.debug("CodeableConceptsLookupService.lookup - null value for property '${property}'")
                 } else if (value.startsWith("code:")){
                     // escape hatch for source codes with no hyperontology concept yet
-                    // (e.g. the Ann Arbor staging system): the "code:" marker is an ETL
-                    // convention, only what follows it travels to the CDM
                     result["${property}"] = value.substring("code:".length())
                 } else {
-        
                     def sql = """
                     SELECT c.concept_code
                     FROM eucaim_hyperontology_codes.concept c
-                    WHERE c.concept_name = ?
+                    WHERE lower(c.concept_name) = lower(?)
                     ORDER BY c.concept_id
                     """
 
@@ -107,8 +104,6 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                                 "Disambiguate it in eucaim_hyperontology_codes.concept.")
                         }
                     } else {
-                        // this is the silent mapping failure: the literal string
-                        // below travels downstream as if it were a valid code
                         log.warn("CodeableConceptsLookupService.lookup - NO MATCH for property " +
                             "'${property}' with value '${value}'. It is stored as NOT FOUND. " +
                             "Add the term to eucaim_hyperontology_codes.concept or correct the mapping.")
