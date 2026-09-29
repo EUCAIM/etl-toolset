@@ -514,7 +514,7 @@
                     "Store State": "Do not store state",
                     "canonical-value-lookup-cache-size": "100",
                     "log_level": "ERROR",
-                    "log_message": "Error re-generating output db",
+                    "log_message": "Error re-generating output db and its CDM CSV bundle",
                     "log_datasettype": "image_timepoints",
                     "Stateful Variables Initial Value": null,
                     "log_stepname": "write_output_db",
@@ -535,7 +535,7 @@
                     "sql.args.8.type": "12",
                     "sql.args.8.value": "ERROR",
                     "sql.args.9.type": "12",
-                    "sql.args.9.value": "Error re-generating output db"
+                    "sql.args.9.value": "Error re-generating output db and its CDM CSV bundle"
                 },
                 "propertyDescriptors": {
                     "log_pipelinestage": {
@@ -941,7 +941,7 @@
                     "Store State": "Do not store state",
                     "canonical-value-lookup-cache-size": "100",
                     "log_level": "INFO",
-                    "log_message": "Re-generating the output db after timepoints processing",
+                    "log_message": "Re-generating the output db and its CDM CSV bundle after timepoints processing",
                     "log_datasettype": "image_timepoints",
                     "Stateful Variables Initial Value": null,
                     "log_stepname": "write_output_db",
@@ -962,7 +962,7 @@
                     "sql.args.8.type": "12",
                     "sql.args.8.value": "OK",
                     "sql.args.9.type": "12",
-                    "sql.args.9.value": "Re-generating the output db after timepoints processing"
+                    "sql.args.9.value": "Re-generating the output db and its CDM CSV bundle after timepoints processing"
                 },
                 "propertyDescriptors": {
                     "log_pipelinestage": {
@@ -1426,7 +1426,7 @@
                 },
                 "properties": {
                     "Regular Expression": "",
-                    "Replacement Value": "CALL eucaim_etl_aux.transform_dataset_v001('${DatasetIdentifier}');",
+                    "Replacement Value": "CALL eucaim_etl_aux.transform_and_export_dataset_v001('${DatasetIdentifier}');",
                     "Evaluation Mode": "Entire text",
                     "Text to Prepend": null,
                     "Line-by-Line Evaluation Mode": "All",

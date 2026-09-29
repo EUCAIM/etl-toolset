@@ -38,21 +38,6 @@ END;
 $func$;
 
 
--- KNOWN GAP (2026-09-25): across the whole repo, this procedure is only ever CALLed from
--- flows/Dicom_timepoints_loop03_exec_proc.json, i.e. only when a dataset's *optional*
--- imaging_timepoints CSV is submitted. Clinical_data_loop03/loop04 never call it. A dataset
--- with clinical data (and even DICOM metadata) but no imaging_timepoints file therefore
--- ingests cleanly but never gets a single row written to eucaim_cdm_output - silently, with
--- no error anywhere (confirmed for 5 of the 10 datasets currently in flows/: AUTH Thyroid,
--- Lung SAS, UoA Prostate, UoA Sarcoma, NHL SAS all lacked a sample imaging_timepoints file
--- and had zero rows in eucaim_cdm_output despite eucaim_cdm_ingestion being fully populated;
--- manually calling this procedure for each fixed it instantly). The call is idempotent
--- (see the DELETE below), so the real fix is to also trigger it - e.g. by cloning the
--- ReplaceText -> SQL-executor pair that builds "CALL eucaim_etl_aux.transform_dataset_v001
--- ('${DatasetIdentifier}')" in Dicom_timepoints_loop03_exec_proc.json - into
--- Clinical_data_loop04_transformToCDM.json, so every dataset gets transformed regardless of
--- whether imaging timepoints ever arrive. Not done here; flagged for a follow-up change to
--- the NiFi flow itself.
 CREATE OR REPLACE PROCEDURE eucaim_etl_aux.transform_dataset_v001(p_dataset_id text)
 LANGUAGE plpgsql
 SET search_path = eucaim_etl_aux, eucaim_cdm_ingestion, eucaim_cdm_output

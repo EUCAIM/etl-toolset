@@ -14,6 +14,7 @@ $dirs = @(
     "staging_data\input_as_csv\image_timepoints",
     "output_data",
     "output_data\ingestion",
+    "output_data\cdm",
 	"output_data\mapping_logs",
     "output_data\etl_process_logs",
     "registry\database",

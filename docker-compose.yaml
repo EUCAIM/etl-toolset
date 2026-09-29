@@ -106,6 +106,11 @@ services:
     volumes:
       - ./Database/:/docker-entrypoint-initdb.d/
       - postgres_data:/var/lib/postgresql/data
+      # eucaim_etl_aux.export_dataset_to_csv_v001 writes the CDM bundle here with
+      # a server side COPY, so the files come from the same place the database
+      # does. Same host folder NiFi already has, mounted under its own name to
+      # keep the export path independent of NiFi's layout.
+      - ./output_data:/etl_output
   nifi-tdc:
     image: bahia_tdc
     build: ./TDC

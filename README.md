@@ -74,6 +74,14 @@ Please push first at least once, the files for clinical data and DICOM metadata,
 
 ## Dataset output folders ##
 
+The EUCAIM CDM deliverable, one CSV per CDM table and dataset, is written here:
+- `output_data\cdm`
+
+Files are named `<dataset_id>__<table>.csv` and their header is the column list of
+that table in the CDM, so they can be loaded as they are. Every table of the model gets a
+file even when it has no rows for that dataset, so a bundle always describes the whole
+model.
+
 The per-run export of the ingestion tables, holding the clinical data and the DICOM metadata as
 the mapping wrote them, is written here:
 - `output_data\ingestion`
