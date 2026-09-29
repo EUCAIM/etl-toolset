@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
     originalValue VARCHAR(150),
     parsedValue VARCHAR(150),
     codeInEUCAIM VARCHAR(50),
-    codeCandidatesInEUCAIM VARCHAR(50),
     mappingTimestamp VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
 );

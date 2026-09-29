@@ -165,14 +165,6 @@ END;
 $$;
 
 
--- What the pipeline calls: rebuilding the output schema and writing the bundle
--- are one step, so the files on disk can never describe a state of the database
--- that has already moved on.
-CREATE OR REPLACE PROCEDURE eucaim_etl_aux.transform_and_export_dataset_v001(p_dataset_id text)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    CALL eucaim_etl_aux.transform_dataset_v001(p_dataset_id);
-    CALL eucaim_etl_aux.export_dataset_to_csv_v001(p_dataset_id);
-END;
-$$;
+-- transform_and_export_dataset_v001, which is what the pipeline actually calls,
+-- lives in step 7c: it chains this export with the report, and keeping one
+-- definition avoids an edit here silently losing to the later one.

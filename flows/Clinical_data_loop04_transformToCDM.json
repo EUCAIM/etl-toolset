@@ -10920,7 +10920,7 @@
                     "esqlrecord-normalize": "false",
                     "esqlrecord-record-writer": "17e7a1ff-9ba8-354b-9e9d-fa4cfbb4574d",
                     "Max Wait Time": "0 seconds",
-                    "SQL Query": "SELECT Id, datasetId, propertyNameOriginal, propertyNameEUCAIM, originalValue, parsedValue, codeInEUCAIM, codeCandidatesInEUCAIM, mappingTimestamp\nFROM eucaim_cdm_ingestion.mappedcodeableconceptsresults WHERE processed = FALSE;",
+                    "SQL Query": "SELECT Id, datasetId, propertyNameOriginal, propertyNameEUCAIM, originalValue, parsedValue, codeInEUCAIM, mappingTimestamp\nFROM eucaim_cdm_ingestion.mappedcodeableconceptsresults WHERE processed = FALSE;",
                     "sql-post-query": null,
                     "sql-pre-query": null
                 },

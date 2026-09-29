@@ -47,6 +47,15 @@ BEGIN
     DELETE FROM eucaim_cdm_output.dataset
     WHERE dataset_id = p_dataset_id;
 
+    -- body_site is the one output table the cascade above cannot reach
+    DELETE FROM eucaim_cdm_output.body_site bs
+    WHERE NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.tumor t
+                      WHERE t.tumor_body_site_id = bs.body_site_id)
+      AND NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.radiotherapy r
+                      WHERE r.radiotherapy_body_site_id = bs.body_site_id)
+      AND NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.surgical_procedure sp
+                      WHERE sp.surgical_procedure_body_site_id = bs.body_site_id);
+
     -- Update Dataset
     INSERT INTO eucaim_cdm_output.dataset(dataset_id, dataset_title, dataset_description)
     SELECT Identifier, Title, Description
