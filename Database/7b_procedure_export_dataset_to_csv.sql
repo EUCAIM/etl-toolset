@@ -14,6 +14,19 @@
 -- layout with subdirectories would need something outside the database to make
 -- them first.
 --
+-- A table with no rows for this dataset gets no file. Which tables the model has
+-- is the manifest's job, and it lists all of them with their count, so an empty
+-- file would only repeat what the manifest already says - while claiming this
+-- node produces data it has no way of producing: five CDM tables (adverse_event,
+-- comorbidities, medical_history, segmentation_series, segment) have no ingestion
+-- table behind them and would ship empty in every bundle forever.
+--
+-- COPY can create and overwrite a file but not delete one, so a table dropping
+-- back to zero rows would leave its previous file on disk, still full of rows
+-- that are no longer true. That is why the run lists the directory first: a file
+-- already there is rewritten even at zero rows, which leaves it holding nothing
+-- but its header. Nothing is ever left saying something the database does not.
+--
 -- Completion is declared by <dataset_id>__manifest.csv, which is rewritten as
 -- in_progress before the first table and as complete after the last one. COPY
 -- is not transactional against the filesystem, so a run that dies halfway
@@ -48,6 +61,8 @@ DECLARE
     v_exported_at timestamptz := now();
     v_total       bigint := 0;
     v_tables      integer := 0;
+    v_existing    text[];
+    v_filename    text;
 BEGIN
     -- Both values end up inside a filesystem path, so neither may carry a
     -- separator or a parent reference. Without this, a dataset identifier is
@@ -87,6 +102,13 @@ BEGIN
         p_output_dir || '/' || p_dataset_id || '__manifest.csv');
     DELETE FROM export_manifest;
 
+    -- What this dataset already has on disk, so a table that no longer has rows
+    -- can be emptied instead of being left behind with the previous run's.
+    SELECT coalesce(array_agg(f), '{}')
+    INTO v_existing
+    FROM pg_ls_dir(p_output_dir) f
+    WHERE starts_with(f, p_dataset_id || '__') AND f LIKE '%.csv';
+
     FOR v_view IN
         SELECT table_name
         FROM information_schema.views
@@ -108,14 +130,17 @@ BEGIN
         EXECUTE format('SELECT count(*) FROM eucaim_cdm_output.%I WHERE export_dataset_id = %L', v_view, p_dataset_id)
         INTO v_rows;
 
-        v_path := p_output_dir || '/' || p_dataset_id || '__' || v_table || '.csv';
+        v_filename := p_dataset_id || '__' || v_table || '.csv';
+        v_path     := p_output_dir || '/' || v_filename;
 
-        -- A table with no rows for this dataset is still written, as a file
-        -- holding only its header: the bundle then describes the whole CDM and
-        -- the header check has something to compare against for every table.
-        EXECUTE format(
-            'COPY (SELECT %s FROM eucaim_cdm_output.%I WHERE export_dataset_id = %L) TO %L WITH (FORMAT csv, HEADER true)',
-            v_columns, v_view, p_dataset_id, v_path);
+        -- Written when the table has rows, and also when it has none but a file
+        -- from an earlier run is still sitting there: that one is overwritten
+        -- down to its header rather than left holding rows that no longer exist.
+        IF v_rows > 0 OR v_filename = ANY(v_existing) THEN
+            EXECUTE format(
+                'COPY (SELECT %s FROM eucaim_cdm_output.%I WHERE export_dataset_id = %L) TO %L WITH (FORMAT csv, HEADER true)',
+                v_columns, v_view, p_dataset_id, v_path);
+        END IF;
 
         INSERT INTO export_manifest VALUES (p_dataset_id, v_exported_at, 'complete', v_table, v_rows);
         v_total  := v_total + v_rows;
@@ -133,7 +158,7 @@ BEGIN
     CALL eucaim_etl_aux.insert_log_v001(
         p_dataset_id || '__manifest.csv', p_dataset_id, 'cdm_output', 'export', '1',
         'export_dataset_to_csv', 'INFO', 'OK',
-        format('Exported %s CDM tables, %s rows, to %s', v_tables, v_total, p_output_dir));
+        format('Exported %s rows over %s CDM tables to %s', v_total, v_tables, p_output_dir));
 
     DROP TABLE pg_temp.export_manifest;
 END;

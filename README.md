@@ -78,9 +78,11 @@ The EUCAIM CDM deliverable, one CSV per CDM table and dataset, is written here:
 - `output_data\cdm`
 
 Files are named `<dataset_id>__<table>.csv` and their header is the column list of
-that table in the CDM, so they can be loaded as they are. Every table of the model gets a
-file even when it has no rows for that dataset, so a bundle always describes the whole
-model.
+that table in the CDM, so they can be loaded as they are. A table with no rows for that
+dataset gets no file: what describes the whole model is the accompanying
+**`<dataset_id>__manifest.csv`**, which lists every CDM table with its row count, including
+the ones at zero that have no file. Read it before the rest, and take the file list from it
+rather than from the directory.
 
 The per-run export of the ingestion tables, holding the clinical data and the DICOM metadata as
 the mapping wrote them, is written here:
