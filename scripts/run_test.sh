@@ -10,6 +10,12 @@ echo "==== RUNNING TEST: start main ===="
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 INPUT_DIR="$ROOT_DIR/input_data"
 OUTPUT_DIR="$ROOT_DIR/output_data"
+### the per-run export of the ingestion tables, which is what these checks read.
+### It is a trace of what the mapping wrote, not the CDM deliverable.
+INGESTION_DIR="$OUTPUT_DIR/ingestion"
+### NiFi creates it on the first write, but the waits below look into it
+### before that happens
+mkdir -p "$INGESTION_DIR"
 SAMPLE_DIR="$ROOT_DIR/sample_data"
 SCRIPTS_DIR="$ROOT_DIR/scripts"
 POSTGRES_CONTAINER=$(docker compose -f "$ROOT_DIR/docker-compose.yaml" ps -q nifi-postgres)
@@ -34,7 +40,7 @@ diagnosticar_atasco() {
            "$ROOT_DIR/staging_data/input_as_csv/clinical_data" \
            "$ROOT_DIR/TDC_Output" \
            "$ROOT_DIR/staging_data/curated_as_csv/clinical_data" \
-           "$OUTPUT_DIR"; do
+           "$INGESTION_DIR"; do
     n=$(find "$d" -maxdepth 1 -type f 2>/dev/null | wc -l)
     printf '  %-52s %s files\n' "${d#$ROOT_DIR/}" "$n"
   done
@@ -58,12 +64,12 @@ diagnosticar_atasco() {
 
 ### definitions: validations for clinical data
 procesar_pipeline_clinical_data() {
-  rm -f $OUTPUT_DIR/*.csv
+  rm -f $INGESTION_DIR/*.csv
   COUNT=0
   cp "$CLINICAL_DATA_TEST_CSV" "$INPUT_DIR/clinical_data/"
   echo "Copied clinical data sample file to $INPUT_DIR"
 
-  until [ -n "$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" -print -quit)" ]; do
+  until [ -n "$(find "$INGESTION_DIR" -maxdepth 1 -type f -name "*.csv" -print -quit)" ]; do
     if [ $COUNT -ge $MAX_RETRIES ]; then
       echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
       diagnosticar_atasco
@@ -83,7 +89,7 @@ procesar_pipeline_clinical_data() {
 
   echo "Output detected!"
   echo "Files generated:"
-  ls -l "$OUTPUT_DIR"
+  ls -l "$INGESTION_DIR"
 
   ### the output files are per-batch logs of the records written, not a final
   ### snapshot: a patient is exported again every time the mapping rewrites its
@@ -92,7 +98,7 @@ procesar_pipeline_clinical_data() {
   ### has to match the dataset is the number of distinct identifiers (first
   ### column) rather than the sum of the rows.
   echo "Validating rows number for clinical data in output files..."
-  TOTAL_ROWS=$(for f in "$OUTPUT_DIR"/patient*.csv; do
+  TOTAL_ROWS=$(for f in "$INGESTION_DIR"/patient*.csv; do
       [ -f "$f" ] || continue   ### an unmatched glob must not abort under pipefail
       tail -n +2 "$f"
     done | cut -d',' -f1 | awk 'NF' | sort -u | wc -l)
@@ -129,12 +135,12 @@ procesar_pipeline_clinical_data() {
 
 ### definitions: validations for imaging metadata pipelines
 procesar_pipeline_imaging_metadata() {
-  rm -f $OUTPUT_DIR/*.csv
+  rm -f $INGESTION_DIR/*.csv
   COUNT=0
   cp "$IMAGE_METADATA_TEST_CSV" "$INPUT_DIR/image_metadata/"
   echo "Copied imaging metadata sample file to $INPUT_DIR"
 
-  until [ -n "$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.csv" -print -quit)" ]; do
+  until [ -n "$(find "$INGESTION_DIR" -maxdepth 1 -type f -name "*.csv" -print -quit)" ]; do
     if [ $COUNT -ge $MAX_RETRIES ]; then
       echo "Timeout: No output files detected after $((MAX_RETRIES*SLEEP_SEC)) seconds."
       diagnosticar_atasco
@@ -154,13 +160,13 @@ procesar_pipeline_imaging_metadata() {
 
   echo "Output detected!"
   echo "Files generated:"
-  ls -l "$OUTPUT_DIR"
+  ls -l "$INGESTION_DIR"
 
   ### same per-batch logs as for the patients, but here the first column is the
   ### autoincremental id, so the study is identified by study_uid, the second
   ### column of the LoadNewImageStudy query
   echo "Validating rows number for imaging metadata in output files..."
-  TOTAL_ROWS=$(for f in "$OUTPUT_DIR"/image_study*.csv; do
+  TOTAL_ROWS=$(for f in "$INGESTION_DIR"/image_study*.csv; do
       [ -f "$f" ] || continue   ### an unmatched glob must not abort under pipefail
       tail -n +2 "$f"
     done | cut -d',' -f2 | awk 'NF' | sort -u | wc -l)
@@ -197,7 +203,7 @@ procesar_pipeline_imaging_metadata() {
 
 ### definitions: validations for imaging timepoints pipelines
 procesar_pipeline_imaging_timepoints() {
-  rm -f $OUTPUT_DIR/*.csv
+  rm -f $INGESTION_DIR/*.csv
   COUNT=0
   cp "$IMAGING_TIMEPOINTS_TEST_CSV" "$INPUT_DIR/image_timepoints/"
   echo "Copied imaging timepoints sample file to $INPUT_DIR"

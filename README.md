@@ -47,7 +47,7 @@ The same file holds two optional settings:
 
 The ETL service runs continuously in the background. In the current version, the execution of the pipeline is triggered by placing the dataset files into the **input_data** directory.
 
-The results are generated as a set of CSV files in the corresponding **output_data** directories.
+The results are generated as a set of CSV files in the corresponding **output_data** subdirectories.
 
 ## Dataset requirements ##
 
@@ -74,8 +74,15 @@ Please push first at least once, the files for clinical data and DICOM metadata,
 
 ## Dataset output folders ##
 
-The generated output files, containing the dataset data and DICOM metadata both converted into the EUCAIM CDM, are written here:
-- `output_data`
+The per-run export of the ingestion tables, holding the clinical data and the DICOM metadata as
+the mapping wrote them, is written here:
+- `output_data\ingestion`
+
+These files are a trace of what each pipeline run loaded, useful for reviewing a mapping without
+querying the database. They follow the ingestion tables, **not** the EUCAIM CDM: the identifiers
+that link the entities are not exported, dates keep the format of the source, and several CDM
+entities have no file at all. They are kept for the same number of days as the log folders below.
+Do not use them as the CDM deliverable.
 
 Additional output to support the review of the mapping process is written here:
 - `output_data\mapping_logs` 

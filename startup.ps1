@@ -13,6 +13,7 @@ $dirs = @(
     "staging_data\input_as_csv\image_metadata",
     "staging_data\input_as_csv\image_timepoints",
     "output_data",
+    "output_data\ingestion",
 	"output_data\mapping_logs",
     "output_data\etl_process_logs",
     "registry\database",
@@ -79,7 +80,9 @@ if ($env:downloadFlows.ToLower() -in @("false", "no", "0", "off")) {
 # loop04 writes one CSV per export run, so these folders reach hundreds of files
 # in a few weeks and stop being readable. The rows they contain stay in the
 # ingestion database, which is what the export reads from, so dropping the old
-# files loses nothing. Only the files loop04 generates are matched: etl-errors.log
+# files loses nothing. output_data\ingestion holds that same per-run export of the
+# ingestion tables, kept as a trace for reviewing a mapping, so it ages out under
+# the same rule. Only the files loop04 generates are matched: etl-errors.log
 # and its rotations are logback's business, and anything the operator put there by
 # hand is left alone. Set to 0 to keep everything.
 if (-not $env:logsRetentionDays) { $env:logsRetentionDays = "30" }
@@ -87,7 +90,8 @@ $retention = 0
 if ([int]::TryParse($env:logsRetentionDays, [ref]$retention) -and $retention -gt 0) {
     $cutoff = (Get-Date).AddDays(-$retention)
     $patterns = @("output_data\mapping_logs\mapping_results_*_records.csv",
-                  "output_data\etl_process_logs\process_logs_*_records.csv")
+                  "output_data\etl_process_logs\process_logs_*_records.csv",
+                  "output_data\ingestion\*_records.csv")
     $removed = 0
     foreach ($pattern in $patterns) {
         $old = Get-ChildItem -Path $pattern -File -ErrorAction SilentlyContinue |

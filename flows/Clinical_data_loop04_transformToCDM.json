@@ -16300,7 +16300,7 @@
                 "properties": {
                     "Conflict Resolution Strategy": "replace",
                     "Create Missing Directories": "true",
-                    "Directory": "#{output_base_path}",
+                    "Directory": "#{output_base_path}/ingestion",
                     "Group": null,
                     "Last Modified Time": null,
                     "Maximum File Count": null,
