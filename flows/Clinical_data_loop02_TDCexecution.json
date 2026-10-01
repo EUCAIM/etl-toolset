@@ -1800,8 +1800,8 @@
                     "Response Redirects Enabled": "True",
                     "Socket Idle Connections": "5",
                     "Socket Idle Timeout": "5 mins",
-                    "Socket Read Timeout": "15 secs",
-                    "Socket Write Timeout": "15 secs",
+                    "Socket Read Timeout": "300 secs",
+                    "Socket Write Timeout": "300 secs",
                     "SSL Context Service": null
                 },
                 "propertyDescriptors": {

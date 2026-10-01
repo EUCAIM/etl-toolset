@@ -5,3 +5,7 @@ output_data/
 registry/
 staging_data/
 utils/testing/
+reference_dump/
+scripts/synthetic/generated/
+__pycache__/
+dist/
