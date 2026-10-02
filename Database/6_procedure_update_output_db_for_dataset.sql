@@ -42,6 +42,9 @@ CREATE OR REPLACE PROCEDURE eucaim_etl_aux.transform_dataset_v001(p_dataset_id t
 LANGUAGE plpgsql
 SET search_path = eucaim_etl_aux, eucaim_cdm_ingestion, eucaim_cdm_output
 AS $$
+DECLARE
+    v_orphan_studies INTEGER;
+    v_orphan_sample  TEXT;
 BEGIN
     -- Clealing output tables or given dataset ID  (CASCADE)
     DELETE FROM eucaim_cdm_output.dataset
@@ -252,6 +255,36 @@ BEGIN
 	  AND ot.patient_id = icp.Identifier;
 
 	-- Update entities for DICOM metadata
+	SELECT count(*) INTO v_orphan_studies
+	FROM eucaim_cdm_ingestion.ImageStudy iis
+	WHERE iis.DatasetIdentifier = p_dataset_id
+	  AND NOT EXISTS (SELECT 1
+	                  FROM eucaim_cdm_output.procedure op
+	                  WHERE op.procedure_id = iis.ImagingProcedureIdentifier
+	                    AND op.patient_id   = iis.PatientIdentifier);
+
+	-- el conteo va sobre todos; la muestra para el log se corta en 10
+	SELECT string_agg(t.ImageStudyUID, ', ' ORDER BY t.ImageStudyUID)
+	INTO v_orphan_sample
+	FROM (
+		SELECT iis.ImageStudyUID
+		FROM eucaim_cdm_ingestion.ImageStudy iis
+		WHERE iis.DatasetIdentifier = p_dataset_id
+		  AND NOT EXISTS (SELECT 1
+		                  FROM eucaim_cdm_output.procedure op
+		                  WHERE op.procedure_id = iis.ImagingProcedureIdentifier
+		                    AND op.patient_id   = iis.PatientIdentifier)
+		ORDER BY iis.ImageStudyUID
+		LIMIT 10
+	) t;
+
+	IF v_orphan_studies > 0 THEN
+		RAISE WARNING 'transform_dataset_v001(%): % ImageStudy sin procedure asociado se '
+		              'quedan fuera de image_study (y sus series con ellos). Primeros: %. '
+		              'Revisa el csv de timepoints del dataset y la tabla procedure.',
+		              p_dataset_id, v_orphan_studies, v_orphan_sample;
+	END IF;
+
 	INSERT INTO eucaim_cdm_output.image_study(study_uid, procedure_id, patient_id, ImagingTimepoint, study_offset_from_diagnosis, study_offset_unit, study_acquisition_date, study_number_of_series, study_number_of_instances)
     SELECT iis.ImageStudyUID, op.procedure_id, op.patient_id, iis.ImagingTimepoint, iis.OffsetFromDiagnosis, iis.OffsetUnitEUCAIM, eucaim_etl_aux.parse_flexible_date(iis.AcquisitionDate),
            (SELECT COUNT(*) FROM eucaim_cdm_ingestion.ImageSeries ise WHERE ise.ImageStudyUID = iis.ImageStudyUID),
