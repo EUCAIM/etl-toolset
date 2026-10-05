@@ -45,6 +45,9 @@ AS $$
 DECLARE
     v_orphan_studies INTEGER;
     v_orphan_sample  TEXT;
+    v_unlinked_events INTEGER;
+    v_unlinked_sample TEXT;
+    v_empty_episodes  INTEGER;
 BEGIN
     -- Clealing output tables or given dataset ID  (CASCADE)
     DELETE FROM eucaim_cdm_output.dataset
@@ -330,28 +333,167 @@ BEGIN
 	FROM eucaim_cdm_ingestion.Episode iep
 	WHERE iep.DatasetIdentifier = p_dataset_id;
 
+	-- Episodio overarching
+	INSERT INTO eucaim_cdm_output.episode(episode_id, patient_id, episode_type_code, episode_number)
+	SELECT opa.patient_id || '_episode_overarching', opa.patient_id, 'GEN1000002', NULL
+	FROM eucaim_cdm_output.patient opa
+	WHERE opa.dataset_id = p_dataset_id;
+
+	UPDATE eucaim_cdm_output.episode oep
+	SET episode_parent_id = oep.patient_id || '_episode_overarching'
+	FROM eucaim_cdm_output.patient opa
+	WHERE opa.patient_id = oep.patient_id
+	  AND opa.dataset_id = p_dataset_id
+	  AND oep.episode_id <> oep.patient_id || '_episode_overarching';
+
+	-- El overarching abarca a sus hijos, así que sus fechas son las de ellos
+	UPDATE eucaim_cdm_output.episode par
+	SET episode_start_date = hijos.min_inicio,
+	    episode_end_date   = hijos.max_fin
+	FROM (
+		SELECT oep.episode_parent_id,
+		       min(oep.episode_start_date) AS min_inicio,
+		       max(oep.episode_end_date)   AS max_fin
+		FROM eucaim_cdm_output.episode oep
+		JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id
+		WHERE opa.dataset_id = p_dataset_id AND oep.episode_parent_id IS NOT NULL
+		GROUP BY oep.episode_parent_id
+	) hijos
+	WHERE par.episode_id = hijos.episode_parent_id;
+
 	-- Episodes relationships
-	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_id, event_table_name)
-	SELECT episode_id, cancer_condition_id, 'cancer_condition'
-	FROM eucaim_cdm_output.episode oep 
-	JOIN eucaim_cdm_output.cancer_condition occ ON occ.patient_id = oep.patient_id 
-	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id 
-	WHERE opa.dataset_id = p_dataset_id;
+	DROP TABLE IF EXISTS tmp_episode_events;
+	CREATE TEMP TABLE tmp_episode_events AS
+	SELECT ev.* FROM (
+		SELECT 'cancer_condition'::varchar AS event_table_name, occ.cancer_condition_id::varchar AS event_table_id,
+		       occ.patient_id, ipcc.EpisodeNumber AS episode_number
+		FROM eucaim_cdm_ingestion.PrimaryCancerCondition ipcc
+		JOIN eucaim_cdm_output.cancer_condition occ ON occ.cancer_condition_id = ipcc.Identifier
+		UNION ALL
+		SELECT 'procedure', opr.procedure_id, opr.patient_id, crp.Episode
+		FROM eucaim_cdm_ingestion.CancerRelatedProcedure crp
+		JOIN eucaim_cdm_output.procedure opr ON opr.procedure_id = crp.ProcedureIdentifier
+		UNION ALL
+		SELECT 'procedure', opr.procedure_id, opr.patient_id, iip.Episode
+		FROM eucaim_cdm_ingestion.ImagingProcedure iip
+		JOIN eucaim_cdm_output.procedure opr ON opr.procedure_id = iip.ProcedureIdentifier
+		UNION ALL
+		SELECT 'treatment', otr.treatment_id, otr.patient_id, isp.Episode
+		FROM eucaim_cdm_ingestion.SurgicalProcedure isp
+		JOIN eucaim_cdm_output.treatment otr ON otr.treatment_id = isp.TreatmentIdentifier
+		UNION ALL
+		SELECT 'treatment', otr.treatment_id, otr.patient_id, ircs.Episode
+		FROM eucaim_cdm_ingestion.RadiotherapyCourseSummary ircs
+		JOIN eucaim_cdm_output.treatment otr ON otr.treatment_id = ircs.TreatmentIdentifier
+		UNION ALL
+		SELECT 'treatment', otr.treatment_id, otr.patient_id, icrm.Episode
+		FROM eucaim_cdm_ingestion.CancerRelatedMedication icrm
+		JOIN eucaim_cdm_output.treatment otr ON otr.treatment_id = icrm.TreatmentIdentifier
+		UNION ALL
+		SELECT 'health_status_assessment', ohs.health_status_assessment_id, ohs.patient_id, ihs.Episode
+		FROM eucaim_cdm_ingestion.HealthStatus ihs
+		JOIN eucaim_cdm_output.health_status_assessment ohs ON ohs.health_status_assessment_id = ihs.Identifier
+		UNION ALL
+		SELECT 'tumor_marker_test', otmt.tumor_marker_test_id, otmt.patient_id, itmt.Episode
+		FROM eucaim_cdm_ingestion.TumorMarkerTest itmt
+		JOIN eucaim_cdm_output.tumor_marker_test otmt ON otmt.tumor_marker_test_id = itmt.Identifier
+		UNION ALL
+		SELECT 'tumor', ot.tumor_id, ot.patient_id, it.Episode
+		FROM eucaim_cdm_ingestion.Tumor it
+		JOIN eucaim_cdm_output.tumor ot ON ot.tumor_id = it.Identifier
+		UNION ALL
+		SELECT 'histologic_grade', ohg.histologic_grade_id, ohg.patient_id, ipcc.EpisodeNumber
+		FROM eucaim_cdm_ingestion.HistologicGrade ihg
+		JOIN eucaim_cdm_output.histologic_grade ohg ON ohg.histologic_grade_id = ihg.Identifier
+		JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON ipcc.Identifier = ihg.PrimaryCancerConditionIdentifier
+		UNION ALL
+		SELECT 'cancer_stage', ocs.cancer_stage_id, ocs.patient_id, ipcc.EpisodeNumber
+		FROM eucaim_cdm_ingestion.CancerStage ics
+		JOIN eucaim_cdm_output.cancer_stage ocs ON ocs.cancer_stage_id = ics.Identifier
+		JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON ipcc.Identifier = ics.PrimaryCancerConditionIdentifier
+		UNION ALL
+		SELECT 'risk_assessment', ora.risk_assessment_id, ora.patient_id, it2.Episode
+		FROM eucaim_cdm_ingestion.RiskAssessment ira
+		JOIN eucaim_cdm_output.risk_assessment ora ON ora.risk_assessment_id = ira.Identifier
+		JOIN eucaim_cdm_ingestion.Tumor it2 ON it2.Identifier = ira.TumorIdentifier
+		UNION ALL
+		SELECT 'tumor_observation', oto.tumor_observation_id, oto.patient_id, it3.Episode
+		FROM eucaim_cdm_ingestion.TumorObservation ito
+		JOIN eucaim_cdm_output.tumor_observation oto ON oto.tumor_observation_id = ito.Identifier
+		JOIN eucaim_cdm_ingestion.Tumor it3 ON it3.Identifier = ito.TumorIdentifier
+		UNION ALL
+		SELECT 'lab_test_result', oltr.lab_test_id, oltr.patient_id, NULL::integer
+		FROM eucaim_cdm_output.lab_test_result oltr
+		UNION ALL
+		SELECT 'family_member_history', ofmh.family_member_history_id, ofmh.patient_id, NULL::integer
+		FROM eucaim_cdm_output.family_member_history ofmh
+	) ev
+	WHERE ev.patient_id IN (SELECT patient_id FROM eucaim_cdm_output.patient WHERE dataset_id = p_dataset_id);
 
-	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_id, event_table_name)
-	SELECT episode_id, opr.procedure_id, 'procedure'
-	FROM eucaim_cdm_output.episode oep 
-	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id 
-	JOIN eucaim_cdm_output.cancer_condition occ ON occ.patient_id = oep.patient_id
-	JOIN eucaim_cdm_output.procedure opr ON opr.cancer_condition_id  = occ.cancer_condition_id 
-	WHERE opa.dataset_id = p_dataset_id;
+	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_name, event_table_id)
+	SELECT DISTINCT oep.episode_id, ev.event_table_name, ev.event_table_id
+	FROM tmp_episode_events ev
+	JOIN eucaim_cdm_output.episode oep ON oep.patient_id = ev.patient_id
+	                                  AND oep.episode_number = ev.episode_number;
 
-	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_id, event_table_name)
-	SELECT episode_id, treatment_id, 'treatment'
-	FROM eucaim_cdm_output.episode oep 
-	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = oep.patient_id 
-	JOIN eucaim_cdm_output.treatment otr ON otr.patient_id = oep.patient_id 
-	WHERE opa.dataset_id = p_dataset_id;
+	-- Todo lo que no casa con un episodio concreto -- porque no declara ninguno, o porque
+	-- declara uno que no existe -- se cuelga del overarching.
+	INSERT INTO eucaim_cdm_output.episode_event(episode_id, event_table_name, event_table_id)
+	SELECT DISTINCT ev.patient_id || '_episode_overarching', ev.event_table_name, ev.event_table_id
+	FROM tmp_episode_events ev
+	WHERE ev.episode_number IS NULL
+	   OR NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.episode oep
+	                  WHERE oep.patient_id = ev.patient_id
+	                    AND oep.episode_number = ev.episode_number);
+
+	-- Que vayan al overarching no los hace correctos: un evento que apunta a un episodio
+	-- inexistente es un error de mapeo, y seguirlo contando permite verlo. 
+	SELECT count(*) INTO v_unlinked_events
+	FROM tmp_episode_events ev
+	WHERE ev.episode_number IS NOT NULL
+	  AND NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.episode oep
+	                  WHERE oep.patient_id = ev.patient_id
+	                    AND oep.episode_number = ev.episode_number);
+
+	IF v_unlinked_events > 0 THEN
+		SELECT string_agg(x.detalle, '; ' ORDER BY x.detalle) INTO v_unlinked_sample
+		FROM (
+			SELECT ev.event_table_name || ' ep=' || coalesce(ev.episode_number::text, 'NULL')
+			       || ' (' || count(*) || ')' AS detalle
+			FROM tmp_episode_events ev
+			WHERE ev.episode_number IS NOT NULL
+			  AND NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.episode oep
+			                  WHERE oep.patient_id = ev.patient_id
+			                    AND oep.episode_number = ev.episode_number)
+			GROUP BY ev.event_table_name, ev.episode_number
+		) x;
+
+		RAISE WARNING 'transform_dataset_v001(%): % eventos declaran un episodio que no existe '
+		              'y se han colgado del overarching. Desglose: %. Revisa la columna Episode '
+		              'de la ingesta y los episodios que genera el flow.',
+		              p_dataset_id, v_unlinked_events, v_unlinked_sample;
+	END IF;
+
+	DROP TABLE tmp_episode_events;
+
+	WITH borrados AS (
+		DELETE FROM eucaim_cdm_output.episode oep
+		USING eucaim_cdm_output.patient opa
+		WHERE opa.patient_id = oep.patient_id
+		  AND opa.dataset_id = p_dataset_id
+		  AND oep.episode_id <> oep.patient_id || '_episode_overarching'
+		  AND NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.episode_event ee
+		                  WHERE ee.episode_id = oep.episode_id)
+		  AND NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.episode hijo
+		                  WHERE hijo.episode_parent_id = oep.episode_id)
+		RETURNING 1
+	)
+	SELECT count(*) INTO v_empty_episodes FROM borrados;
+
+	IF v_empty_episodes > 0 THEN
+		RAISE NOTICE 'transform_dataset_v001(%): % episodios se quedaron sin ningun evento y se '
+		             'han eliminado.', p_dataset_id, v_empty_episodes;
+	END IF;
 
 
 	-- Update flag for this dataset_id	(currently handled in NiFi process group)
