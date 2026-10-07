@@ -19,7 +19,7 @@
 set -o pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CDM_DIR="$ROOT_DIR/output_data/cdm"
+CDM_DIR="${outputDataDir:-$ROOT_DIR/output_data}/cdm"
 
 if [ -z "$POSTGRES_CONTAINER" ]; then
   POSTGRES_CONTAINER=$(docker compose -f "$ROOT_DIR/docker-compose.yaml" ps -q nifi-postgres)

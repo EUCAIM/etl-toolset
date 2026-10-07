@@ -9,7 +9,7 @@ echo "==== RUNNING TEST: start main ===="
 ### no matter which directory it is invoked from
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 INPUT_DIR="$ROOT_DIR/input_data"
-OUTPUT_DIR="$ROOT_DIR/output_data"
+OUTPUT_DIR="${outputDataDir:-$ROOT_DIR/output_data}"
 ### the per-run export of the ingestion tables, which is what these checks read.
 ### It is a trace of what the mapping wrote, not the CDM deliverable.
 INGESTION_DIR="$OUTPUT_DIR/ingestion"

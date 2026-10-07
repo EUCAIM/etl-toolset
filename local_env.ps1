@@ -32,3 +32,9 @@
 # delete nothing. Defaults to 30.
 #
 # $env:logsRetentionDays = "2"
+#
+# Host folder that holds the output of the ETL (CDM bundle, ingestion export and
+# logs). Optional: most nodes leave it alone and get .\output_data. Use an
+# absolute path with forward slashes, and make sure it is writable.
+#
+# $env:outputDataDir = "D:/eucaim/output_data"

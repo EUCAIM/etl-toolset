@@ -5,10 +5,6 @@ mkdir -m 777 -p ./nifi_data/nifi_content_repository ./nifi_data/nifi_data ./nifi
 mkdir -m 777 -p ./input_data/clinical_data ./input_data/image_metadata ./input_data/image_timepoints
 mkdir -m 777 -p ./staging_data/curated_as_csv/clinical_data ./staging_data/input_as_csv/clinical_data ./staging_data/input_as_csv/image_metadata ./staging_data/input_as_csv/image_timepoints
 mkdir -m 777 -p ./TDC_Output
-mkdir -m 777 -p ./output_data ./output_data/ingestion ./output_data/mapping_logs ./output_data/etl_process_logs
-### the CDM bundle. Postgres writes it with COPY, which does not create the
-### directory, so it has to be here before the first export runs
-mkdir -m 777 -p ./output_data/cdm
 mkdir -m 777 -p ./registry/database ./registry/flow-storage
 mkdir -p ./flows
 chmod 777 ./flows
@@ -34,6 +30,14 @@ fi
 if [ -n "$DOWNLOAD_FROM_ENV" ]; then
     downloadFlows="$DOWNLOAD_FROM_ENV"
 fi
+
+### host folder mounted as output_data in the containers, ./output_data unless
+### local_env.sh says otherwise. cdm/ is the CDM bundle: Postgres writes it with
+### COPY, which does not create the directory, so it has to exist before the
+### first export runs
+outputDataDir="${outputDataDir:-./output_data}"
+export outputDataDir
+mkdir -m 777 -p "$outputDataDir" "$outputDataDir/ingestion" "$outputDataDir/mapping_logs" "$outputDataDir/etl_process_logs" "$outputDataDir/cdm"
 
 ### datasets whose mappings init.sh pulls from EUCAIM/etl-mappings. Empty on a
 ### clean deployment: this node downloads no mapping until its operator selects
@@ -69,9 +73,9 @@ case "$logsRetentionDays" in
     ''|*[!0-9]*) echo "logsRetentionDays is not a number, skipping the cleanup" ;;
     0) ;;
     *)
-        removed=$(find ./output_data/mapping_logs -maxdepth 1 -type f -name 'mapping_results_*_records.csv' -mtime +"$logsRetentionDays" -print -delete 2>/dev/null | wc -l)
-        removed=$((removed + $(find ./output_data/etl_process_logs -maxdepth 1 -type f -name 'process_logs_*_records.csv' -mtime +"$logsRetentionDays" -print -delete 2>/dev/null | wc -l)))
-        removed=$((removed + $(find ./output_data/ingestion -maxdepth 1 -type f -name '*_records.csv' -mtime +"$logsRetentionDays" -print -delete 2>/dev/null | wc -l)))
+        removed=$(find "$outputDataDir/mapping_logs" -maxdepth 1 -type f -name 'mapping_results_*_records.csv' -mtime +"$logsRetentionDays" -print -delete 2>/dev/null | wc -l)
+        removed=$((removed + $(find "$outputDataDir/etl_process_logs" -maxdepth 1 -type f -name 'process_logs_*_records.csv' -mtime +"$logsRetentionDays" -print -delete 2>/dev/null | wc -l)))
+        removed=$((removed + $(find "$outputDataDir/ingestion" -maxdepth 1 -type f -name '*_records.csv' -mtime +"$logsRetentionDays" -print -delete 2>/dev/null | wc -l)))
         [ "$removed" -gt 0 ] && echo "Removed $removed exported log files older than $logsRetentionDays days"
         ;;
 esac

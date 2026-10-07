@@ -69,7 +69,7 @@ services:
       - ./nifi_data/nifi_content_repository:/opt/nifi/nifi-current/content_repository
       - ./nifi_data/nifi_provenance_repository:/opt/nifi/nifi-current/provenance_repository
       - ./input_data:/mnt/persistent-home/ETL-files/input_data
-      - ./output_data:/mnt/persistent-home/ETL-files/output_data
+      - ${outputDataDir:-./output_data}:/mnt/persistent-home/ETL-files/output_data
       - ./staging_data:/mnt/persistent-home/ETL-files/staging_data
       - ./flows/:/flows
       - ./TDC_Output:/mnt/persistent-home/ETL-files/TDC_Output
@@ -110,7 +110,7 @@ services:
       # a server side COPY, so the files come from the same place the database
       # does. Same host folder NiFi already has, mounted under its own name to
       # keep the export path independent of NiFi's layout.
-      - ./output_data:/etl_output
+      - ${outputDataDir:-./output_data}:/etl_output
   nifi-tdc:
     image: bahia_tdc
     build: ./TDC
