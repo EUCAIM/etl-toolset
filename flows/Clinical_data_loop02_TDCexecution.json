@@ -2092,7 +2092,7 @@
                     "Character Set": "UTF-8",
                     "Evaluation Mode": "Entire text",
                     "Line-by-Line Evaluation Mode": "All",
-                    "Maximum Buffer Size": "1 MB",
+                    "Maximum Buffer Size": "100 MB",
                     "Regular Expression": "(?s)^(.*)$",
                     "Replacement Strategy": "Regex Replace",
                     "Replacement Value": "--boundary\nContent-Disposition: form-data; name=\"file\"; filename=\"${filename}\"\nContent-Type: application/octet-stream\n\n$1\n--boundary\nContent-Disposition: form-data; name=\"imputation_method_id\"\n\n4\n--boundary\nContent-Disposition: form-data; name=\"outlier_detection_method_id\"\n\n2\n--boundary\nContent-Disposition: form-data; name=\"sim_method_id\"\n\n1\n--boundary--",
