@@ -671,6 +671,48 @@ VALUES ('Temporal', 'Temporal lobe');
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
 VALUES ('Thalamus - Cingulum', 'Thalamus');
 
+-- UoA Brain (90a34e05855697899fe5e22ad6259c89): 368 valores de "Topography : Region" salian sin
+-- codigo. El lookup compara el texto exacto (mayusculas, guiones y espacios incluidos), asi que
+-- cada variante de escritura del origen necesita su fila, tal como llega, typos incluidos.
+-- parsedValue debe ser un concept_name que exista: el servicio de conceptos lo resuelve por nombre.
+-- Tumor_BodySiteLocationQualifier admite un unico concepto, asi que las combinaciones de varias
+-- regiones no se pueden partir en varias filas. Se codifican con el concepto que las engloba:
+--   * varios lobulos (con o sin talamo)  -> 'Supratentorial brain'
+--   * mesencefalo / protuberancia        -> 'Brain stem'
+-- Es una perdida de detalle deliberada, preferible a dejar el valor sin codigo.
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES
+    -- una sola region
+    ('Frontal', 'Frontal lobe'),
+    ('Parietal', 'Parietal lobe'),
+    ('Occipital', 'Occipital lobe'),
+    ('Thalamus', 'Thalamus'),
+    ('Cerebellum', 'Cerebellum'),
+    ('cerebellum', 'Cerebellum'),
+    ('caudate nucleus / basal ganglia', 'Basal ganglia'),
+    ('3rd Ventricle', 'Ventricle, NOS'),
+    ('4th Ventricle', 'Ventricle, NOS'),
+    ('Pons', 'Brain stem'),
+    ('Midbrain - Pons', 'Brain stem'),
+    ('Posterior Fossa', 'Infratentorial brain structure'),
+    -- varios lobulos: supratentorial
+    ('Frontal - Parietal', 'Supratentorial brain'),
+    ('Parietal - Frontal', 'Supratentorial brain'),
+    ('Frontal Parietal', 'Supratentorial brain'),
+    ('Frontal Temporal', 'Supratentorial brain'),
+    ('Frontal Temporal Parietal', 'Supratentorial brain'),
+    ('Frontal Parietal Temporal', 'Supratentorial brain'),
+    ('Frontal  Parietal Temporal', 'Supratentorial brain'),
+    ('Frontal Parietal Occipital', 'Supratentorial brain'),
+    ('Frontal - Parietal - Thalamus - Occipital', 'Supratentorial brain'),
+    ('Parietal - Temporal', 'Supratentorial brain'),
+    ('Parietal Temporal', 'Supratentorial brain'),
+    ('Temporal - Parietal', 'Supratentorial brain'),
+    ('Parietal Temporal Occipital', 'Supratentorial brain'),
+    ('Parietal - Occipial', 'Supratentorial brain'),
+    ('Temporal Occipital', 'Supratentorial brain'),
+    ('Temporal - Occipital', 'Supratentorial brain');
+
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorGradeCodeService;
 
