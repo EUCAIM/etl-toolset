@@ -33,7 +33,7 @@ fi
 echo "✔️ Patient diagnostic category code is the expected in test data"
 
 NUMBER_OF_EPISODES_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.Episode e where e.datasetidentifier='${CODE}';" | xargs)
-NUMBER_OF_EPISODES=8
+NUMBER_OF_EPISODES=16
 
 if [ "$NUMBER_OF_EPISODES_QUERY" -ne "$NUMBER_OF_EPISODES" ]; then
   echo "❌ Not expected number of episodes in sample data"
@@ -43,7 +43,7 @@ fi
 echo "✔️ Number of episodes in test data is the expected"
 
 IMAGING_PROCEDURE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.imagingprocedure i join eucaim_cdm_ingestion.cancerpatient p on p.identifier = i.patientidentifier and p.datasetidentifier='${CODE}' where i.patientidentifier='EUCAIM-42359961463279617395233496226407435633';" | xargs)
-IMAGING_PROCEDURE_NUMBER=1
+IMAGING_PROCEDURE_NUMBER=2
 
 if [ "$IMAGING_PROCEDURE_QUERY" -ne "$IMAGING_PROCEDURE_NUMBER" ]; then
   echo "❌ Not expected number of imaging procedures for patient EUCAIM-42359961463279617395233496226407435633"
@@ -51,6 +51,39 @@ if [ "$IMAGING_PROCEDURE_QUERY" -ne "$IMAGING_PROCEDURE_NUMBER" ]; then
 fi
 
 echo "✔️ Number of imaging procedures for a patient is the expected in test data"
+
+### patient 1 has two clinical rows (two exams), patient 2 only one: each row must end
+### up as its own imaging procedure, numbered by timepoint
+IMAGING_PROCEDURE_P2_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.imagingprocedure i join eucaim_cdm_ingestion.cancerpatient p on p.identifier = i.patientidentifier and p.datasetidentifier='${CODE}' where i.patientidentifier='EUCAIM-235865861987234915500053222799778009958';" | xargs)
+
+if [ "$IMAGING_PROCEDURE_P2_QUERY" -ne 1 ]; then
+  echo "❌ Not expected number of imaging procedures for patient EUCAIM-235865861987234915500053222799778009958"
+  exit 1
+fi
+
+IMAGING_TIMEPOINTS_P1_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT string_agg(i.imagingtimepoint::text, ',' ORDER BY i.imagingtimepoint) FROM eucaim_cdm_ingestion.imagingprocedure i join eucaim_cdm_ingestion.cancerpatient p on p.identifier = i.patientidentifier and p.datasetidentifier='${CODE}' where i.patientidentifier='EUCAIM-42359961463279617395233496226407435633';" | xargs)
+
+if [ "$IMAGING_TIMEPOINTS_P1_QUERY" != "1,2" ]; then
+  echo "❌ Not expected imaging timepoints on patient 1 (got '$IMAGING_TIMEPOINTS_P1_QUERY', expected '1,2')"
+  exit 1
+fi
+
+echo "✔️ Imaging procedures and timepoints per patient are the expected in test data"
+
+### one exam per clinical row, however many: patient 3 has three exams, patient 4 four
+### (two of them "Follow up"), and the timepoints must come out as 1..N by exam date
+for EXPECTED in "EUCAIM-171642803985521406953177491234950123|1,2,3" "EUCAIM-308175926140839527164850293618475026|1,2,3,4"; do
+  PATIENT_ID="${EXPECTED%%|*}"
+  EXPECTED_TIMEPOINTS="${EXPECTED##*|}"
+  TIMEPOINTS=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT string_agg(i.imagingtimepoint::text, ',' ORDER BY i.imagingtimepoint) FROM eucaim_cdm_ingestion.imagingprocedure i join eucaim_cdm_ingestion.cancerpatient p on p.identifier = i.patientidentifier and p.datasetidentifier='${CODE}' where i.patientidentifier='${PATIENT_ID}';" | xargs)
+
+  if [ "$TIMEPOINTS" != "$EXPECTED_TIMEPOINTS" ]; then
+    echo "❌ Not expected imaging timepoints on patient ${PATIENT_ID} (got '$TIMEPOINTS', expected '$EXPECTED_TIMEPOINTS')"
+    exit 1
+  fi
+done
+
+echo "✔️ Patients with three and four exams get one imaging procedure per exam"
 
 PCC_CODE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT c.primarycancerconditioneucaim FROM eucaim_cdm_ingestion.primarycancercondition c join eucaim_cdm_ingestion.cancerpatient p on p.identifier = c.patientidentifier and p.datasetidentifier='${CODE}' where c.patientidentifier='EUCAIM-42359961463279617395233496226407435633';" | xargs)
 PCC_CODE="CLIN1007990"
@@ -65,7 +98,7 @@ echo "✔️ Primary Cancer Condition Code is the expected in test data"
 
 
 RADIOTHERAPY_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.radiotherapycoursesummary r join eucaim_cdm_ingestion.cancerpatient p on p.identifier = r.patientidentifier and p.datasetidentifier='${CODE}';" | xargs)
-RADIOTHERAPY_NUMBER=2
+RADIOTHERAPY_NUMBER=4
 
 if [ "$RADIOTHERAPY_QUERY" -ne "$RADIOTHERAPY_NUMBER" ]; then
   echo "❌ Not expected number of radiotherapy procedures for test data"
