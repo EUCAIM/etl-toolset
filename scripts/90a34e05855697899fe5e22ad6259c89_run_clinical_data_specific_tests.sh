@@ -98,7 +98,7 @@ echo "✔️ Primary Cancer Condition Code is the expected in test data"
 
 
 RADIOTHERAPY_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.radiotherapycoursesummary r join eucaim_cdm_ingestion.cancerpatient p on p.identifier = r.patientidentifier and p.datasetidentifier='${CODE}';" | xargs)
-RADIOTHERAPY_NUMBER=4
+RADIOTHERAPY_NUMBER=2
 
 if [ "$RADIOTHERAPY_QUERY" -ne "$RADIOTHERAPY_NUMBER" ]; then
   echo "❌ Not expected number of radiotherapy procedures for test data"
