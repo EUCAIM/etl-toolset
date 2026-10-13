@@ -377,6 +377,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
     Laterality VARCHAR(50),
     AcquisitionDate VARCHAR(50),
     Modality VARCHAR(50),
+    -- NumberOfSeriesRelatedInstances del extractor. Es un tag POR SERIE; hasta ahora se
+    -- cargaba a nivel de estudio, donde no significa nada. El recuento del estudio se
+    -- obtiene sumando esta columna sobre sus series.
+    NumberOfInstances INTEGER,
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -395,6 +399,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
     ConvolutionKernel VARCHAR(30),
     SliceThickness DECIMAL(10,4),
     EchoTime DECIMAL(10,5),
+    CTDIvol DECIMAL(10,4),
     ImageRows INTEGER,
     ImageColumns INTEGER,
     PixelRowSpacing DECIMAL(10,4),

@@ -291,14 +291,16 @@ BEGIN
 	INSERT INTO eucaim_cdm_output.image_study(study_uid, procedure_id, patient_id, ImagingTimepoint, study_offset_from_diagnosis, study_offset_unit, study_acquisition_date, study_number_of_series, study_number_of_instances)
     SELECT iis.ImageStudyUID, op.procedure_id, op.patient_id, iis.ImagingTimepoint, iis.OffsetFromDiagnosis, iis.OffsetUnitEUCAIM, eucaim_etl_aux.parse_flexible_date(iis.AcquisitionDate),
            (SELECT COUNT(*) FROM eucaim_cdm_ingestion.ImageSeries ise WHERE ise.ImageStudyUID = iis.ImageStudyUID),
-           iis.NumberOfInstances
+           -- NumberOfSeriesRelatedInstances es un tag POR SERIE, asi que el total del
+           -- estudio es la suma sobre sus series, igual que el recuento de arriba.
+           (SELECT SUM(ise.NumberOfInstances) FROM eucaim_cdm_ingestion.ImageSeries ise WHERE ise.ImageStudyUID = iis.ImageStudyUID)
     FROM eucaim_cdm_ingestion.ImageStudy iis
 	JOIN eucaim_cdm_output.procedure op ON iis.ImagingProcedureIdentifier = op.procedure_id
 	                                       AND op.patient_id = iis.PatientIdentifier
 	WHERE iis.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.image_series(series_uid, study_uid, series_number, series_description, series_manufacturer_name, series_acquisition_date, series_modality, series_body_site)
-    SELECT iise.ImageSeriesUID, ois.study_uid, ImageSeriesNumber, Description, Manufacturer, eucaim_etl_aux.parse_flexible_date(iise.AcquisitionDate), modality, iise.BodyPart
+	INSERT INTO eucaim_cdm_output.image_series(series_uid, study_uid, series_number, series_description, series_manufacturer_name, series_acquisition_date, series_modality, series_body_site, series_number_of_instances)
+    SELECT iise.ImageSeriesUID, ois.study_uid, ImageSeriesNumber, Description, Manufacturer, eucaim_etl_aux.parse_flexible_date(iise.AcquisitionDate), modality, iise.BodyPart, iise.NumberOfInstances
 	FROM eucaim_cdm_ingestion.ImageSeries iise
 	JOIN eucaim_cdm_ingestion.ImageStudy iis ON iise.ImageStudyUID = iis.ImageStudyUID
 	JOIN eucaim_cdm_output.image_study ois ON iise.ImageStudyUID = ois.study_uid
@@ -325,6 +327,28 @@ BEGIN
     WHERE iist.DatasetIdentifier = p_dataset_id
     AND iita.EchoTime IS NOT NULL
     ORDER BY ois.series_uid, iita.ImageStudyUID;
+
+	-- CTDIvol (indice de dosis en TC)
+	INSERT INTO eucaim_cdm_output.image_modality(modality_id, series_uid, study_uid, acquisition_parameter_code, acquisition_parameter_value_code, acquisition_parameter_value_number, acquisition_parameter_value_unit)
+	SELECT DISTINCT ON (ois.series_uid)
+	       ois.series_uid || '_IMG1000144', ois.series_uid, ois.study_uid, 'IMG1000144', null, iita.CTDIvol, 'COM1001957'
+	FROM eucaim_cdm_ingestion.ImageTags  iita
+	JOIN eucaim_cdm_ingestion.ImageStudy iist ON iita.ImageStudyUID = iist.ImageStudyUID
+	JOIN eucaim_cdm_output.image_series ois ON iita.ImageSeriesUID = ois.series_uid
+	WHERE iist.DatasetIdentifier = p_dataset_id
+	AND iita.CTDIvol IS NOT NULL
+	ORDER BY ois.series_uid, iita.ImageStudyUID;
+
+	-- Exposure (IMG1016635, 'radiation exposure measure')
+	INSERT INTO eucaim_cdm_output.image_modality(modality_id, series_uid, study_uid, acquisition_parameter_code, acquisition_parameter_value_code, acquisition_parameter_value_number, acquisition_parameter_value_unit)
+	SELECT DISTINCT ON (ois.series_uid)
+	       ois.series_uid || '_IMG1016635', ois.series_uid, ois.study_uid, 'IMG1016635', null, iita.Exposure, null
+	FROM eucaim_cdm_ingestion.ImageTags  iita
+	JOIN eucaim_cdm_ingestion.ImageStudy iist ON iita.ImageStudyUID = iist.ImageStudyUID
+	JOIN eucaim_cdm_output.image_series ois ON iita.ImageSeriesUID = ois.series_uid
+	WHERE iist.DatasetIdentifier = p_dataset_id
+	AND iita.Exposure IS NOT NULL
+	ORDER BY ois.series_uid, iita.ImageStudyUID;
 
 
 	-- Episodes
