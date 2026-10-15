@@ -56,6 +56,9 @@ DECLARE
     v_producible  boolean;
     v_mapped      bigint;
     v_unmapped    bigint;
+    v_blank       bigint;
+    v_nf          bigint;
+    v_nf_shown    integer := 0;
     v_since       text;
     v_shown       integer := 0;
     r             record;
@@ -166,16 +169,22 @@ BEGIN
     v_md := v_md || ''::text;
 
     ----------------------------------------------------- 3. mapping quality
-    SELECT count(*) FILTER (WHERE coalesce(codeInEUCAIM, '') <> ''),
-           count(*) FILTER (WHERE coalesce(codeInEUCAIM, '') =  ''),
+    -- The lookups write the literal 'NOT FOUND' when a term has no concept, so that string
+    -- is an unmapped value, not a code. A source value that is empty has nothing to map:
+    -- it is counted apart instead of inflating the share of failures
+    SELECT count(*) FILTER (WHERE coalesce(codeInEUCAIM, '') NOT IN ('', 'NOT FOUND')),
+           count(*) FILTER (WHERE coalesce(codeInEUCAIM, '') IN ('', 'NOT FOUND')
+                              AND coalesce(trim(originalValue), '') <> ''),
+           count(*) FILTER (WHERE coalesce(codeInEUCAIM, '') IN ('', 'NOT FOUND')
+                              AND coalesce(trim(originalValue), '') =  ''),
            to_char(min(mappingTimestamp::timestamp), 'YYYY-MM-DD HH24:MI')
-    INTO v_mapped, v_unmapped, v_since
+    INTO v_mapped, v_unmapped, v_blank, v_since
     FROM eucaim_cdm_ingestion.MappedCodeableConceptsResults
     WHERE datasetId = p_dataset_id;
 
     v_md := v_md || ARRAY['## 3. Mapping quality', ''];
 
-    IF coalesce(v_mapped, 0) + coalesce(v_unmapped, 0) = 0 THEN
+    IF coalesce(v_mapped, 0) + coalesce(v_unmapped, 0) + coalesce(v_blank, 0) = 0 THEN
         v_md := v_md || ARRAY['No mapping result recorded for this dataset.', ''];
     ELSE
         v_md := v_md || ARRAY[
@@ -183,15 +192,17 @@ BEGIN
             '|---|---:|',
             '| Source values mapped to a EUCAIM code | ' || v_mapped || ' |',
             '| Source values with **no** EUCAIM code | ' || v_unmapped || ' |',
-            '| Share unmapped | **' || round(100.0 * v_unmapped / (v_mapped + v_unmapped), 1) || '%** |',
+            '| Source values left empty (nothing to map) | ' || v_blank || ' |',
+            '| Share unmapped | **' || round(100.0 * v_unmapped / nullif(v_mapped + v_unmapped, 0), 1) || '%** |',
             '| Oldest mapping recorded | ' || coalesce(v_since, '-') || ' |',
             ''];
 
-        IF v_unmapped > 0 THEN
+        IF v_unmapped + v_blank > 0 THEN
             v_md := v_md || ARRAY[
                 'Every source value below reached the mapping and came out without a code, so',
                 'the data behind it is not in the CDM output. Each row is a distinct value and',
-                'how many times it appeared.',
+                'how many times it appeared. An empty value is a gap in the source file, not a',
+                'failure of the mapping.',
                 '',
                 '| Source column | Source value | Times |',
                 '|---|---|---:|'];
@@ -199,7 +210,7 @@ BEGIN
             FOR r IN
                 SELECT propertyNameOriginal AS col, originalValue AS val, count(*) AS n
                 FROM eucaim_cdm_ingestion.MappedCodeableConceptsResults
-                WHERE datasetId = p_dataset_id AND coalesce(codeInEUCAIM, '') = ''
+                WHERE datasetId = p_dataset_id AND coalesce(codeInEUCAIM, '') IN ('', 'NOT FOUND')
                 GROUP BY 1, 2
                 ORDER BY count(*) DESC, 1, 2
                 LIMIT 100
@@ -214,6 +225,39 @@ BEGIN
             v_md := v_md || ''::text;
         END IF;
     END IF;
+
+    -- The mapping log only covers the clinical columns. The DICOM-derived ones (series body
+    -- site, manufacturer...) never reach it, so the exported CDM itself is scanned for the
+    -- literal the lookups leave behind when a term has no concept
+    v_md := v_md || ARRAY['### Unresolved values in the exported CDM', ''];
+    FOR r IN
+        SELECT c.table_name AS vw, c.column_name AS col
+        FROM information_schema.columns c
+        WHERE c.table_schema = 'eucaim_cdm_output' AND c.table_name LIKE 'v\_export\_%'
+          AND c.column_name <> 'export_dataset_id'
+          AND c.data_type IN ('character varying', 'text', 'character')
+        ORDER BY c.table_name, c.ordinal_position
+    LOOP
+        EXECUTE format('SELECT count(*) FROM eucaim_cdm_output.%I WHERE export_dataset_id = %L AND %I = %L',
+                       r.vw, p_dataset_id, r.col, 'NOT FOUND')
+        INTO v_nf;
+        IF v_nf > 0 THEN
+            IF v_nf_shown = 0 THEN
+                v_md := v_md || ARRAY[
+                    'These cells hold the text `NOT FOUND` instead of a code: the term reached a',
+                    'lookup and no concept matched. Add it to the lookup tables or the ontology.',
+                    '',
+                    '| CDM table | Column | Cells |',
+                    '|---|---|---:|'];
+            END IF;
+            v_md := v_md || ('| ' || substring(r.vw from 10) || ' | ' || r.col || ' | ' || v_nf || ' |');
+            v_nf_shown := v_nf_shown + 1;
+        END IF;
+    END LOOP;
+    IF v_nf_shown = 0 THEN
+        v_md := v_md || '- ✅ no exported cell holds `NOT FOUND`'::text;
+    END IF;
+    v_md := v_md || ''::text;
 
     ----------------------------------------------------- 4. CDM coverage
     v_md := v_md || ARRAY['## 4. CDM coverage', ''];

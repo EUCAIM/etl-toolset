@@ -48,6 +48,8 @@ DECLARE
     v_unlinked_events INTEGER;
     v_unlinked_sample TEXT;
     v_empty_episodes  INTEGER;
+    v_seg_incomplete  INTEGER;
+    v_seg_relaxed     BOOLEAN;
 BEGIN
     -- Clealing output tables or given dataset ID  (CASCADE)
     DELETE FROM eucaim_cdm_output.dataset
@@ -349,6 +351,64 @@ BEGIN
 	WHERE iist.DatasetIdentifier = p_dataset_id
 	AND iita.Exposure IS NOT NULL
 	ORDER BY ois.series_uid, iita.ImageStudyUID;
+
+	-- Segmentation Series
+	-- El extractor entrega hoy la identidad de la serie SEG y su fecha, pero no los dos
+	-- campos que el CDM marca required: source_series_uid (tag ReferencedSeriesSequence) y
+	-- segmentation_algorithm_type (SegmentAlgorithmType). Ambos viven DENTRO del objeto SEG,
+	-- no en sus metadatos de serie, asi que hoy llegan nulos a la ingesta.
+	--
+	-- Que hacer con ellas depende de la instalacion, y el procedimiento lo averigua en vez
+	-- de imponerlo: si el paso 3z ha relajado los NOT NULL de esos dos campos, se publican
+	-- incompletas; si no, se publican solo las que vienen completas. Preguntarlo a
+	-- information_schema en lugar de asumirlo es lo que permite que el mismo procedimiento
+	-- sirva a quien acepta la divergencia y a quien se queda con el CDM estricto, sin que a
+	-- este ultimo le reviente el transform ENTERO por una fila de segmentacion.
+	--
+	-- Lo que NO se hace es rellenarlos con un valor por defecto: segmentation_algorithm_type
+	-- dice si la anotacion fue automatica, semiautomatica o manual, y eso es procedencia. Un
+	-- nulo se ve; un 'MANUAL' inventado se cree. El aviso de abajo cuenta cuantas filas van
+	-- incompletas, que es la cifra que hara falta en esa negociacion.
+	SELECT bool_and(c.is_nullable = 'YES') INTO v_seg_relaxed
+	FROM information_schema.columns c
+	WHERE c.table_schema = 'eucaim_cdm_output'
+	  AND c.table_name   = 'segmentation_series'
+	  AND c.column_name IN ('source_series_uid', 'segmentation_algorithm_type');
+
+	INSERT INTO eucaim_cdm_output.segmentation_series(segmentation_series_uid, source_series_uid, study_uid, segmentation_algorithm_type, segmentation_performed_date)
+	SELECT iseg.SegmentationSeriesUID, iseg.SourceSeriesUID, ois.study_uid, iseg.AlgorithmType,
+	       eucaim_etl_aux.parse_flexible_date(iseg.AcquisitionDate)
+	FROM eucaim_cdm_ingestion.SegmentationSeries iseg
+	JOIN eucaim_cdm_output.image_study ois ON ois.study_uid = iseg.ImageStudyUID
+	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = ois.patient_id
+	                                  AND opa.dataset_id = p_dataset_id
+	WHERE v_seg_relaxed
+	   OR (iseg.SourceSeriesUID IS NOT NULL AND iseg.AlgorithmType IS NOT NULL);
+
+	-- Cuantas de las publicadas no cumplen el CDM. Mientras el extractor no de los dos tags
+	-- seran todas; la cifra es el coste real de la divergencia.
+	SELECT count(*) INTO v_seg_incomplete
+	FROM eucaim_cdm_ingestion.SegmentationSeries iseg
+	JOIN eucaim_cdm_output.image_study ois ON ois.study_uid = iseg.ImageStudyUID
+	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = ois.patient_id
+	                                  AND opa.dataset_id = p_dataset_id
+	WHERE iseg.SourceSeriesUID IS NULL
+	   OR iseg.AlgorithmType  IS NULL;
+
+	IF v_seg_incomplete > 0 THEN
+		IF v_seg_relaxed THEN
+			RAISE WARNING 'transform_dataset_v001(%): % series de segmentacion se publican SIN '
+			              'source_series_uid y/o segmentation_algorithm_type, que el CDM marca '
+			              'como required. Divergencia aceptada (paso 3z) a la espera de que el '
+			              'extractor emita ReferencedSeriesSequence y SegmentAlgorithmType.',
+			              p_dataset_id, v_seg_incomplete;
+		ELSE
+			RAISE WARNING 'transform_dataset_v001(%): % series de segmentacion NO se publican por '
+			              'faltar source_series_uid y/o segmentation_algorithm_type, required en '
+			              'el CDM. Para publicarlas incompletas, aplicar el paso 3z.',
+			              p_dataset_id, v_seg_incomplete;
+		END IF;
+	END IF;
 
 
 	-- Episodes

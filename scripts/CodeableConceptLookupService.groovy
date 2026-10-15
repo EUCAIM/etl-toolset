@@ -77,9 +77,26 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                 if (!value) {
                     result["${property}"] = null
                     log.debug("CodeableConceptsLookupService.lookup - null value for property '${property}'")
+                } else if (value.startsWith("omop:")) {
+                    // concept with omop ID
+                    def omopId = value.toString().substring("omop:".length()).trim()
+                    def code = lookupOmopConceptCode(conn, omopId, "${property}")
+                    if (code != null) {
+                        result["${property}"] = code
+                    } else {
+    
+                        log.warn("CodeableConceptsLookupService.lookup - NO OMOP MATCH for property '${property}': " +
+                            "OMOP concept id '${omopId}' is not in concept_external_mapping. " +
+                            "Stored as 'omop_id:${omopId}'. Add the mapping or correct the value.")
+                        result["${property}"] = "omop_id:" + omopId
+                    }
                 } else if (value.startsWith("code:")){
-                    // escape hatch for source codes with no hyperontology concept yet
-                    result["${property}"] = value.substring("code:".length())
+                    // concept with omop ID
+                    result["${property}"] = "omop_id:" + value.toString().substring("code:".length())
+                } else if (value.toString() ==~ /^[A-Za-z][A-Za-z0-9_-]*:[^\s]+$/) {
+                    // pattern for a different coding system i.e. snomed:1234
+                    result["${property}"] = value.toString().trim()
+                    log.debug("CodeableConceptsLookupService.lookup - property '${property}' value '${value}' is already a qualified code")
                 } else {
                     def sql = """
                     SELECT c.concept_code
@@ -128,6 +145,33 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
         return result.isEmpty() ? Optional.empty() : Optional.of(result)
     }
     
+    private String lookupOmopConceptCode(Connection conn, String omopId, String property) {
+        def sql = """
+        SELECT c.concept_code
+        FROM eucaim_hyperontology_codes.concept_external_mapping m
+        JOIN eucaim_hyperontology_codes.concept c ON c.concept_id = m.concept_id
+        WHERE m.external_vocabulary = 'OMOP_CONCEPT_ID'
+          AND m.external_code = ?
+        ORDER BY c.concept_id
+        """
+        def pstmt = conn.prepareStatement(sql)
+        try {
+            pstmt.setString(1, omopId)
+            def rs = pstmt.executeQuery()
+            try {
+                if (!rs.next()) return null
+                def code = rs.getString("concept_code")
+                if (rs.next()) {
+                    log.warn("CodeableConceptsLookupService.lookup - AMBIGUOUS OMOP id '${omopId}' for property " +
+                        "'${property}': it maps to more than one EUCAIM concept. Using " +
+                        "'${code}', the first one loaded. Disambiguate it in " +
+                        "eucaim_hyperontology_codes.concept_external_mapping.")
+                }
+                return code
+            } finally { rs.close() }
+        } finally { pstmt.close() }
+    }
+
     Set<String> getRequiredKeys() {
         return java.util.Collections.emptySet();
     }

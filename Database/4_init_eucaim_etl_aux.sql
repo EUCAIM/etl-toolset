@@ -1780,7 +1780,7 @@ INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionTopography (originalValue
 VALUES ('Skin', 'Skin structure');
 
 INSERT INTO eucaim_etl_aux.LookupCancerStageCode (originalValue, parsedValue)
-VALUES ('Ann Arbor classification', 'code:snomed:4115000');
+VALUES ('Ann Arbor classification', 'snomed:4115000');
 
 -- Ann Arbor stage values, stripped of their modifiers. Roman numeral -> generic stage.
 INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
