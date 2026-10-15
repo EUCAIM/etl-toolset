@@ -9,3 +9,4 @@ reference_dump/
 scripts/synthetic/generated/
 __pycache__/
 dist/
+reload_backup_*.sql

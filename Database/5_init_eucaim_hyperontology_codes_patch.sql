@@ -219,17 +219,5 @@ VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '45595663', 
 INSERT INTO eucaim_hyperontology_codes.concept(concept_id, concept_code, concept_uri, concept_name)
 VALUES(nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), '45552260', 'https://cancerimage.eu/ontology/EUCAIM#45552260', 'C49.22');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+INSERT INTO eucaim_hyperontology_codes.concept (concept_id, concept_code, concept_uri, concept_name)
+VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'CLIN1039310', 'https://cancerimage.eu/ontology/EUCAIM#CLIN1039310', 'Lymphoma');

@@ -1,4 +1,6 @@
 ----------------------------------------------------
+-- Re-runnable: every table is dropped before it is created, so applying the file again over
+-- an existing database only refreshes the lookup values (scripts/reload_database.sh does it).
 CREATE SCHEMA IF NOT EXISTS eucaim_etl_aux;
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupHeaderRowsToRemove;
@@ -635,6 +637,10 @@ VALUES ('parietal (4)', 'Parietal region');
 
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
 VALUES ('temporal (2)', 'Temporal brain region');
+
+-- UoA Brain: a tumour on both sides is written 'Left - Right'. 'Bilateral' is IMG1016659.
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('Left - Right', 'Bilateral');
 
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
 VALUES ('Unknown', 'Unknown');
@@ -1293,6 +1299,11 @@ INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) 
 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('GE MEDICAL SYSTEMS', 'GENERAL ELECTRIC');
 
+-- UoA Brain: the DICOM manufacturer reads 'Canon Medical Systems'; the concept is 'Canon' (IMG1000050).
+-- 'Manufactured Image' is deliberately absent: it is not a manufacturer but the value some
+-- systems write on derived objects, so it has no concept to map to.
+INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Canon Medical Systems', 'CANON');
+
 ----------------------------------------------------
 
 
@@ -1304,6 +1315,8 @@ INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) 
 -------------------------------------------------------------------------------
 
 -- lookupcancerstage1code: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStage1Code;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage1Code (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1341,6 +1354,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
 VALUES ('50', 'AJCC/UICC TX Category');
 
 -- lookupcancerstage2code: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStage2Code;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage2Code (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1363,6 +1378,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStage2Code (originalValue, parsedValue)
 VALUES ('40', 'AJCC/UICC 8th NX Category');
 
 -- lookupcancerstage3code: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStage3Code;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage3Code (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1379,6 +1396,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStage3Code (originalValue, parsedValue)
 VALUES ('20', 'AJCC/UICC 8th MX Category');
 
 -- lookupcancerstagemvalue: recovered from branch SAS
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStageMValue;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageMValue (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1407,6 +1426,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
 VALUES ('X', 'AJCC/UICC 8th clinical MX Category');
 
 -- lookupcancerstagenvalue: recovered from branch SAS
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStageNValue;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageNValue (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1480,6 +1501,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
 VALUES ('X', 'AJCC/UICC 8th clinical NX Category');
 
 -- lookupcancerstagetvalue: recovered from branch SAS
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStageTValue;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageTValue (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1531,6 +1554,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
 VALUES ('1mi', 'AJCC/UICC 8th clinical T1mi Category');
 
 -- lookuppatientbirthsex: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupPatientBirthSex;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPatientBirthSex (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -1550,6 +1575,8 @@ INSERT INTO eucaim_etl_aux.LookupPatientBirthSex (originalValue, parsedValue)
 VALUES ('M', 'Male');
 
 -- lookupprimarycancerconditionhistologymorphologybehaviorinsitu: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInSitu;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInSitu (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1569,6 +1596,8 @@ INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavi
 VALUES ('50', 'Other carcinoma in situ of breast');
 
 -- lookupprimarycancerconditionhistologymorphologybehaviorinvasive: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInvasive;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInvasive (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1591,6 +1620,8 @@ INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavi
 VALUES ('70', 'Invasive carcinoma of breast');
 
 -- lookupsurgicalprocedurecodeaxillary: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -1624,6 +1655,8 @@ INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (originalValue, p
 VALUES ('98', 'Not available');
 
 -- lookupsurgicalprocedurecodebreast: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeBreast;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeBreast (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -1653,6 +1686,8 @@ INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeBreast (originalValue, par
 VALUES ('4', 'Excision of axillary lymph node');
 
 -- lookuptumorhistologicgrade: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorHistologicGrade;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorHistologicGrade (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),

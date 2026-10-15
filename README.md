@@ -191,3 +191,17 @@ docker compose down -v
 ```
 
 Afterwards execute the launch script as normal, and ingest the files following the same instructions.
+
+
+### 5. I updated the ETL (git pull) and a new lookup value, ontology concept or procedure is not taking effect
+
+PostgreSQL runs the files in `Database/` only the first time its volume is created, so an update of those files never reaches a database that already exists. You do not need to recreate it (and lose the ingested data): reload just the reference data and code with
+
+```bash
+scripts/reload_database.sh            # lookup tables + procedures (the usual case)
+scripts/reload_database.sh all        # also the ontology concepts
+```
+
+On Windows use `.\scripts\reload_database.ps1` (same groups: `aux`, `procedures`, `ontology`, `all`).
+
+The ingested and exported data are not touched. Everything selected is applied in one transaction, so an error leaves the database as it was. Rows added by hand to a `Lookup*` table are replaced by the content of the file: add `--backup` (`-Backup` in PowerShell) to get a dump first. NiFi does not need to be restarted for these changes. A change in a Groovy script or in a flow does: the flows are loaded again when the ETL starts.
