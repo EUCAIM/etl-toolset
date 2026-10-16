@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.patient (
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.procedure (
     procedure_id VARCHAR(150) PRIMARY KEY,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
-    cancer_condition_id VARCHAR(150),        -- depecrated
     procedure_code VARCHAR(50),
     procedure_category VARCHAR(50),
     procedure_evaluation_finding VARCHAR(150),
@@ -165,7 +164,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_output.body_site (
 
 CREATE TABLE IF NOT EXISTS eucaim_cdm_output.tumor (
     tumor_id VARCHAR(150) PRIMARY KEY,
-    --cancer_condition_id VARCHAR(150) REFERENCES eucaim_cdm_output.cancer_condition(cancer_condition_id) ON DELETE CASCADE,
     patient_id VARCHAR(150) REFERENCES eucaim_cdm_output.patient(patient_id) ON DELETE CASCADE,
     procedure_id VARCHAR(150) REFERENCES eucaim_cdm_output.procedure(procedure_id) ON DELETE CASCADE,
     histologic_grade_id VARCHAR(150) REFERENCES eucaim_cdm_output.histologic_grade(histologic_grade_id) ON DELETE CASCADE,

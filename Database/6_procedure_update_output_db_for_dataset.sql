@@ -107,8 +107,8 @@ BEGIN
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
 	-- Update treatments, linked with CancerPatient via Treatment: SurgicalProcedure, MedicationAdministration, Radiotherapy
-	INSERT INTO eucaim_cdm_output.treatment(treatment_id, patient_id, treatment_type)
-	SELECT ircs.TreatmentIdentifier, ocp.patient_id, 'GEN1000018'
+	INSERT INTO eucaim_cdm_output.treatment(treatment_id, patient_id, treatment_type, start_date, start_offset_from_diagnosis, start_offset_unit)
+	SELECT ircs.TreatmentIdentifier, ocp.patient_id, 'GEN1000018', eucaim_etl_aux.parse_flexible_date(ircs.PerformedDate), round(ircs.OffsetFromDiagnosis), ircs.OffsetUnitEUCAIM
 	FROM eucaim_cdm_ingestion.RadiotherapyCourseSummary ircs
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ircs.PatientIdentifier = icp.Identifier
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
@@ -121,8 +121,8 @@ BEGIN
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.treatment(treatment_id, patient_id, treatment_type)
-	SELECT isp.TreatmentIdentifier, ocp.patient_id, 'CLIN1004413'
+	INSERT INTO eucaim_cdm_output.treatment(treatment_id, patient_id, treatment_type, start_date, start_offset_from_diagnosis, start_offset_unit)
+	SELECT isp.TreatmentIdentifier, ocp.patient_id, 'CLIN1004413', eucaim_etl_aux.parse_flexible_date(isp.PerformedDate), round(isp.OffsetFromDiagnosis), isp.OffsetUnitEUCAIM
 	FROM eucaim_cdm_ingestion.SurgicalProcedure isp
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON isp.PatientIdentifier = icp.Identifier
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
@@ -135,8 +135,8 @@ BEGIN
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.treatment(treatment_id, patient_id, treatment_type)
-	SELECT icrm.TreatmentIdentifier, ocp.patient_id, 'CLIN1034187'
+	INSERT INTO eucaim_cdm_output.treatment(treatment_id, patient_id, treatment_type, start_date, start_offset_from_diagnosis, start_offset_unit)
+	SELECT icrm.TreatmentIdentifier, ocp.patient_id, 'CLIN1034187', cast(icrm.DateOfMedication as date), round(icrm.OffsetFromDiagnosis), icrm.OffsetUnitEUCAIM
 	FROM eucaim_cdm_ingestion.CancerRelatedMedication icrm
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON icrm.PatientIdentifier = icp.Identifier
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
@@ -176,8 +176,8 @@ BEGIN
 	WHERE icp.DatasetIdentifier = p_dataset_id
 	  AND opcc.patient_id = icp.Identifier;
 
-	INSERT INTO eucaim_cdm_output.procedure(procedure_id, patient_id, cancer_condition_id, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
-	SELECT iip.ProcedureIdentifier, opcc.patient_id, opcc.cancer_condition_id, ImagingProcedureEUCAIM, iip.OffsetFromDiagnosis, iip.OffsetUnitEUCAIM, eucaim_etl_aux.parse_flexible_date(PerformedDate), ImagingProcedureCategoryCodeEUCAIM
+	INSERT INTO eucaim_cdm_output.procedure(procedure_id, patient_id, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
+	SELECT iip.ProcedureIdentifier, opcc.patient_id, ImagingProcedureEUCAIM, iip.OffsetFromDiagnosis, iip.OffsetUnitEUCAIM, eucaim_etl_aux.parse_flexible_date(PerformedDate), ImagingProcedureCategoryCodeEUCAIM
 	FROM eucaim_cdm_ingestion.ImagingProcedure iip
 	JOIN eucaim_cdm_output.cancer_condition opcc ON iip.PrimaryCancerConditionIdentifier = opcc.cancer_condition_id
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON iip.PrimaryCancerConditionIdentifier = ipcc.Identifier
@@ -188,8 +188,8 @@ BEGIN
 	              FROM eucaim_cdm_ingestion.imagestudy iit
 	              WHERE iit.imagingprocedureidentifier = iip.procedureidentifier);
 
-	INSERT INTO eucaim_cdm_output.procedure(procedure_id, patient_id, cancer_condition_id, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
-	SELECT crp.ProcedureIdentifier, opcc.patient_id, opcc.cancer_condition_id, ProcedureEUCAIM, OffsetFromDiagnosis, OffsetUnitEUCAIM, eucaim_etl_aux.parse_flexible_date(PerformedDate), ProcedureCategoryCodeEUCAIM
+	INSERT INTO eucaim_cdm_output.procedure(procedure_id, patient_id, procedure_code, procedure_offset_from_diagnosis, procedure_offset_unit, procedure_date, procedure_category)
+	SELECT crp.ProcedureIdentifier, opcc.patient_id, ProcedureEUCAIM, OffsetFromDiagnosis, OffsetUnitEUCAIM, eucaim_etl_aux.parse_flexible_date(PerformedDate), ProcedureCategoryCodeEUCAIM
 	FROM eucaim_cdm_ingestion.CancerRelatedProcedure crp
 	JOIN eucaim_cdm_output.cancer_condition opcc ON crp.PrimaryCancerConditionIdentifier = opcc.cancer_condition_id
 	JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON crp.PrimaryCancerConditionIdentifier = ipcc.Identifier
@@ -222,21 +222,40 @@ BEGIN
 	WHERE bs.body_site_id = ot.tumor_id || '_bodysite';
 
 
+	-- The condition a procedure belongs to is only known in ingestion
+	-- (PrimaryCancerConditionIdentifier); the output procedure table does not keep it.
 	UPDATE eucaim_cdm_output.cancer_condition occ
 	SET procedure_id = first_procedure.procedure_id
 	FROM (
-		SELECT DISTINCT ON (cancer_condition_id) cancer_condition_id, procedure_id
-		FROM eucaim_cdm_output.procedure
-		WHERE cancer_condition_id IS NOT NULL
-		ORDER BY cancer_condition_id,
-		         procedure_date NULLS LAST,
-		         procedure_offset_from_diagnosis NULLS LAST,
-		         procedure_id
+		SELECT DISTINCT ON (pp.cancer_condition_id) pp.cancer_condition_id, op.procedure_id
+		FROM (
+			SELECT ProcedureIdentifier AS procedure_id, PrimaryCancerConditionIdentifier AS cancer_condition_id
+			FROM eucaim_cdm_ingestion.ImagingProcedure
+			UNION ALL
+			SELECT ProcedureIdentifier, PrimaryCancerConditionIdentifier
+			FROM eucaim_cdm_ingestion.CancerRelatedProcedure
+		) pp
+		JOIN eucaim_cdm_output.procedure op ON op.procedure_id = pp.procedure_id
+		ORDER BY pp.cancer_condition_id,
+		         op.procedure_date NULLS LAST,
+		         op.procedure_offset_from_diagnosis NULLS LAST,
+		         op.procedure_id
 	) AS first_procedure,
 	eucaim_cdm_output.patient opa
 	WHERE occ.cancer_condition_id = first_procedure.cancer_condition_id
 	  AND occ.patient_id = opa.patient_id
 	  AND opa.dataset_id = p_dataset_id;
+
+	-- Tumor  is attached to the procedure that first documents its cancer condition (the one chosen just above).
+	UPDATE eucaim_cdm_output.tumor ot
+	SET procedure_id = occ.procedure_id
+	FROM eucaim_cdm_ingestion.Tumor it
+	JOIN eucaim_cdm_output.cancer_condition occ ON occ.cancer_condition_id = it.PrimaryCancerConditionIdentifier
+	JOIN eucaim_cdm_output.patient opa ON opa.patient_id = occ.patient_id
+	WHERE it.Identifier = ot.tumor_id
+	  AND ot.patient_id = occ.patient_id
+	  AND opa.dataset_id = p_dataset_id
+	  AND occ.procedure_id IS NOT NULL;
 
 	-- Update entities linked with Tumor: RiskAssessment, TumorObservation
 	INSERT INTO eucaim_cdm_output.risk_assessment(risk_assessment_id, tumor_id, patient_id, risk_assessment_code, risk_assessment_value_unit, risk_assessment_value_as_concept, risk_assessment_value_as_number)
@@ -449,67 +468,67 @@ BEGIN
 	DROP TABLE IF EXISTS tmp_episode_events;
 	CREATE TEMP TABLE tmp_episode_events AS
 	SELECT ev.* FROM (
-		SELECT 'cancer_condition'::varchar AS event_table_name, occ.cancer_condition_id::varchar AS event_table_id,
+		SELECT 'Cancer Condition'::varchar AS event_table_name, occ.cancer_condition_id::varchar AS event_table_id,
 		       occ.patient_id, ipcc.EpisodeNumber AS episode_number
 		FROM eucaim_cdm_ingestion.PrimaryCancerCondition ipcc
 		JOIN eucaim_cdm_output.cancer_condition occ ON occ.cancer_condition_id = ipcc.Identifier
 		UNION ALL
-		SELECT 'procedure', opr.procedure_id, opr.patient_id, crp.Episode
+		SELECT 'Procedure', opr.procedure_id, opr.patient_id, crp.Episode
 		FROM eucaim_cdm_ingestion.CancerRelatedProcedure crp
 		JOIN eucaim_cdm_output.procedure opr ON opr.procedure_id = crp.ProcedureIdentifier
 		UNION ALL
-		SELECT 'procedure', opr.procedure_id, opr.patient_id, iip.Episode
+		SELECT 'Procedure', opr.procedure_id, opr.patient_id, iip.Episode
 		FROM eucaim_cdm_ingestion.ImagingProcedure iip
 		JOIN eucaim_cdm_output.procedure opr ON opr.procedure_id = iip.ProcedureIdentifier
 		UNION ALL
-		SELECT 'treatment', otr.treatment_id, otr.patient_id, isp.Episode
+		SELECT 'Treatment', otr.treatment_id, otr.patient_id, isp.Episode
 		FROM eucaim_cdm_ingestion.SurgicalProcedure isp
 		JOIN eucaim_cdm_output.treatment otr ON otr.treatment_id = isp.TreatmentIdentifier
 		UNION ALL
-		SELECT 'treatment', otr.treatment_id, otr.patient_id, ircs.Episode
+		SELECT 'Treatment', otr.treatment_id, otr.patient_id, ircs.Episode
 		FROM eucaim_cdm_ingestion.RadiotherapyCourseSummary ircs
 		JOIN eucaim_cdm_output.treatment otr ON otr.treatment_id = ircs.TreatmentIdentifier
 		UNION ALL
-		SELECT 'treatment', otr.treatment_id, otr.patient_id, icrm.Episode
+		SELECT 'Treatment', otr.treatment_id, otr.patient_id, icrm.Episode
 		FROM eucaim_cdm_ingestion.CancerRelatedMedication icrm
 		JOIN eucaim_cdm_output.treatment otr ON otr.treatment_id = icrm.TreatmentIdentifier
 		UNION ALL
-		SELECT 'health_status_assessment', ohs.health_status_assessment_id, ohs.patient_id, ihs.Episode
+		SELECT 'Health Status Assessment', ohs.health_status_assessment_id, ohs.patient_id, ihs.Episode
 		FROM eucaim_cdm_ingestion.HealthStatus ihs
 		JOIN eucaim_cdm_output.health_status_assessment ohs ON ohs.health_status_assessment_id = ihs.Identifier
 		UNION ALL
-		SELECT 'tumor_marker_test', otmt.tumor_marker_test_id, otmt.patient_id, itmt.Episode
+		SELECT 'Tumor Marker Test', otmt.tumor_marker_test_id, otmt.patient_id, itmt.Episode
 		FROM eucaim_cdm_ingestion.TumorMarkerTest itmt
 		JOIN eucaim_cdm_output.tumor_marker_test otmt ON otmt.tumor_marker_test_id = itmt.Identifier
 		UNION ALL
-		SELECT 'tumor', ot.tumor_id, ot.patient_id, it.Episode
+		SELECT 'Tumor', ot.tumor_id, ot.patient_id, it.Episode
 		FROM eucaim_cdm_ingestion.Tumor it
 		JOIN eucaim_cdm_output.tumor ot ON ot.tumor_id = it.Identifier
 		UNION ALL
-		SELECT 'histologic_grade', ohg.histologic_grade_id, ohg.patient_id, ipcc.EpisodeNumber
+		SELECT 'Histologic Grade', ohg.histologic_grade_id, ohg.patient_id, ipcc.EpisodeNumber
 		FROM eucaim_cdm_ingestion.HistologicGrade ihg
 		JOIN eucaim_cdm_output.histologic_grade ohg ON ohg.histologic_grade_id = ihg.Identifier
 		JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON ipcc.Identifier = ihg.PrimaryCancerConditionIdentifier
 		UNION ALL
-		SELECT 'cancer_stage', ocs.cancer_stage_id, ocs.patient_id, ipcc.EpisodeNumber
+		SELECT 'Cancer Stage', ocs.cancer_stage_id, ocs.patient_id, ipcc.EpisodeNumber
 		FROM eucaim_cdm_ingestion.CancerStage ics
 		JOIN eucaim_cdm_output.cancer_stage ocs ON ocs.cancer_stage_id = ics.Identifier
 		JOIN eucaim_cdm_ingestion.PrimaryCancerCondition ipcc ON ipcc.Identifier = ics.PrimaryCancerConditionIdentifier
 		UNION ALL
-		SELECT 'risk_assessment', ora.risk_assessment_id, ora.patient_id, it2.Episode
+		SELECT 'Risk Assessment', ora.risk_assessment_id, ora.patient_id, it2.Episode
 		FROM eucaim_cdm_ingestion.RiskAssessment ira
 		JOIN eucaim_cdm_output.risk_assessment ora ON ora.risk_assessment_id = ira.Identifier
 		JOIN eucaim_cdm_ingestion.Tumor it2 ON it2.Identifier = ira.TumorIdentifier
 		UNION ALL
-		SELECT 'tumor_observation', oto.tumor_observation_id, oto.patient_id, it3.Episode
+		SELECT 'Tumor Observation', oto.tumor_observation_id, oto.patient_id, it3.Episode
 		FROM eucaim_cdm_ingestion.TumorObservation ito
 		JOIN eucaim_cdm_output.tumor_observation oto ON oto.tumor_observation_id = ito.Identifier
 		JOIN eucaim_cdm_ingestion.Tumor it3 ON it3.Identifier = ito.TumorIdentifier
 		UNION ALL
-		SELECT 'lab_test_result', oltr.lab_test_id, oltr.patient_id, NULL::integer
+		SELECT 'Lab Test Result', oltr.lab_test_id, oltr.patient_id, NULL::integer
 		FROM eucaim_cdm_output.lab_test_result oltr
 		UNION ALL
-		SELECT 'family_member_history', ofmh.family_member_history_id, ofmh.patient_id, NULL::integer
+		SELECT 'Family Member History', ofmh.family_member_history_id, ofmh.patient_id, NULL::integer
 		FROM eucaim_cdm_output.family_member_history ofmh
 	) ev
 	WHERE ev.patient_id IN (SELECT patient_id FROM eucaim_cdm_output.patient WHERE dataset_id = p_dataset_id);
