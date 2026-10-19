@@ -51,6 +51,9 @@ DECLARE
     v_manifest    text;
     v_bad_headers integer := 0;
     v_missing     integer := 0;
+    v_studies     bigint;
+    v_orphans     bigint;
+    v_no_tp       bigint;
     v_empty       text[] := ARRAY[]::text[];
     v_absent      text[] := ARRAY[]::text[];
     v_producible  boolean;
@@ -165,6 +168,32 @@ BEGIN
         v_md := v_md || ('- ❌ ' || v_bad_headers || ' file(s) have a header that is not the CDM column list of their table');
     ELSIF v_missing = 0 THEN
         v_md := v_md || '- ✅ every exported file was read back and its header is the CDM column list of its table'::text;
+    END IF;
+
+    -- DICOM studies reach the CDM only through an imaging procedure, and that link is made by
+    -- the timepoints file. A study left unlinked drops out of the output together with its
+    -- series and modality rows, without any error: the pipeline log only has INFO rows and the
+    -- orphan warning of the output procedure goes to the database log, which nobody reads
+    SELECT count(*),
+           count(*) FILTER (WHERE s.ImagingTimepoint IS NULL),
+           count(*) FILTER (WHERE NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.procedure op
+                                              WHERE op.procedure_id = s.ImagingProcedureIdentifier
+                                                AND op.patient_id   = s.PatientIdentifier))
+    INTO v_studies, v_no_tp, v_orphans
+    FROM eucaim_cdm_ingestion.ImageStudy s
+    WHERE s.DatasetIdentifier = p_dataset_id;
+
+    IF v_studies > 0 THEN
+        IF v_orphans = 0 THEN
+            v_md := v_md || ('- ✅ the ' || v_studies || ' ingested DICOM studies are linked to an imaging procedure')::text;
+        ELSE
+            v_md := v_md || ('- ❌ ' || v_orphans || ' of ' || v_studies || ' ingested DICOM studies are NOT in the CDM: '
+                          || v_no_tp || ' have no timepoint and none is linked to an imaging procedure. Their series and '
+                          || 'modality rows are left out too. Check that the imaging timepoints csv holds the same '
+                          || 'PatientID and StudyInstanceUID as the DICOM metadata, that its Timepoint column is a '
+                          || 'whole number, and that it matches the clinical data (if it has not been ingested yet, '
+                          || 'this is expected)')::text;
+        END IF;
     END IF;
     v_md := v_md || ''::text;
 

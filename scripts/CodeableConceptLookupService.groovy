@@ -97,6 +97,12 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                     // pattern for a different coding system i.e. snomed:1234
                     result["${property}"] = value.toString().trim()
                     log.debug("CodeableConceptsLookupService.lookup - property '${property}' value '${value}' is already a qualified code")
+                } else if (isConceptCode(conn, value.toString())) {
+                    // already an EUCAIM concept_code, as the lookup tables that run before this
+                    // service emit (LookupImagingModality: 'CT' -> 'IMG1000042'). Searched by
+                    // name it matched nothing and was stored as NOT FOUND
+                    result["${property}"] = value.toString().trim()
+                    log.debug("CodeableConceptsLookupService.lookup - property '${property}' value '${value}' is already a concept_code")
                 } else {
                     def sql = """
                     SELECT c.concept_code
@@ -170,6 +176,18 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                 return code
             } finally { rs.close() }
         } finally { pstmt.close() }
+    }
+
+    // exact, case-insensitive match against concept_code
+    private static boolean isConceptCode(Connection conn, String value) {
+        def pstmt = conn.prepareStatement("SELECT 1 FROM eucaim_hyperontology_codes.concept c WHERE upper(c.concept_code) = upper(?) LIMIT 1")
+        try {
+            pstmt.setString(1, value.trim())
+            def rs = pstmt.executeQuery()
+            try { return rs.next() } finally { rs.close() }
+        } finally {
+            pstmt.close()
+        }
     }
 
     Set<String> getRequiredKeys() {

@@ -154,7 +154,9 @@ If you see the "Permission denied" message, the solution is to ensure that the f
 
 ### 2. Ingesting the imaging timepoints does not seem to work, and/or is generating errors
 
-Please check the csv file containing the imaging timepoints includes the expected header, with at least the columns **Timepoint** (also "ImagingTimepoint" is valid as column name), **StudyInstanceUID** and **PatientID** (column names no case sensitive).
+Please check the csv file containing the imaging timepoints includes the expected header, with at least the columns **Timepoint** (also "ImagingTimepoint" is valid as column name), **StudyInstanceUID** and **PatientID**. The column names are matched exactly, with this capitalisation: another spelling (for instance "timepoint") is not recognised and leaves the studies with timepoint 0. The values of the timepoint column must be whole numbers (1, 2, 3, not 1.0), and the StudyInstanceUID and PatientID must be the ones of the DICOM metadata of the dataset: a study the file does not reach keeps a null timepoint, with no error, and is left out of the CDM together with its series.
+
+To see how far the studies of a dataset got, run `scripts/check_data.sh <dataset_id>` (or `scripts/check_data.ps1`): its last block, `check_imaging_timepoints.sql`, counts the studies with and without timepoint and link, and tells why the others are not linked. It prints no identifiers, so its output can be shared as it is.
 
 
 ### 3. A mapping placed by hand in `flows` is replaced every time the ETL is started

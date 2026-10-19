@@ -643,6 +643,9 @@ INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue
 VALUES ('Left - Right', 'Bilateral');
 
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('Left', 'Left'), ('left', 'Left'), ('Right', 'Right'), ('right', 'Right'), ('Bilateral', 'Bilateral'), ('bilateral', 'Bilateral');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
 VALUES ('Unknown', 'Unknown');
 
 

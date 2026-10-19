@@ -1,5 +1,5 @@
 #!/bin/bash
-# Runs the three data-quality SQL checks (ingestion, output, and the
+# Runs the data-quality SQL checks (ingestion, output, and the
 # ingestion-vs-output comparison) against the running nifi-postgres
 # container in one shot.
 #
@@ -24,7 +24,7 @@ if [ -n "$1" ]; then
   PSQL_ARGS+=(-v "dataset='$1'")
 fi
 
-for f in check_ingestion_data.sql check_output_data.sql check_ingestion_vs_output.sql; do
+for f in check_ingestion_data.sql check_output_data.sql check_ingestion_vs_output.sql check_imaging_timepoints.sql; do
   echo ""
   echo "==== $f ===="
   docker exec -i "$POSTGRES_CONTAINER" psql "${PSQL_ARGS[@]}" -f - < "$SCRIPTS_DIR/$f"

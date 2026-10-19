@@ -45,6 +45,8 @@ AS $$
 DECLARE
     v_orphan_studies INTEGER;
     v_orphan_sample  TEXT;
+    v_orphan_no_tp   INTEGER;
+    v_orphan_no_proc INTEGER;
     v_unlinked_events INTEGER;
     v_unlinked_sample TEXT;
     v_empty_episodes  INTEGER;
@@ -307,6 +309,36 @@ BEGIN
 		              'quedan fuera de image_study (y sus series con ellos). Primeros: %. '
 		              'Revisa el csv de timepoints del dataset y la tabla procedure.',
 		              p_dataset_id, v_orphan_studies, v_orphan_sample;
+		-- RAISE WARNING only reaches the database server log (and carries a sample of UIDs, which is
+		-- fine there). The process log is what the report and the shared output folders carry, so
+		-- the same finding goes there too, WITHOUT any identifier: only how many studies and why
+		SELECT count(*) FILTER (WHERE iis.ImagingTimepoint IS NULL),
+		       count(*) FILTER (WHERE iis.ImagingTimepoint IS NOT NULL
+		                          AND NOT EXISTS (SELECT 1
+		                                          FROM eucaim_cdm_ingestion.ImagingProcedure ip
+		                                          JOIN eucaim_cdm_ingestion.PrimaryCancerCondition pcc
+		                                            ON ip.PrimaryCancerConditionIdentifier = pcc.Identifier
+		                                          WHERE pcc.PatientIdentifier = iis.PatientIdentifier
+		                                            AND ip.ImagingTimepoint   = iis.ImagingTimepoint))
+		INTO v_orphan_no_tp, v_orphan_no_proc
+		FROM eucaim_cdm_ingestion.ImageStudy iis
+		WHERE iis.DatasetIdentifier = p_dataset_id
+		  AND NOT EXISTS (SELECT 1
+		                  FROM eucaim_cdm_output.procedure op
+		                  WHERE op.procedure_id = iis.ImagingProcedureIdentifier
+		                    AND op.patient_id   = iis.PatientIdentifier);
+
+		CALL eucaim_etl_aux.insert_log_v001(
+			p_dataset_id, p_dataset_id, 'cdm_output', 'transform', '1',
+			'link_image_studies', 'WARN', 'ERROR',
+			format('%s ImageStudy without a linked imaging procedure are left out of the CDM, with their series: '
+			       '%s have no timepoint (the timepoints csv did not reach them: its StudyInstanceUID or PatientID '
+			       'differ from the DICOM metadata, or a column is missing), %s have a timepoint that no imaging '
+			       'procedure of the patient has, and %s have both but are not linked. The timepoints csv needs the '
+			       'columns PatientID, StudyInstanceUID and Timepoint (a whole number). scripts/check_data.sh runs '
+			       'check_imaging_timepoints.sql, which breaks this down per dataset.',
+			       v_orphan_studies, v_orphan_no_tp, v_orphan_no_proc,
+			       v_orphan_studies - v_orphan_no_tp - v_orphan_no_proc));
 	END IF;
 
 	INSERT INTO eucaim_cdm_output.image_study(study_uid, procedure_id, patient_id, ImagingTimepoint, study_offset_from_diagnosis, study_offset_unit, study_acquisition_date, study_number_of_series, study_number_of_instances)
