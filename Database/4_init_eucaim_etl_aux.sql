@@ -1880,3 +1880,21 @@ VALUES ('colon cancer', 'Carcinoma of colon');
 
 INSERT INTO eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
 VALUES ('pancreatic cancer', 'Carcinoma of pancreas');
+
+
+-------------------------------------------------------------------------------------------
+-- APHP IMALIVE (bf7d344c9a50f00888da03c982d8f439): hepatocellular carcinoma, MRI/CT and pathology.
+INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
+VALUES ('bf7d344c9a50f00888da03c982d8f439', '0');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionCode (originalValue, parsedValue)
+VALUES ('C22.0', 'Liver cell carcinoma');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('Hepatocellular carcinoma', 'Hepatocellular carcinoma (morphologic abnormality)');
+
+INSERT INTO eucaim_etl_aux.LookupProcedureCode (originalValue, parsedValue)
+VALUES ('Surgical specimen', 'snomed:39228008');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+VALUES ('Segmentectomy 4b', 'snomed:71273005');

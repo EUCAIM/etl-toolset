@@ -1,0 +1,9 @@
+Patient ID,Population,Hôpital,Sex,Date of pathology confirmation / diagnosis date,Age at diagnosis ,ICD10 code,Topography,Pathology,Pathology procedure confirmation,Date of pathology confirmation,Surgery procedure,Date of surgical treatement,Imaging procedure protocol : MRI,MRI date,Imaging procedure protocol : CT,CT date 
+MOSAIC_0001,Patient with cancer,AP-HP,1,21/09/2012,64,C22.0,Liver,Hepatocellular carcinoma,Surgical specimen,21/09/2012,Segmentectomy 4b,21/09/2012,1,21/08/2012,1,10/07/2012
+MOSAIC_0002,Patient with cancer,AP-HP,0,03/02/2015,58,C22.0,Liver,Hepatocellular carcinoma,Surgical specimen,03/02/2015,Segmentectomy 4b,03/02/2015,1,12/01/2015,0,
+MOSAIC_0003,Patient with cancer,AP-HP,1,17/11/2016,71,C22.0,Liver,Hepatocellular carcinoma,Surgical specimen,17/11/2016,Segmentectomy 4b,17/11/2016,0,,1,02/10/2016
+MOSAIC_0004,Patient with cancer,AP-HP,0,05/06/2018,49,C22.0,Liver,Hepatocellular carcinoma,Surgical specimen,05/06/2018,,,0,,0,
+MOSAIC_0005,Patient with cancer,AP-HP,1,28/03/2019,66,C22.0,Liver,Hepatocellular carcinoma,Surgical specimen,28/03/2019,Segmentectomy 4b,28/03/2019,1,01/02/2019,1,20/02/2019
+MOSAIC_0006,Patient with cancer,AP-HP,0,14/09/2020,62,C22.0,Liver,Hepatocellular carcinoma,Surgical specimen,14/09/2020,Segmentectomy 4b,14/09/2020,1,04/08/2020,1,04/08/2020
+MOSAIC_0007,Patient with cancer,AP-HP,1,09/12/2021,55,C22.0,Liver,Hepatocellular carcinoma,Surgical specimen,09/12/2021,Segmentectomy 4b,09/12/2021,1,15/11/2021,1,22/10/2021
+MOSAIC_0008,Patient with cancer,AP-HP,1,30/04/2023,73,C22.0,Liver,Hepatocellular carcinoma,Surgical specimen,30/04/2023,Segmentectomy 4b,30/04/2023,0,,1,11/04/2023
