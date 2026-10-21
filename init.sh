@@ -172,6 +172,109 @@ if [ -n "$DATASETSLIST" ]; then
 fi
 
 
+### Enabling of the DBConnectionPool and ScriptedLookupService of each flow.
+###
+### NiFi 2.3.0 has a race in ScriptedLookupService: the background validation
+### that runs while the flow is being imported can lose the single Groovy engine
+### to another thread ("Error adding script engine Groovy", "No script runner
+### available!" or a NullPointerException on this.scriptRunner in the log). The
+### service caches that error and never validates again until one of its script
+### properties changes, so it stays ENABLING / INVALID forever, and with it the
+### start of the ETL. It happens on some starts only and with any of the flows.
+###
+### A service that does not get enabled in SERVICE_ENABLE_TIMEOUT seconds is
+### disabled, gets its Script File set to an equivalent path and back, which
+### drops the cached error without leaving any local change on the flow, and is
+### enabled again. If that does not work either the rest of the flows are still
+### loaded, and /tmp/init_failed is left instead of /tmp/init_done.
+SERVICE_ENABLE_TIMEOUT=${SERVICE_ENABLE_TIMEOUT:-30}
+SCRIPTED_SERVICE_RETRIES=3
+FAILED_SERVICES=""
+
+get_service() {
+    curl -s -k -H "Authorization: Bearer $token" "https://nifi:8443/nifi-api/controller-services/$1"
+}
+
+set_service_state() {
+    local revision
+    revision=$(get_service "$1" | jq '.revision.version')
+    curl -s -X PUT -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $token" -k \
+        -d "{\"revision\":{\"version\":$revision},\"disconnectedNodeAcknowledged\":false,\"state\":\"$2\",\"uiOnly\":false}" \
+        "https://nifi:8443/nifi-api/controller-services/$1/run-status" > /dev/null
+}
+
+set_service_property() {
+    local revision body
+    revision=$(get_service "$1" | jq '.revision.version')
+    body=$(jq -n --argjson v "$revision" --arg id "$1" --arg name "$2" --arg value "$3" \
+        '{revision:{version:$v},disconnectedNodeAcknowledged:false,component:{id:$id,properties:{($name):$value}}}')
+    curl -s -X PUT -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $token" -k -d "$body" \
+        "https://nifi:8443/nifi-api/controller-services/$1" > /dev/null
+}
+
+### waits until the service reaches the given run status (and VALID, unless the
+### status is DISABLED), or the given seconds pass
+wait_service() {
+    local deadline=$((SECONDS + $3)) status validation
+    while true; do
+        read -r status validation <<< "$(get_service "$1" | jq -r '"\(.status.runStatus) \(.status.validationStatus)"')"
+        echo "Checking Status: $status / Validation: $validation"
+        if [[ "$status" == "$2" && ( "$2" == "DISABLED" || "$validation" == "VALID" ) ]]; then
+            return 0
+        fi
+        if [ $SECONDS -ge $deadline ]; then
+            return 1
+        fi
+        sleep 2
+    done
+}
+
+reset_scripted_service() {
+    local scriptFile equivalent
+    set_service_state "$1" DISABLED
+    wait_service "$1" DISABLED 60 || return 1
+    scriptFile=$(get_service "$1" | jq -r '.component.properties["Script File"] // empty')
+    if [ -z "$scriptFile" ]; then
+        return 1
+    fi
+    ### same file through "/./": a different value, so NiFi does call
+    ### onPropertyModified, which is what clears the cached error
+    if [[ "$scriptFile" == */* ]]; then
+        equivalent="${scriptFile%/*}/./${scriptFile##*/}"
+    else
+        equivalent="./$scriptFile"
+    fi
+    set_service_property "$1" "Script File" "$equivalent"
+    set_service_property "$1" "Script File" "$scriptFile"
+    set_service_state "$1" ENABLED
+}
+
+enable_service() {
+    local serviceId=$1 kind=$2 attempt
+    echo "----- Found $kind: $serviceId"
+    set_service_state "$serviceId" ENABLED
+    echo "Service $serviceId enabling..."
+    if wait_service "$serviceId" ENABLED "$SERVICE_ENABLE_TIMEOUT"; then
+        echo "Controller service fully enabled"
+        return 0
+    fi
+    if [ "$kind" = "ScriptedLookupService" ]; then
+        for attempt in $(seq 1 $SCRIPTED_SERVICE_RETRIES); do
+            echo "WARNING: $kind $serviceId not enabled after ${SERVICE_ENABLE_TIMEOUT}s, resetting it (attempt $attempt/$SCRIPTED_SERVICE_RETRIES)"
+            if reset_scripted_service "$serviceId" && wait_service "$serviceId" ENABLED "$SERVICE_ENABLE_TIMEOUT"; then
+                echo "Controller service fully enabled"
+                return 0
+            fi
+        done
+    fi
+    echo "ERROR: $kind $serviceId could not be enabled. NiFi reports:"
+    get_service "$serviceId" | jq -r '.component.validationErrors[]?' | sed 's/^/         /'
+    FAILED_SERVICES="${FAILED_SERVICES} ${serviceId}"
+    return 1
+}
+
 #Add flows to registry
 FOLDER="/flows"
 index=0
@@ -214,73 +317,14 @@ for file in "$FOLDER"/*.json; do
        
 
     # Find DBConnectionPool instances
-    LOOKUP_SERVICES=$(echo "$SERVICES" | jq -r '.controllerServices[] | select(.component.name=="DBConnectionPool") | .component.id')
-    for serviceId in $LOOKUP_SERVICES; do
-        echo "----- Found DBConnectionPool: $serviceId"
-        SERVICE_INFO=$(curl -s -k -H "Authorization: Bearer $token" \
-        "https://nifi:8443/nifi-api/controller-services/$serviceId")
-        
-        REVISION=$(echo "$SERVICE_INFO" | jq '.revision.version')
-        ENABLE_RESPONSE=$(curl -s -X PUT -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $token" -k \
-            -d "{\"revision\":{\"version\":$REVISION},\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\",\"uiOnly\":false}" \
-        "https://nifi:8443/nifi-api/controller-services/$serviceId/run-status")
-        echo "Service $serviceId enabling..."
-        
-        while true; do
-            STATUS=$(curl -s -k -H "Authorization: Bearer $token" \
-                "https://nifi:8443/nifi-api/controller-services/$serviceId" \
-            | jq -r '.status.runStatus')
-            
-            VALIDATION=$(curl -s -k -H "Authorization: Bearer $token" \
-                "https://nifi:8443/nifi-api/controller-services/$serviceId" \
-            | jq -r '.status.validationStatus')
-            
-            echo "Checking Status: $STATUS / Validation: $VALIDATION"
-            
-            if [[ "$STATUS" == "ENABLED" && "$VALIDATION" == "VALID" ]]; then
-                echo "Controller service fully enabled"
-                break
-            fi
-            
-            sleep 2
-        done
-    done  
-
+    for serviceId in $(echo "$SERVICES" | jq -r '.controllerServices[] | select(.component.name=="DBConnectionPool") | .component.id'); do
+        enable_service "$serviceId" DBConnectionPool
+    done
 
     # Find ScriptedLookupService instances
-    LOOKUP_SERVICES=$(echo "$SERVICES" | jq -r '.controllerServices[] | select(.component.name=="ScriptedLookupService") | .component.id')
-    for serviceId in $LOOKUP_SERVICES; do
-        echo "----- Found ScriptedLookupService: $serviceId"
-        SERVICE_INFO=$(curl -s -k -H "Authorization: Bearer $token" \
-        "https://nifi:8443/nifi-api/controller-services/$serviceId")
-        
-        REVISION=$(echo "$SERVICE_INFO" | jq '.revision.version')
-        ENABLE_RESPONSE=$(curl -s -X PUT -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $token" -k \
-            -d "{\"revision\":{\"version\":$REVISION},\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\",\"uiOnly\":false}" \
-        "https://nifi:8443/nifi-api/controller-services/$serviceId/run-status")
-        echo "Service $serviceId enabling..."
-        
-        while true; do
-            STATUS=$(curl -s -k -H "Authorization: Bearer $token" \
-                "https://nifi:8443/nifi-api/controller-services/$serviceId" \
-            | jq -r '.status.runStatus')
-            
-            VALIDATION=$(curl -s -k -H "Authorization: Bearer $token" \
-                "https://nifi:8443/nifi-api/controller-services/$serviceId" \
-            | jq -r '.status.validationStatus')
-            
-            echo "Checking Status: $STATUS / Validation: $VALIDATION"
-            
-            if [[ "$STATUS" == "ENABLED" && "$VALIDATION" == "VALID" ]]; then
-                echo "Controller service fully enabled"
-                break
-            fi
-            
-            sleep 2
-        done
-    done 
+    for serviceId in $(echo "$SERVICES" | jq -r '.controllerServices[] | select(.component.name=="ScriptedLookupService") | .component.id'); do
+        enable_service "$serviceId" ScriptedLookupService
+    done
 
 
     enableProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\"}" https://nifi:8443/nifi-api/flow/process-groups/$processGroupID)
@@ -363,6 +407,15 @@ else
             echo "       It did not start. NiFi answered: $(echo "$started" | head -c 300)"
         fi
     fi
+fi
+
+if [ -n "$FAILED_SERVICES" ]; then
+    echo "ERROR: these controller services could not be enabled:${FAILED_SERVICES}"
+    echo "       The rest of the flows are loaded, but the ones using them will not run."
+    echo "       Restarting the ETL usually fixes it."
+    touch /tmp/init_failed
+    echo "****eucaim startup script completed with errors ****"
+    exit 1
 fi
 
 #create flag file to mark as completed
