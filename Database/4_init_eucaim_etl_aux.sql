@@ -1273,6 +1273,12 @@ INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue)
 
 INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('breast', 'CLIN1063727');
 
+-- THORAX
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('thorax', 'BP1000067');
+
+-- IAC: 'Structure of peripheral auditory system' is the closest one
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('iac', 'BP1000174');
+
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupManufacturerAlias;
 
@@ -1799,6 +1805,14 @@ VALUES ('8e92d702a8874791869c37a4b17157dc', '0');
 
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionCode (originalValue, parsedValue)
 VALUES ('NHL', 'Non-Hodgkin''s lymphoma (clinical)');
+
+-- UoA Brain: histologies with no concept of their own in the hyperontology, generalised on purpose to
+-- the closest parent that exists (the diagnosis loses precision: the original text stays in the source).
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionCode (originalValue, parsedValue)
+VALUES ('Diffuse Gliomas', 'Glioma'),
+       ('Astrocytoma', 'Glioma'),
+       ('Diffuse Astrocytoma', 'Glioma'),
+       ('CNS-DLBCL', 'Malignant lymphoma');
 
 -- Histological subtype -> nearest ICDO Histology ancestor present in the hyperontology.
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)

@@ -84,9 +84,6 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                     if (code != null) {
                         result["${property}"] = code
                     } else {
-                        // no se pierde el identificador ni se disfraza de concept_code: un
-                        // '1234' pelado en el CDM es indistinguible de un codigo EUCAIM y
-                        // viaja como si lo fuera. Con el prefijo se ve que no lo es.
                         log.warn("CodeableConceptsLookupRelaxedService.lookup - NO OMOP MATCH for property '${property}': " +
                             "OMOP concept id '${omopId}' is not in concept_external_mapping. " +
                             "Stored as 'omop_id:${omopId}'. Add the mapping or correct the value.")
@@ -107,10 +104,16 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                     SELECT c.concept_code, c.concept_name
                     FROM eucaim_hyperontology_codes.concept c
                     WHERE upper(c.concept_name) LIKE ?
+                    ORDER BY (upper(c.concept_name) = upper(?)) DESC,
+                             length(c.concept_name),
+                             c.concept_id
                     """
+                    // The exact name goes first; among the substring
+                    // matches the shortest name is the closest to what was written.
 
                     def pstmt = conn.prepareStatement(sql)
                     pstmt.setString(1, "%" + value.toString().toUpperCase() + "%")
+                    pstmt.setString(2, value.toString())
                     def rs = pstmt.executeQuery()
 
                     log.debug("CodeableConceptsLookupRelaxedService.lookup - property '${property}', value '${value}'")
