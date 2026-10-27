@@ -194,16 +194,20 @@ docker compose down -v
 
 Afterwards execute the launch script as normal, and ingest the files following the same instructions.
 
+This only applies when coming from a release prior to 0.3.X. Updating between 0.3.X releases does not need it: see the next question.
 
-### 5. I updated the ETL (git pull) and a new lookup value, ontology concept or procedure is not taking effect
 
-PostgreSQL runs the files in `Database/` only the first time its volume is created, so an update of those files never reaches a database that already exists. You do not need to recreate it (and lose the ingested data): reload just the reference data and code with
+### 5. I updated the ETL (git pull) and a new lookup value, ontology concept or procedure is not taking effect, or the ingestion fails with "table ... not found" / "column ... does not exist"
+
+PostgreSQL runs the files in `Database/` only the first time its volume is created, so an update of those files never reaches a database that already exists. You do not need to recreate it (and lose the ingested data): with the ETL running, bring the database up to the new version with
 
 ```bash
-scripts/reload_database.sh            # lookup tables + procedures (the usual case)
+scripts/reload_database.sh            # lookup tables + procedures + schemas (the usual case)
 scripts/reload_database.sh all        # also the ontology concepts
 ```
 
-On Windows use `.\scripts\reload_database.ps1` (same groups: `aux`, `procedures`, `ontology`, `all`).
+On Windows use `.\scripts\reload_database.ps1` (same groups: `aux`, `procedures`, `ontology`, `schema`, `all`).
 
-The ingested and exported data are not touched. Everything selected is applied in one transaction, so an error leaves the database as it was. Rows added by hand to a `Lookup*` table are replaced by the content of the file: add `--backup` (`-Backup` in PowerShell) to get a dump first. NiFi does not need to be restarted for these changes. A change in a Groovy script or in a flow does: the flows are loaded again when the ETL starts.
+The `schema` group compares the ingestion and output tables with the ones the new version expects. The ingestion tables are updated in place and keep their data: missing tables and columns are added and the types widened. The output tables are only a projection of the ingestion ones: if they changed, they are created again and every dataset already published is transformed and exported again, so the CDM bundle in the output folder is rewritten in the new format. If the tables already match, nothing changes.
+
+Data ingested with an earlier version keeps empty the fields that version did not extract (for example the number of instances of an image study, or the segmentation series). To fill them, put the source files of that dataset in **input_data** again: the existing rows are updated, not duplicated.

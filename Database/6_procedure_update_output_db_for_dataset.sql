@@ -53,11 +53,25 @@ DECLARE
     v_seg_incomplete  INTEGER;
     v_seg_relaxed     BOOLEAN;
 BEGIN
+    -- segmentation_series and segment go first
+    DELETE FROM eucaim_cdm_output.segment sg
+    USING eucaim_cdm_output.segmentation_series ss
+    JOIN eucaim_cdm_output.image_study ois ON ois.study_uid = ss.study_uid
+    JOIN eucaim_cdm_output.patient opa ON opa.patient_id = ois.patient_id
+    WHERE sg.segmentation_series_uid = ss.segmentation_series_uid
+      AND opa.dataset_id = p_dataset_id;
+
+    DELETE FROM eucaim_cdm_output.segmentation_series ss
+    USING eucaim_cdm_output.image_study ois
+    JOIN eucaim_cdm_output.patient opa ON opa.patient_id = ois.patient_id
+    WHERE ois.study_uid = ss.study_uid
+      AND opa.dataset_id = p_dataset_id;
+
     -- Clealing output tables or given dataset ID  (CASCADE)
     DELETE FROM eucaim_cdm_output.dataset
     WHERE dataset_id = p_dataset_id;
 
-    -- body_site is the one output table the cascade above cannot reach
+    -- body_site cannot be reached by the cascade above either
     DELETE FROM eucaim_cdm_output.body_site bs
     WHERE NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.tumor t
                       WHERE t.tumor_body_site_id = bs.body_site_id)
