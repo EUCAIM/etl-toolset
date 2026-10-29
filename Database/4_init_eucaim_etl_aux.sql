@@ -1885,6 +1885,68 @@ VALUES ('IVSXB', 'Stage 4');
 INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
 VALUES ('IVXA', 'Stage 4');
 
+-- Seen in the NHL dataset (8e92d702a8874791869c37a4b17157dc). The modifiers (A/B symptoms,
+-- E extranodal, S spleen, X bulky) do not change the stage.
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IA', 'Stage 1');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IEA', 'Stage 1');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IX', 'Stage 1');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIB', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIX', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIXB', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIEXB', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIEX', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIISA', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIISB', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIX', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIXA', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIXB', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVE', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVEA', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVEB', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVESXB', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVEX', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVSA', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVXB', 'Stage 4');
+
 INSERT INTO eucaim_etl_aux.LookupTumorSizeDimensionUnit (originalValue, parsedValue)
 VALUES ('mm', 'millimeter');
 
