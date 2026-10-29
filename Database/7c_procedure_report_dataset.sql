@@ -54,6 +54,7 @@ DECLARE
     v_studies     bigint;
     v_orphans     bigint;
     v_no_tp       bigint;
+    v_no_proc     bigint;
     v_empty       text[] := ARRAY[]::text[];
     v_absent      text[] := ARRAY[]::text[];
     v_producible  boolean;
@@ -63,6 +64,11 @@ DECLARE
     v_nf          bigint;
     v_nf_shown    integer := 0;
     v_since       text;
+    v_earlier     bigint;
+    -- Neither ProcessLog nor the mapping results carry a run id, and nothing clears them
+    -- between runs. A run is told apart by time instead: a pause longer than this between
+    -- two run starts (or two mapping rows) means a new run began
+    v_run_gap     interval := interval '15 minutes';
     v_shown       integer := 0;
     r             record;
 BEGIN
@@ -174,25 +180,45 @@ BEGIN
     -- the timepoints file. A study left unlinked drops out of the output together with its
     -- series and modality rows, without any error: the pipeline log only has INFO rows and the
     -- orphan warning of the output procedure goes to the database log, which nobody reads
+    -- The breakdown is the one transform_dataset_v001 logs, so both say the same
     SELECT count(*),
-           count(*) FILTER (WHERE s.ImagingTimepoint IS NULL),
-           count(*) FILTER (WHERE NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.procedure op
-                                              WHERE op.procedure_id = s.ImagingProcedureIdentifier
-                                                AND op.patient_id   = s.PatientIdentifier))
-    INTO v_studies, v_no_tp, v_orphans
+           count(*) FILTER (WHERE o.orphan),
+           count(*) FILTER (WHERE o.orphan AND s.ImagingTimepoint IS NULL),
+           count(*) FILTER (WHERE o.orphan AND s.ImagingTimepoint IS NOT NULL
+                              AND NOT EXISTS (SELECT 1
+                                              FROM eucaim_cdm_ingestion.ImagingProcedure ip
+                                              JOIN eucaim_cdm_ingestion.PrimaryCancerCondition pcc
+                                                ON ip.PrimaryCancerConditionIdentifier = pcc.Identifier
+                                              WHERE pcc.PatientIdentifier = s.PatientIdentifier
+                                                AND ip.ImagingTimepoint   = s.ImagingTimepoint))
+    INTO v_studies, v_orphans, v_no_tp, v_no_proc
     FROM eucaim_cdm_ingestion.ImageStudy s
+    CROSS JOIN LATERAL (SELECT NOT EXISTS (SELECT 1 FROM eucaim_cdm_output.procedure op
+                                           WHERE op.procedure_id = s.ImagingProcedureIdentifier
+                                             AND op.patient_id   = s.PatientIdentifier) AS orphan) o
     WHERE s.DatasetIdentifier = p_dataset_id;
 
     IF v_studies > 0 THEN
         IF v_orphans = 0 THEN
             v_md := v_md || ('- ✅ the ' || v_studies || ' ingested DICOM studies are linked to an imaging procedure')::text;
         ELSE
-            v_md := v_md || ('- ❌ ' || v_orphans || ' of ' || v_studies || ' ingested DICOM studies are NOT in the CDM: '
-                          || v_no_tp || ' have no timepoint and none is linked to an imaging procedure. Their series and '
-                          || 'modality rows are left out too. Check that the imaging timepoints csv holds the same '
-                          || 'PatientID and StudyInstanceUID as the DICOM metadata, that its Timepoint column is a '
-                          || 'whole number, and that it matches the clinical data (if it has not been ingested yet, '
-                          || 'this is expected)')::text;
+            v_md := v_md || ('- ❌ ' || v_orphans || ' of ' || v_studies || ' ingested DICOM studies are NOT in the CDM, '
+                          || 'and their series and modality rows are left out with them')::text;
+            IF v_no_tp > 0 THEN
+                v_md := v_md || ('    - ' || v_no_tp || ' have no timepoint: the imaging timepoints csv did not reach '
+                              || 'them. Check that it holds the same PatientID and StudyInstanceUID as the DICOM '
+                              || 'metadata and that its Timepoint column is a whole number (if it has not been '
+                              || 'ingested yet, this is expected)')::text;
+            END IF;
+            IF v_no_proc > 0 THEN
+                v_md := v_md || ('    - ' || v_no_proc || ' have a timepoint, but the clinical data has no imaging '
+                              || 'procedure for that patient at that timepoint. Check the timepoints csv against '
+                              || 'the imaging procedures of the clinical file')::text;
+            END IF;
+            IF v_orphans - v_no_tp - v_no_proc > 0 THEN
+                v_md := v_md || ('    - ' || (v_orphans - v_no_tp - v_no_proc) || ' have a timepoint and a matching '
+                              || 'imaging procedure, and still are not linked: this is an ETL fault, please report it')::text;
+            END IF;
         END IF;
     END IF;
     v_md := v_md || ''::text;
@@ -200,16 +226,33 @@ BEGIN
     ----------------------------------------------------- 3. mapping quality
     -- The lookups write the literal 'NOT FOUND' when a term has no concept, so that string
     -- is an unmapped value, not a code. A source value that is empty has nothing to map:
-    -- it is counted apart instead of inflating the share of failures
-    SELECT count(*) FILTER (WHERE coalesce(codeInEUCAIM, '') NOT IN ('', 'NOT FOUND')),
-           count(*) FILTER (WHERE coalesce(codeInEUCAIM, '') IN ('', 'NOT FOUND')
+    -- it is counted apart instead of inflating the share of failures.
+    -- Only the last mapping run counts: the table keeps every run since the node was set
+    -- up, and the older ones describe lookups that may have changed since. Its timestamps
+    -- come from the mapping service, not from the database, so the run is found from
+    -- them alone rather than compared with ProcessLog
+    DROP TABLE IF EXISTS pg_temp.report_mapping;
+    CREATE TEMP TABLE report_mapping AS
+    WITH m AS (
+        SELECT propertyNameOriginal, originalValue, codeInEUCAIM, mappingTimestamp::timestamp AS ts
+        FROM eucaim_cdm_ingestion.MappedCodeableConceptsResults
+        WHERE datasetId = p_dataset_id
+    ), starts AS (
+        SELECT ts, ts - lag(ts) OVER (ORDER BY ts) AS pause
+        FROM (SELECT DISTINCT ts FROM m) d
+    )
+    SELECT m.*, (m.ts >= (SELECT max(ts) FROM starts WHERE pause IS NULL OR pause > v_run_gap)) AS last_run
+    FROM m;
+
+    SELECT count(*) FILTER (WHERE last_run AND coalesce(codeInEUCAIM, '') NOT IN ('', 'NOT FOUND')),
+           count(*) FILTER (WHERE last_run AND coalesce(codeInEUCAIM, '') IN ('', 'NOT FOUND')
                               AND coalesce(trim(originalValue), '') <> ''),
-           count(*) FILTER (WHERE coalesce(codeInEUCAIM, '') IN ('', 'NOT FOUND')
+           count(*) FILTER (WHERE last_run AND coalesce(codeInEUCAIM, '') IN ('', 'NOT FOUND')
                               AND coalesce(trim(originalValue), '') =  ''),
-           to_char(min(mappingTimestamp::timestamp), 'YYYY-MM-DD HH24:MI')
-    INTO v_mapped, v_unmapped, v_blank, v_since
-    FROM eucaim_cdm_ingestion.MappedCodeableConceptsResults
-    WHERE datasetId = p_dataset_id;
+           to_char(min(ts) FILTER (WHERE last_run), 'YYYY-MM-DD HH24:MI'),
+           count(*) FILTER (WHERE NOT last_run)
+    INTO v_mapped, v_unmapped, v_blank, v_since, v_earlier
+    FROM report_mapping;
 
     v_md := v_md || ARRAY['## 3. Mapping quality', ''];
 
@@ -223,7 +266,8 @@ BEGIN
             '| Source values with **no** EUCAIM code | ' || v_unmapped || ' |',
             '| Source values left empty (nothing to map) | ' || v_blank || ' |',
             '| Share unmapped | **' || round(100.0 * v_unmapped / nullif(v_mapped + v_unmapped, 0), 1) || '%** |',
-            '| Oldest mapping recorded | ' || coalesce(v_since, '-') || ' |',
+            '| Mapping run started | ' || coalesce(v_since, '-') || ' |',
+            '| Results of earlier runs, not counted | ' || v_earlier || ' |',
             ''];
 
         IF v_unmapped + v_blank > 0 THEN
@@ -238,8 +282,8 @@ BEGIN
 
             FOR r IN
                 SELECT propertyNameOriginal AS col, originalValue AS val, count(*) AS n
-                FROM eucaim_cdm_ingestion.MappedCodeableConceptsResults
-                WHERE datasetId = p_dataset_id AND coalesce(codeInEUCAIM, '') IN ('', 'NOT FOUND')
+                FROM report_mapping
+                WHERE last_run AND coalesce(codeInEUCAIM, '') IN ('', 'NOT FOUND')
                 GROUP BY 1, 2
                 ORDER BY count(*) DESC, 1, 2
                 LIMIT 100
@@ -306,44 +350,87 @@ BEGIN
     END IF;
 
     ------------------------------------------------------- 5. pipeline log
+    -- Each input (clinical data, DICOM metadata, timepoints) is run on its own and can be
+    -- run again without the others, so each one is read from the start of ITS last run:
+    -- the last loop01 step 1, or the first of a burst of them when several files went in
+    -- together. The transform and export (cdm_output) are one transaction, whose rows all
+    -- carry the timestamp of its export. A type with no recorded start is read in full
     v_md := v_md || ARRAY['## 5. Pipeline log', ''];
-    IF NOT EXISTS (SELECT 1 FROM eucaim_cdm_ingestion.ProcessLog WHERE datasetId = p_dataset_id) THEN
+    DROP TABLE IF EXISTS pg_temp.report_log;
+    CREATE TEMP TABLE report_log AS
+    WITH l AS (
+        SELECT * FROM eucaim_cdm_ingestion.ProcessLog WHERE datasetId = p_dataset_id
+    ), starts AS (
+        SELECT datasetType, timestamp AS ts,
+               timestamp - lag(timestamp) OVER (PARTITION BY datasetType ORDER BY timestamp) AS pause
+        FROM l
+        WHERE (pipelineStage = 'loop01' AND stepNumber = 1 AND level = 'INFO')
+           OR (datasetType = 'cdm_output' AND stepName = 'export_dataset_to_csv')
+    ), run AS (
+        SELECT datasetType, max(ts) AS started
+        FROM starts
+        WHERE pause IS NULL OR pause > v_run_gap OR datasetType = 'cdm_output'
+        GROUP BY datasetType
+    )
+    SELECT l.*, run.started
+    FROM l LEFT JOIN run ON run.datasetType IS NOT DISTINCT FROM l.datasetType
+    WHERE run.started IS NULL OR l.timestamp >= run.started;
+
+    SELECT count(*) INTO v_earlier
+    FROM eucaim_cdm_ingestion.ProcessLog WHERE datasetId = p_dataset_id;
+    v_earlier := v_earlier - (SELECT count(*) FROM report_log);
+
+    IF NOT EXISTS (SELECT 1 FROM report_log) THEN
         v_md := v_md || ARRAY['No pipeline step recorded for this dataset.', ''];
     ELSE
+        v_md := v_md || ARRAY['Only the last run of each input is read:', '',
+                              '| Input | Last run started |', '|---|---|'];
+        FOR r IN
+            SELECT datasetType AS input, to_char(coalesce(max(started), min(timestamp)), 'YYYY-MM-DD HH24:MI:SS') AS ts
+            FROM report_log GROUP BY datasetType ORDER BY 2
+        LOOP
+            v_md := v_md || ('| ' || eucaim_etl_aux.md_cell(r.input) || ' | ' || r.ts || ' |');
+        END LOOP;
+        v_md := v_md || ARRAY['', v_earlier || ' rows of earlier runs are not counted.', ''];
+
         v_md := v_md || ARRAY['| Level | Steps |', '|---|---:|'];
         FOR r IN
-            SELECT level, count(*) AS n FROM eucaim_cdm_ingestion.ProcessLog
-            WHERE datasetId = p_dataset_id GROUP BY level ORDER BY level
+            SELECT level, count(*) AS n FROM report_log GROUP BY level ORDER BY level
         LOOP
             v_md := v_md || ('| ' || eucaim_etl_aux.md_cell(r.level) || ' | ' || r.n || ' |');
         END LOOP;
         v_md := v_md || ''::text;
 
-        IF EXISTS (SELECT 1 FROM eucaim_cdm_ingestion.ProcessLog
-                   WHERE datasetId = p_dataset_id AND level <> 'INFO') THEN
-            v_md := v_md || ARRAY['| When | Stage | Step | Level | Message |', '|---|---|---|---|---|'];
+        IF EXISTS (SELECT 1 FROM report_log WHERE level <> 'INFO') THEN
+            v_md := v_md || ARRAY['| When | Input | Stage | Step | Level | Message |', '|---|---|---|---|---|---|'];
             FOR r IN
-                SELECT to_char(timestamp, 'YYYY-MM-DD HH24:MI:SS') AS ts, pipelineStage AS stage,
-                       stepName AS step, level, message
-                FROM eucaim_cdm_ingestion.ProcessLog
-                WHERE datasetId = p_dataset_id AND level <> 'INFO'
+                SELECT to_char(timestamp, 'YYYY-MM-DD HH24:MI:SS') AS ts, datasetType AS input,
+                       pipelineStage AS stage, stepName AS step, level, message
+                FROM report_log
+                WHERE level <> 'INFO'
                 ORDER BY timestamp DESC
                 LIMIT 50
             LOOP
-                v_md := v_md || ('| ' || r.ts || ' | ' || eucaim_etl_aux.md_cell(r.stage) || ' | '
+                v_md := v_md || ('| ' || r.ts || ' | ' || eucaim_etl_aux.md_cell(r.input) || ' | '
+                              || eucaim_etl_aux.md_cell(r.stage) || ' | '
                               || eucaim_etl_aux.md_cell(r.step) || ' | ' || eucaim_etl_aux.md_cell(r.level)
                               || ' | ' || eucaim_etl_aux.md_cell(r.message) || ' |');
             END LOOP;
+            IF (SELECT count(*) FROM report_log WHERE level <> 'INFO') > 50 THEN
+                v_md := v_md || ARRAY['', '_Only the 50 most recent are listed; output_data/etl_process_logs has them all._'];
+            END IF;
         ELSE
-            -- Worth saying plainly: right now the flows only ever write INFO rows
-            -- here, so a clean log is not by itself evidence that nothing failed.
+            -- A clean log is not by itself evidence that nothing failed: a file can still
+            -- fail in a way that neither the flows nor ProvenanceToProcessLog record
             v_md := v_md || ARRAY[
-                'No warning or error recorded for this dataset. Note that the pipeline',
-                'currently only writes INFO rows to this log, so failures are found in',
-                'output_data/etl_process_logs/etl-errors.log rather than here.',
+                'No warning or error recorded in the last run of this dataset. Failures the',
+                'pipeline does not record are found in output_data/etl_process_logs/etl-errors.log.',
                 ''];
         END IF;
     END IF;
+
+    DROP TABLE pg_temp.report_mapping;
+    DROP TABLE pg_temp.report_log;
 
     v_md := v_md || ARRAY['', '---', '', 'Generated by `eucaim_etl_aux.report_dataset_v001`. Checks the bundle against the',
                           'database it came from; `scripts/check_cdm_bundle.sh` runs the same comparison on demand.'];

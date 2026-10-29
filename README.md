@@ -85,7 +85,8 @@ the ones at zero that have no file. Read it before the rest, and take the file l
 rather than from the directory.
 
 Each bundle also carries a **`<dataset_id>__report.md`**: how the dataset ingestion went, in one
-page meant to be read and shared.
+page meant to be read and shared. Its mapping and pipeline log sections cover only the last run
+of each input (clinical data, DICOM metadata, timepoints), not every run the node kept.
 
 The per-run export of the ingestion tables, holding the clinical data and the DICOM metadata as
 the mapping wrote them, is written here:
