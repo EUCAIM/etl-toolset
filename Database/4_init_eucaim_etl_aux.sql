@@ -1,4 +1,6 @@
 ----------------------------------------------------
+-- Re-runnable: every table is dropped before it is created, so applying the file again over
+-- an existing database only refreshes the lookup values (scripts/reload_database.sh does it).
 CREATE SCHEMA IF NOT EXISTS eucaim_etl_aux;
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupHeaderRowsToRemove;
@@ -636,6 +638,13 @@ VALUES ('parietal (4)', 'Parietal region');
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
 VALUES ('temporal (2)', 'Temporal brain region');
 
+-- UoA Brain: a tumour on both sides is written 'Left - Right'. 'Bilateral' is IMG1016659.
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('Left - Right', 'Bilateral');
+
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
+VALUES ('Left', 'Left'), ('left', 'Left'), ('Right', 'Right'), ('right', 'Right'), ('Bilateral', 'Bilateral'), ('bilateral', 'Bilateral');
+
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLateralityQualifier (originalValue, parsedValue)
 VALUES ('Unknown', 'Unknown');
 
@@ -670,6 +679,48 @@ VALUES ('Temporal', 'Temporal lobe');
 -- como concept_name, así que el servicio de conceptos lo convertía en 'NOT FOUND'.
 INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
 VALUES ('Thalamus - Cingulum', 'Thalamus');
+
+-- UoA Brain (90a34e05855697899fe5e22ad6259c89): 368 valores de "Topography : Region" salian sin
+-- codigo. El lookup compara el texto exacto (mayusculas, guiones y espacios incluidos), asi que
+-- cada variante de escritura del origen necesita su fila, tal como llega, typos incluidos.
+-- parsedValue debe ser un concept_name que exista: el servicio de conceptos lo resuelve por nombre.
+-- Tumor_BodySiteLocationQualifier admite un unico concepto, asi que las combinaciones de varias
+-- regiones no se pueden partir en varias filas. Se codifican con el concepto que las engloba:
+--   * varios lobulos (con o sin talamo)  -> 'Supratentorial brain'
+--   * mesencefalo / protuberancia        -> 'Brain stem'
+-- Es una perdida de detalle deliberada, preferible a dejar el valor sin codigo.
+INSERT INTO eucaim_etl_aux.LookupTumorBodySiteLocationQualifier (originalValue, parsedValue)
+VALUES
+    -- una sola region
+    ('Frontal', 'Frontal lobe'),
+    ('Parietal', 'Parietal lobe'),
+    ('Occipital', 'Occipital lobe'),
+    ('Thalamus', 'Thalamus'),
+    ('Cerebellum', 'Cerebellum'),
+    ('cerebellum', 'Cerebellum'),
+    ('caudate nucleus / basal ganglia', 'Basal ganglia'),
+    ('3rd Ventricle', 'Ventricle, NOS'),
+    ('4th Ventricle', 'Ventricle, NOS'),
+    ('Pons', 'Brain stem'),
+    ('Midbrain - Pons', 'Brain stem'),
+    ('Posterior Fossa', 'Infratentorial brain structure'),
+    -- varios lobulos: supratentorial
+    ('Frontal - Parietal', 'Supratentorial brain'),
+    ('Parietal - Frontal', 'Supratentorial brain'),
+    ('Frontal Parietal', 'Supratentorial brain'),
+    ('Frontal Temporal', 'Supratentorial brain'),
+    ('Frontal Temporal Parietal', 'Supratentorial brain'),
+    ('Frontal Parietal Temporal', 'Supratentorial brain'),
+    ('Frontal  Parietal Temporal', 'Supratentorial brain'),
+    ('Frontal Parietal Occipital', 'Supratentorial brain'),
+    ('Frontal - Parietal - Thalamus - Occipital', 'Supratentorial brain'),
+    ('Parietal - Temporal', 'Supratentorial brain'),
+    ('Parietal Temporal', 'Supratentorial brain'),
+    ('Temporal - Parietal', 'Supratentorial brain'),
+    ('Parietal Temporal Occipital', 'Supratentorial brain'),
+    ('Parietal - Occipial', 'Supratentorial brain'),
+    ('Temporal Occipital', 'Supratentorial brain'),
+    ('Temporal - Occipital', 'Supratentorial brain');
 
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorGradeCodeService;
@@ -1222,6 +1273,12 @@ INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue)
 
 INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('breast', 'CLIN1063727');
 
+-- THORAX
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('thorax', 'BP1000067');
+
+-- IAC: 'Structure of peripheral auditory system' is the closest one
+INSERT INTO eucaim_etl_aux.LookupBodyPartForImaging (originalValue, parsedValue) VALUES ('iac', 'BP1000174');
+
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupManufacturerAlias;
 
@@ -1243,6 +1300,8 @@ INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) 
 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Philips Healthcare', 'PHILIPS');
 
+INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Philips Digital Mammography Sweden AB', 'PHILIPS');
+
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Toshiba Medical', 'TOSHIBA');
 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Toshiba Medical', 'TOSHIBA');
@@ -1250,6 +1309,11 @@ INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('FUJIFILM Corporation', 'FUJIFILM');
 
 INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('GE MEDICAL SYSTEMS', 'GENERAL ELECTRIC');
+
+-- UoA Brain: the DICOM manufacturer reads 'Canon Medical Systems'; the concept is 'Canon' (IMG1000050).
+-- 'Manufactured Image' is deliberately absent: it is not a manufacturer but the value some
+-- systems write on derived objects, so it has no concept to map to.
+INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) VALUES ('Canon Medical Systems', 'CANON');
 
 ----------------------------------------------------
 
@@ -1262,6 +1326,8 @@ INSERT INTO eucaim_etl_aux.LookupManufacturerAlias (originalValue, parsedValue) 
 -------------------------------------------------------------------------------
 
 -- lookupcancerstage1code: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStage1Code;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage1Code (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1299,6 +1365,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStage1Code (originalValue, parsedValue)
 VALUES ('50', 'AJCC/UICC TX Category');
 
 -- lookupcancerstage2code: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStage2Code;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage2Code (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1321,6 +1389,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStage2Code (originalValue, parsedValue)
 VALUES ('40', 'AJCC/UICC 8th NX Category');
 
 -- lookupcancerstage3code: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStage3Code;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStage3Code (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1337,6 +1407,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStage3Code (originalValue, parsedValue)
 VALUES ('20', 'AJCC/UICC 8th MX Category');
 
 -- lookupcancerstagemvalue: recovered from branch SAS
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStageMValue;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageMValue (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1365,6 +1437,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStageMValue (originalValue, parsedValue)
 VALUES ('X', 'AJCC/UICC 8th clinical MX Category');
 
 -- lookupcancerstagenvalue: recovered from branch SAS
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStageNValue;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageNValue (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1438,6 +1512,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStageNValue (originalValue, parsedValue)
 VALUES ('X', 'AJCC/UICC 8th clinical NX Category');
 
 -- lookupcancerstagetvalue: recovered from branch SAS
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupCancerStageTValue;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupCancerStageTValue (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1489,6 +1565,8 @@ INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
 VALUES ('1mi', 'AJCC/UICC 8th clinical T1mi Category');
 
 -- lookuppatientbirthsex: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupPatientBirthSex;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPatientBirthSex (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -1508,6 +1586,8 @@ INSERT INTO eucaim_etl_aux.LookupPatientBirthSex (originalValue, parsedValue)
 VALUES ('M', 'Male');
 
 -- lookupprimarycancerconditionhistologymorphologybehaviorinsitu: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInSitu;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInSitu (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1527,6 +1607,8 @@ INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavi
 VALUES ('50', 'Other carcinoma in situ of breast');
 
 -- lookupprimarycancerconditionhistologymorphologybehaviorinvasive: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInvasive;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehaviorInvasive (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1549,6 +1631,8 @@ INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavi
 VALUES ('70', 'Invasive carcinoma of breast');
 
 -- lookupsurgicalprocedurecodeaxillary: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -1582,6 +1666,8 @@ INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeAxillary (originalValue, p
 VALUES ('98', 'Not available');
 
 -- lookupsurgicalprocedurecodebreast: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeBreast;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupSurgicalProcedureCodeBreast (
 
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -1611,6 +1697,8 @@ INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCodeBreast (originalValue, par
 VALUES ('4', 'Excision of axillary lymph node');
 
 -- lookuptumorhistologicgrade: recovered from branch KI
+DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorHistologicGrade;
+
 CREATE TABLE IF NOT EXISTS eucaim_etl_aux.LookupTumorHistologicGrade (
     Id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     originalValue VARCHAR(200),
@@ -1709,17 +1797,6 @@ VALUES ('lung cancer', 'Neoplasm of lung');
 
 -------------------------------------------------------------------------------------------
 -- SAS_NHL (8e92d702a8874791869c37a4b17157dc): non-Hodgkin lymphoma treated with CAR-T.
---
--- Only data-driven values need a row here. Values that are already spelled like a
--- EUCAIM concept (Female, Male, Patient with cancer) and the constants set in
--- AddConstantValues (PET-CT, Biopsy, Imaging (Procedure), day, year, Diagnosis,
--- Treatment) go straight to the concept lookup.
---
--- The histological subtypes, the Ann Arbor classification and the CAR-T products
--- have no concept in the hyperontology yet, so they are deliberately left without a
--- row: the lookup misses, the EUCAIM column stays null and the original value is
--- still persisted. Adding the concepts upstream turns this into a data-only change.
-
 INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
 VALUES ('nhl', '0');
 
@@ -1728,6 +1805,21 @@ VALUES ('8e92d702a8874791869c37a4b17157dc', '0');
 
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionCode (originalValue, parsedValue)
 VALUES ('NHL', 'Non-Hodgkin''s lymphoma (clinical)');
+
+-- UoA Brain: histologies with no concept of their own in the hyperontology, generalised on purpose to
+-- the closest parent that exists (the diagnosis loses precision: the original text stays in the source).
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionCode (originalValue, parsedValue)
+VALUES ('Diffuse Gliomas', 'Glioma'),
+       ('Astrocytoma', 'Glioma'),
+       ('Diffuse Astrocytoma', 'Glioma'),
+       ('CNS-DLBCL', 'Malignant lymphoma');
+
+-- Histological subtype -> nearest ICDO Histology ancestor present in the hyperontology.
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('Diffuse Large B-Cell Lymphoma', 'Malignant lymphomas, NOS or diffuse');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('Follicular Lymphoma', 'Malignant lymphoma, non-Hodgkin, NOS');
 
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionTopography (originalValue, parsedValue)
 VALUES ('Lymph node', 'Structure of lymph node');
@@ -1741,22 +1833,144 @@ VALUES ('Abdomen', 'Abdomen');
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionTopography (originalValue, parsedValue)
 VALUES ('Skin', 'Skin structure');
 
--- Nasopharynx is a documented topography of this dataset but has no concept in the
--- hyperontology, so it is left unmapped on purpose.
+INSERT INTO eucaim_etl_aux.LookupCancerStageCode (originalValue, parsedValue)
+VALUES ('Ann Arbor classification', 'snomed:4115000');
 
--- The index tumor reuses the parsed Topography, and each involvement row carries a
--- constant concept name set in AddConstantValues, so LookupTumorBodySiteCode needs
--- no row. Hepatosplenic and Other extranodal involvement have no concept at all
--- (there is a Liver structure but no spleen), so those rows keep only the original
--- value.
+-- Ann Arbor stage values, stripped of their modifiers. Roman numeral -> generic stage.
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('I', 'Stage 1');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('II', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIA', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIEX', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIEXA', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('III', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIA', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIB', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIEXB', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IV', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVA', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVB', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVEXB', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVSB', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVSXB', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVXA', 'Stage 4');
+
+-- Seen in the NHL dataset (8e92d702a8874791869c37a4b17157dc). The modifiers (A/B symptoms,
+-- E extranodal, S spleen, X bulky) do not change the stage.
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IA', 'Stage 1');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IEA', 'Stage 1');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IX', 'Stage 1');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIB', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIX', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIXB', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIEXB', 'Stage 2');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIEX', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIISA', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIISB', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIX', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIXA', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IIIXB', 'Stage 3');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVE', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVEA', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVEB', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVESXB', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVEX', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVSA', 'Stage 4');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageValue (originalValue, parsedValue)
+VALUES ('IVXB', 'Stage 4');
 
 INSERT INTO eucaim_etl_aux.LookupTumorSizeDimensionUnit (originalValue, parsedValue)
 VALUES ('mm', 'millimeter');
 
--- Family history arrives as a single free-text column ("Mother, colon cancer"); the
--- flow splits it on the comma, the relationship half already matches a concept name.
+
 INSERT INTO eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
 VALUES ('colon cancer', 'Carcinoma of colon');
 
 INSERT INTO eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
 VALUES ('pancreatic cancer', 'Carcinoma of pancreas');
+
+
+-------------------------------------------------------------------------------------------
+-- APHP IMALIVE (bf7d344c9a50f00888da03c982d8f439): hepatocellular carcinoma, MRI/CT and pathology.
+INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
+VALUES ('bf7d344c9a50f00888da03c982d8f439', '0');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionCode (originalValue, parsedValue)
+VALUES ('C22.0', 'Liver cell carcinoma');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('Hepatocellular carcinoma', 'Hepatocellular carcinoma (morphologic abnormality)');
+
+INSERT INTO eucaim_etl_aux.LookupProcedureCode (originalValue, parsedValue)
+VALUES ('Surgical specimen', 'snomed:39228008');
+
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+VALUES ('Segmentectomy 4b', 'snomed:71273005');

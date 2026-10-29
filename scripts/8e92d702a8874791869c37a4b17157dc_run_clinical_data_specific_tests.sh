@@ -67,6 +67,34 @@ fi
 
 echo "✔️ CAR-T product is stored with its original value"
 
+### the histological subtype maps to its hierarchical parent, since neither DLBCL
+### nor follicular lymphoma exists in the hyperontology. This patient is follicular
+### at both timepoints: the EUCAIM column holds the NHL NOS ancestor and the original
+### literal is kept beside it
+HISTOLOGY_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT DISTINCT c.histologymorphologybehavioureucaim || '|' || c.histologymorphologybehaviouroriginal FROM eucaim_cdm_ingestion.primarycancercondition c JOIN eucaim_cdm_ingestion.cancerpatient p ON p.identifier = c.patientidentifier AND p.datasetidentifier='${CODE}' WHERE c.patientidentifier='${PATIENT}';" | xargs)
+HISTOLOGY_EXPECTED='CLIN1049660|Follicular Lymphoma'
+
+if [ "$HISTOLOGY_QUERY" != "$HISTOLOGY_EXPECTED" ]; then
+  echo "❌ Histological subtype not mapped to its parent for patient $PATIENT (got '$HISTOLOGY_QUERY')"
+  exit 1
+fi
+
+echo "✔️ Histological subtype maps to its parent and keeps the original value"
+
+### Ann Arbor: the staging system travels as the raw SNOMED code through the
+### 'code:' escape hatch, and the value is reduced to the system-agnostic stage
+### concept. This patient is IVA at both timepoints: modifiers are dropped on the
+### EUCAIM column and kept on the original one
+STAGE_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT DISTINCT s.cancerstagecodeeucaim || '|' || s.cancerstagevalueeucaim || '|' || s.cancerstagevalueoriginal FROM eucaim_cdm_ingestion.cancerstage s JOIN eucaim_cdm_ingestion.primarycancercondition c ON c.identifier = s.primarycancerconditionidentifier JOIN eucaim_cdm_ingestion.cancerpatient p ON p.identifier = c.patientidentifier AND p.datasetidentifier='${CODE}' WHERE c.patientidentifier='${PATIENT}';" | xargs)
+STAGE_EXPECTED='snomed:4115000|CLIN1000419|IVA'
+
+if [ "$STAGE_QUERY" != "$STAGE_EXPECTED" ]; then
+  echo "❌ Ann Arbor stage not mapped as expected for patient $PATIENT (got '$STAGE_QUERY')"
+  exit 1
+fi
+
+echo "✔️ Ann Arbor stage maps to the generic stage concept and keeps the original value"
+
 ### a patient whose 3-month evaluation is NA must produce two studies, not three
 PATIENT_NA='EUCAIM-90719333099368965402437184739625970359'
 NA_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.imagingprocedure i JOIN eucaim_cdm_ingestion.cancerpatient p ON p.identifier = i.patientidentifier AND p.datasetidentifier='${CODE}' WHERE i.patientidentifier='${PATIENT_NA}';" | xargs)

@@ -67,7 +67,19 @@ class ImagingIdentifierLookupService implements LookupService<String> {
             def studyUID = input.StudyUID
             def patientID = input.PatientID
             def datasetID = input.DatasetID
-            def imagingTimepoint = Integer.parseInt(input.ImagingTimepoint)
+
+            // a study with no timepoint has nothing to look up: parseInt(null) used to throw and
+            // was reported as a lookup failure
+            if (input.ImagingTimepoint == null || input.ImagingTimepoint.toString().trim().isEmpty()
+                    || input.ImagingTimepoint.toString().trim() == "null") {
+                log.warn("SearchImagingIdentifier.lookup - the source gives no ImagingTimepoint for " +
+                    "datasetID='${datasetID}', patientID='${patientID}' (studyUID='${studyUID}'). " +
+                    "The timepoint is stored as NOT FOUND. Check the imaging timepoints file for this study.")
+                result["imagingIdentifier"] = "NOT FOUND"
+                return Optional.of(result)
+            }
+
+            def imagingTimepoint = Integer.parseInt(input.ImagingTimepoint.toString().trim())
 
             log.debug("SearchImagingIdentifier.lookup - studyUID=${studyUID}, patientID=${patientID}, " +
                 "datasetID=${datasetID}, imagingTimepoint=${imagingTimepoint}")

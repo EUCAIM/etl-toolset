@@ -17,6 +17,9 @@ RUN python -m pip install --upgrade pip setuptools wheel \
 
 COPY . .
 ENV FLASK_APP=app.py
+# Without this the per-stage timings data_curator prints stay buffered and only
+# surface once the process exits, which hides progress on long curations.
+ENV PYTHONUNBUFFERED=1
 EXPOSE 5000
 VOLUME ["/app/results"]
 CMD ["flask", "run" , "--host", "0.0.0.0", "--port", "5000"]

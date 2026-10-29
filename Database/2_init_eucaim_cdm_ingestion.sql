@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
     originalValue VARCHAR(150),
     parsedValue VARCHAR(150),
     codeInEUCAIM VARCHAR(50),
-    codeCandidatesInEUCAIM VARCHAR(50),
     mappingTimestamp VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
 );
@@ -397,6 +396,24 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
     Laterality VARCHAR(50),
     AcquisitionDate VARCHAR(50),
     Modality VARCHAR(50),
+    -- NumberOfSeriesRelatedInstances del extractor. Es un tag POR SERIE
+    NumberOfInstances INTEGER,
+    processed BOOLEAN DEFAULT FALSE
+);
+
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.SegmentationSeries (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
+    SegmentationSeriesUID VARCHAR(70) PRIMARY KEY,
+    ImageStudyUID VARCHAR(70),
+    SourceSeriesUID VARCHAR(70),
+    AlgorithmType VARCHAR(50),
+    SeriesNumber INTEGER,
+    Description VARCHAR(170),
+    Manufacturer VARCHAR(70),
+    SoftwareVersions VARCHAR(70),
+    AcquisitionDate VARCHAR(50),
+    Modality VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -415,6 +432,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
     ConvolutionKernel VARCHAR(30),
     SliceThickness DECIMAL(10,4),
     EchoTime DECIMAL(10,5),
+    CTDIvol DECIMAL(10,4),
     ImageRows INTEGER,
     ImageColumns INTEGER,
     PixelRowSpacing DECIMAL(10,4),

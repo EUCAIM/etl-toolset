@@ -47,7 +47,7 @@ The same file holds two optional settings:
 
 The ETL service runs continuously in the background. In the current version, the execution of the pipeline is triggered by placing the dataset files into the **input_data** directory.
 
-The results are generated as a set of CSV files in the corresponding **output_data** directories.
+The results are generated as a set of CSV files in the corresponding **output_data** subdirectories.
 
 ## Dataset requirements ##
 
@@ -74,8 +74,29 @@ Please push first at least once, the files for clinical data and DICOM metadata,
 
 ## Dataset output folders ##
 
-The generated output files, containing the dataset data and DICOM metadata both converted into the EUCAIM CDM, are written here:
-- `output_data`
+The EUCAIM CDM deliverable, one CSV per CDM table and dataset, is written here:
+- `output_data\cdm`
+
+Files are named `<dataset_id>__<table>.csv` and their header is the column list of
+that table in the CDM, so they can be loaded as they are. A table with no rows for that
+dataset gets no file: what describes the whole model is the accompanying
+**`<dataset_id>__manifest.csv`**, which lists every CDM table with its row count, including
+the ones at zero that have no file. Read it before the rest, and take the file list from it
+rather than from the directory.
+
+Each bundle also carries a **`<dataset_id>__report.md`**: how the dataset ingestion went, in one
+page meant to be read and shared. Its mapping and pipeline log sections cover only the last run
+of each input (clinical data, DICOM metadata, timepoints), not every run the node kept.
+
+The per-run export of the ingestion tables, holding the clinical data and the DICOM metadata as
+the mapping wrote them, is written here:
+- `output_data\ingestion`
+
+These files are a trace of what each pipeline run loaded, useful for reviewing a mapping without
+querying the database. They follow the ingestion tables, **not** the EUCAIM CDM: the identifiers
+that link the entities are not exported, dates keep the format of the source, and several CDM
+entities have no file at all. They are kept for the same number of days as the log folders below.
+Do not use them as the CDM deliverable.
 
 Additional output to support the review of the mapping process is written here:
 - `output_data\mapping_logs` 
@@ -134,7 +155,9 @@ If you see the "Permission denied" message, the solution is to ensure that the f
 
 ### 2. Ingesting the imaging timepoints does not seem to work, and/or is generating errors
 
-Please check the csv file containing the imaging timepoints includes the expected header, with at least the columns **Timepoint** (also "ImagingTimepoint" is valid as column name), **StudyInstanceUID** and **PatientID** (column names no case sensitive).
+Please check the csv file containing the imaging timepoints includes the expected header, with at least the columns **Timepoint** (also "ImagingTimepoint" is valid as column name), **StudyInstanceUID** and **PatientID**. The column names are matched exactly, with this capitalisation: another spelling (for instance "timepoint") is not recognised and leaves the studies with timepoint 0. The values of the timepoint column must be whole numbers (1, 2, 3, not 1.0), and the StudyInstanceUID and PatientID must be the ones of the DICOM metadata of the dataset: a study the file does not reach keeps a null timepoint, with no error, and is left out of the CDM together with its series.
+
+To see how far the studies of a dataset got, run `scripts/check_data.sh <dataset_id>` (or `scripts/check_data.ps1`): its last block, `check_imaging_timepoints.sql`, counts the studies with and without timepoint and link, and tells why the others are not linked. It prints no identifiers, so its output can be shared as it is.
 
 
 ### 3. A mapping placed by hand in `flows` is replaced every time the ETL is started
@@ -171,3 +194,21 @@ docker compose down -v
 ```
 
 Afterwards execute the launch script as normal, and ingest the files following the same instructions.
+
+This only applies when coming from a release prior to 0.3.X. Updating between 0.3.X releases does not need it: see the next question.
+
+
+### 5. I updated the ETL (git pull) and a new lookup value, ontology concept or procedure is not taking effect, or the ingestion fails with "table ... not found" / "column ... does not exist"
+
+PostgreSQL runs the files in `Database/` only the first time its volume is created, so an update of those files never reaches a database that already exists. You do not need to recreate it (and lose the ingested data): with the ETL running, bring the database up to the new version with
+
+```bash
+scripts/reload_database.sh            # lookup tables + procedures + schemas (the usual case)
+scripts/reload_database.sh all        # also the ontology concepts
+```
+
+On Windows use `.\scripts\reload_database.ps1` (same groups: `aux`, `procedures`, `ontology`, `schema`, `all`).
+
+The `schema` group compares the ingestion and output tables with the ones the new version expects. The ingestion tables are updated in place and keep their data: missing tables and columns are added and the types widened. The output tables are only a projection of the ingestion ones: if they changed, they are created again and every dataset already published is transformed and exported again, so the CDM bundle in the output folder is rewritten in the new format. If the tables already match, nothing changes.
+
+Data ingested with an earlier version keeps empty the fields that version did not extract (for example the number of instances of an image study, or the segmentation series). To fill them, put the source files of that dataset in **input_data** again: the existing rows are updated, not duplicated.

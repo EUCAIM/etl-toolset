@@ -38,7 +38,11 @@ fi
 echo "✔️ Patient diagnostic category code is the expected in test data"
 
 NUMBER_OF_EPISODES_QUERY=$(docker exec $POSTGRES_CONTAINER psql -U postgres -d eucaim-etl-db -t -c "SELECT COUNT(*) FROM eucaim_cdm_ingestion.Episode e where e.datasetidentifier='${CODE}';" | xargs)
-NUMBER_OF_EPISODES=140
+### 20 pacientes x 6 episodios. Fueron 7 hasta que el episodio 0 ('Overarching') se
+### retiro del flow: ese papel lo hace ahora un episodio que transform_dataset_v001
+### genera por paciente en el esquema de salida, igual para los diez datasets, asi que
+### en la ingesta ya no se declara.
+NUMBER_OF_EPISODES=120
 
 if [ "$NUMBER_OF_EPISODES_QUERY" -ne "$NUMBER_OF_EPISODES" ]; then
   echo "❌ Not expected number of episodes in sample data"

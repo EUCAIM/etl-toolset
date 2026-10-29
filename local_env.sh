@@ -34,3 +34,9 @@
 ### delete nothing. Defaults to 30.
 ###
 ### logsRetentionDays="2"
+###
+### Host folder that holds the output of the ETL (CDM bundle, ingestion export
+### and logs). Optional: most nodes leave it alone and get ./output_data. Use an
+### absolute path, writable.
+###
+### outputDataDir="/data/eucaim/output_data"

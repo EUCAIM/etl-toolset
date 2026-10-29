@@ -12,9 +12,6 @@ $dirs = @(
     "staging_data\input_as_csv\clinical_data",
     "staging_data\input_as_csv\image_metadata",
     "staging_data\input_as_csv\image_timepoints",
-    "output_data",
-	"output_data\mapping_logs",
-    "output_data\etl_process_logs",
     "registry\database",
     "registry\flow-storage",
     "TDC_Output"
@@ -57,6 +54,16 @@ if ($downloadFromEnv) {
     $env:downloadFlows = $downloadFromEnv
 }
 
+# Host folder mounted as output_data in the containers, .\output_data unless
+# local_env.ps1 says otherwise
+if (-not $env:outputDataDir) { $env:outputDataDir = ".\output_data" }
+foreach ($sub in @("", "ingestion", "cdm", "mapping_logs", "etl_process_logs")) {
+    $path = Join-Path $env:outputDataDir $sub
+    if (-not (Test-Path $path)) {
+        New-Item -ItemType Directory -Path $path | Out-Null
+    }
+}
+
 # Datasets whose mappings init.sh pulls from EUCAIM/etl-mappings. Empty on a
 # clean deployment: this node downloads no mapping until its operator selects
 # the datasets it serves.
@@ -79,15 +86,18 @@ if ($env:downloadFlows.ToLower() -in @("false", "no", "0", "off")) {
 # loop04 writes one CSV per export run, so these folders reach hundreds of files
 # in a few weeks and stop being readable. The rows they contain stay in the
 # ingestion database, which is what the export reads from, so dropping the old
-# files loses nothing. Only the files loop04 generates are matched: etl-errors.log
+# files loses nothing. output_data\ingestion holds that same per-run export of the
+# ingestion tables, kept as a trace for reviewing a mapping, so it ages out under
+# the same rule. Only the files loop04 generates are matched: etl-errors.log
 # and its rotations are logback's business, and anything the operator put there by
 # hand is left alone. Set to 0 to keep everything.
 if (-not $env:logsRetentionDays) { $env:logsRetentionDays = "30" }
 $retention = 0
 if ([int]::TryParse($env:logsRetentionDays, [ref]$retention) -and $retention -gt 0) {
     $cutoff = (Get-Date).AddDays(-$retention)
-    $patterns = @("output_data\mapping_logs\mapping_results_*_records.csv",
-                  "output_data\etl_process_logs\process_logs_*_records.csv")
+    $patterns = @("$env:outputDataDir\mapping_logs\mapping_results_*_records.csv",
+                  "$env:outputDataDir\etl_process_logs\process_logs_*_records.csv",
+                  "$env:outputDataDir\ingestion\*_records.csv")
     $removed = 0
     foreach ($pattern in $patterns) {
         $old = Get-ChildItem -Path $pattern -File -ErrorAction SilentlyContinue |

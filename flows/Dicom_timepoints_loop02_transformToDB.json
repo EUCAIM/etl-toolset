@@ -2051,7 +2051,7 @@
                     "version": "2.3.0"
                 },
                 "properties": {
-                    "/ImagingTimepoint": "/Timepoint",
+                    "/ImagingTimepoint": "coalesce(/ImagingTimepoint, /Timepoint)",
                     "Record Writer": "9c609a6f-495b-3ea5-9381-a06b75643a88",
                     "Record Reader": "4bc6caeb-04a4-3ff5-a418-5c3e0930f65d",
                     "Replacement Value Strategy": "record-path-value"
