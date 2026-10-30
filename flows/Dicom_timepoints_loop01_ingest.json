@@ -371,7 +371,7 @@
                 },
                 "properties": {
                     "Keep Source File": "false",
-                    "Minimum File Age": "0 sec",
+                    "Minimum File Age": "10 sec",
                     "Polling Interval": "0 sec",
                     "Input Directory": "#{input_base_path}/image_timepoints",
                     "Maximum File Age": null,
@@ -558,7 +558,7 @@
                 "identifier": "0a2572b4-019c-1000-1e8e-9b12541ab418",
                 "instanceIdentifier": "4ffe161b-31fb-3d3d-eaa2-d4974d619d33",
                 "name": "RouteOnTypeOfSeparator",
-                "comments": "",
+                "comments": "Exactly one route per file: the separator that appears most often in the header, ignoring trailing whitespace (ties: comma, then semicolon). With 'Route to Property name' a header matching several conditions, e.g. a comma header followed by stray tabs, is cloned to every matching route.",
                 "position": {
                     "x": -3280.0,
                     "y": -128.0
@@ -571,9 +571,9 @@
                 },
                 "properties": {
                     "Routing Strategy": "Route to Property name",
-                    "tab_csv": "${first_line:contains('\\t')}",
-                    "comma_csv": "${first_line:contains(',')}",
-                    "semicolon_csv": "${first_line:contains(';')}"
+                    "tab_csv": "${first_line:trim():replaceAll('[^\\t]', ''):length():gt(0):and(${first_line:trim():replaceAll('[^\\t]', ''):length():gt(${first_line:trim():replaceAll('[^,]', ''):length()})}):and(${first_line:trim():replaceAll('[^\\t]', ''):length():gt(${first_line:trim():replaceAll('[^;]', ''):length()})})}",
+                    "comma_csv": "${first_line:trim():replaceAll('[^,]', ''):length():gt(0):and(${first_line:trim():replaceAll('[^,]', ''):length():ge(${first_line:trim():replaceAll('[^;]', ''):length()})}):and(${first_line:trim():replaceAll('[^,]', ''):length():ge(${first_line:trim():replaceAll('[^\\t]', ''):length()})})}",
+                    "semicolon_csv": "${first_line:trim():replaceAll('[^;]', ''):length():gt(0):and(${first_line:trim():replaceAll('[^;]', ''):length():gt(${first_line:trim():replaceAll('[^,]', ''):length()})}):and(${first_line:trim():replaceAll('[^;]', ''):length():ge(${first_line:trim():replaceAll('[^\\t]', ''):length()})})}"
                 },
                 "propertyDescriptors": {
                     "Routing Strategy": {
