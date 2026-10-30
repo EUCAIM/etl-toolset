@@ -270,12 +270,15 @@ BEGIN
             '| Results of earlier runs, not counted | ' || v_earlier || ' |',
             ''];
 
-        IF v_unmapped + v_blank > 0 THEN
+        -- Empty values are left out of the list: they are already counted above, and in a
+        -- source file with one row per treatment or per event they outnumber the real
+        -- failures by far and push them out of sight
+        IF v_unmapped > 0 THEN
             v_md := v_md || ARRAY[
                 'Every source value below reached the mapping and came out without a code, so',
                 'the data behind it is not in the CDM output. Each row is a distinct value and',
-                'how many times it appeared. An empty value is a gap in the source file, not a',
-                'failure of the mapping.',
+                'how many times it appeared. Empty values are not listed: they are a gap in',
+                'the source file, not a failure of the mapping, and are counted above.',
                 '',
                 '| Source column | Source value | Times |',
                 '|---|---|---:|'];
@@ -284,6 +287,7 @@ BEGIN
                 SELECT propertyNameOriginal AS col, originalValue AS val, count(*) AS n
                 FROM report_mapping
                 WHERE last_run AND coalesce(codeInEUCAIM, '') IN ('', 'NOT FOUND')
+                  AND coalesce(trim(originalValue), '') <> ''
                 GROUP BY 1, 2
                 ORDER BY count(*) DESC, 1, 2
                 LIMIT 100
