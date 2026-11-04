@@ -247,7 +247,7 @@
                 },
                 "properties": {
                     "Keep Source File": "false",
-                    "Minimum File Age": "0 sec",
+                    "Minimum File Age": "10 sec",
                     "Polling Interval": "0 sec",
                     "Input Directory": "#{input_base_path}/image_metadata",
                     "Maximum File Age": null,
