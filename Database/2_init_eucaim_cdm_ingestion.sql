@@ -299,6 +299,25 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.LabTestResult (
     processed BOOLEAN DEFAULT FALSE
 );
 
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MedicalHistory (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
+    Identifier VARCHAR(150) PRIMARY KEY,
+    PatientIdentifier VARCHAR(150) NOT NULL,
+    codeOriginal VARCHAR(150),
+    codeEUCAIM VARCHAR(150),
+    MedicalHistoryCategoryEUCAIM VARCHAR(50),
+    MedicalHistoryCategoryOriginal VARCHAR(50),
+    MedicalHistoryPresent boolean,
+    MedicalHistoryOnsetAge DECIMAL(5,1),
+    MedicalHistoryOnsetAgeUnitOriginal VARCHAR(50),
+    MedicalHistoryOnsetAgeUnitEUCAIM VARCHAR(50),
+    MedicalHistoryValueAsConceptOriginal VARCHAR(100),
+    MedicalHistoryValueAsConceptEUCAIM VARCHAR(100),
+    MedicalHistoryValueAsNumber DECIMAL(12,3),
+    MedicalHistoryValueUnit VARCHAR(50),
+    processed BOOLEAN DEFAULT FALSE
+);
+
 -------------------------------------------------------------------------------------------
 -- Entities related with Tumor directly: RiskAssessment, TumorObservation
 

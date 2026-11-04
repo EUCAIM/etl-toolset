@@ -162,6 +162,10 @@ INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValu
 
 VALUES ('MG', 'Mammography');
 
+INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValue)
+
+VALUES ('MRI', 'Magnetic resonance imaging');
+
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupHistologyMorphologyCode;
 
@@ -435,6 +439,10 @@ VALUES ('Class V', 'ASA physical status class 5');
 INSERT INTO eucaim_etl_aux.LookupHealthStatusValueCode (originalValue, parsedValue)
 
 VALUES ('Class VI', 'ASA physical status class 6');
+
+INSERT INTO eucaim_etl_aux.LookupHealthStatusValueCode (originalValue, parsedValue)
+
+VALUES ('KPS', 'Karnofsky Performance Scale (KPS) 0');
 
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode;
