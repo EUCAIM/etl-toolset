@@ -1806,11 +1806,20 @@ INSERT INTO eucaim_etl_aux.LookupPatientDiagnosticCategory (originalValue, parse
 VALUES ('DISCUSSION', 'Subject under discussion with suspicious findings');
 
 -- lookupprimarycancerconditionhistologymorphologybehavior: recovered from branch SAS
+-- The SAS branch mapped invasive ductal carcinoma to 'Invasive ductal carcinoma with an
+-- extensive intraductal component', which states a component the source does not mention.
+-- Invasive and infiltrating are synonyms here (ICD-O 8500/3 ductal, 8520/3 lobular)
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
-VALUES ('invasive ductal carninoma of breast', 'Invasive ductal carcinoma with an extensive intraductal component');
+VALUES ('invasive ductal carninoma of breast', 'Infiltrating duct carcinoma of breast');
 
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
-VALUES ('invasive ductal carcinoma of breast', 'Invasive ductal carcinoma with an extensive intraductal component');
+VALUES ('invasive ductal carcinoma of breast', 'Infiltrating duct carcinoma of breast');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('invasive lobular carcinoma of breast', 'Infiltrating lobular carcinoma of breast');
+
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
+VALUES ('invasive carcinoma of breast, unspecified', 'Invasive carcinoma of breast');
 
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionHistologyMorphologyBehavior (originalValue, parsedValue)
 VALUES ('small cell carcinoma', 'Neoplasm of lung');
