@@ -1572,6 +1572,71 @@ VALUES ('1d', 'AJCC/UICC 8th clinical T1d Category');
 INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
 VALUES ('1mi', 'AJCC/UICC 8th clinical T1mi Category');
 
+-- The SAS branch stopped at T1mi, while N and M were complete. The rest of the clinical T
+-- categories, whose concepts are in 5_init_eucaim_hyperontology_codes_update.sql
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('2', 'AJCC/UICC 8th clinical T2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('2a', 'AJCC/UICC 8th clinical T2a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('2a1', 'AJCC/UICC 8th clinical T2a1 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('2a2', 'AJCC/UICC 8th clinical T2a2 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('2b', 'AJCC/UICC 8th clinical T2b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('2c', 'AJCC/UICC 8th clinical T2c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('2d', 'AJCC/UICC 8th clinical T2d Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('3', 'AJCC/UICC 8th clinical T3 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('3a', 'AJCC/UICC 8th clinical T3a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('3b', 'AJCC/UICC 8th clinical T3b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('3c', 'AJCC/UICC 8th clinical T3c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('3d', 'AJCC/UICC 8th clinical T3d Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('3e', 'AJCC/UICC 8th clinical T3e Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('4', 'AJCC/UICC 8th clinical T4 Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('4a', 'AJCC/UICC 8th clinical T4a Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('4b', 'AJCC/UICC 8th clinical T4b Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('4c', 'AJCC/UICC 8th clinical T4c Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('4d', 'AJCC/UICC 8th clinical T4d Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('4e', 'AJCC/UICC 8th clinical T4e Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('is', 'AJCC/UICC 8th clinical Tis Category');
+
+INSERT INTO eucaim_etl_aux.LookupCancerStageTValue (originalValue, parsedValue)
+VALUES ('X', 'AJCC/UICC 8th clinical TX Category');
+
 -- lookuppatientbirthsex: recovered from branch KI
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupPatientBirthSex;
 
