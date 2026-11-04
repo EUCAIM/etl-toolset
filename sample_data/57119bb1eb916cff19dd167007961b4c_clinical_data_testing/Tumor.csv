@@ -1,0 +1,3 @@
+﻿tumor_id,patient_id,histologic_grade_id,tumor_body_site_id,tumor_identifier,tumor_histology_morphology,tumor_volume,tumor_volume_unit,tumor_size_maximum_dimension,tumor_size_method,tumor_is_index,tumor_size_other_dimension
+1,90001,1,1,1,"Adenocarcinoma, NOS",,Milliliter,14.0,Gross examination and sampling of tissue specimen,,
+2,90004,2,2,2,"Adenocarcinoma, NOS",,Milliliter,18.0,Gross examination and sampling of tissue specimen,,

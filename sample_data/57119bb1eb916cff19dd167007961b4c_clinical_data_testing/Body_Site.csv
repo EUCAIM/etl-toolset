@@ -1,0 +1,3 @@
+﻿body_site_id,body_site_code,body_site_location,body_site_laterality,body_site_volume,body_site_volume_unit
+1,Prostate,Left posterolateral middle peripheral zone of prostate,Left,45.0,cubic centimeter
+2,Prostate,Right posterolateral basal peripheral zone of prostate,Right,40.0,cubic centimeter

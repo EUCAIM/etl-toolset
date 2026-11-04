@@ -1,0 +1,4 @@
+﻿medical_history_id,patient_id,medical_history_code,medical_history_category,medical_history_onset_age,medical_history_onset_age_unit,medical_history_value_as_concept,medical_history_value_as_number,medical_history_value_unit,medical_history_present
+1,90001,MRI of prostate,Procedure,62,year,Past,,,
+2,90002,MRI of prostate,Procedure,64,year,Past,,,
+3,90004,MRI of prostate,Procedure,67,year,Past,,,

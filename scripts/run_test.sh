@@ -66,8 +66,17 @@ diagnosticar_atasco() {
 procesar_pipeline_clinical_data() {
   rm -f $INGESTION_DIR/*.csv
   COUNT=0
-  cp "$CLINICAL_DATA_TEST_CSV" "$INPUT_DIR/clinical_data/"
-  echo "Copied clinical data sample file to $INPUT_DIR"
+  if [ -d "$CLINICAL_DATA_TEST_DIR" ]; then
+    ### a delivery split in one CSV per CDM entity: the dataset code is what
+    ### routes each file, so it is put in front of the name as on a real delivery
+    for SAMPLE_FILE in "$CLINICAL_DATA_TEST_DIR"/*.csv; do
+      cp "$SAMPLE_FILE" "$INPUT_DIR/clinical_data/${CODE}_$(basename "$SAMPLE_FILE")"
+    done
+    echo "Copied clinical data sample files of $CLINICAL_DATA_TEST_DIR to $INPUT_DIR"
+  else
+    cp "$CLINICAL_DATA_TEST_CSV" "$INPUT_DIR/clinical_data/"
+    echo "Copied clinical data sample file to $INPUT_DIR"
+  fi
 
   until [ -n "$(find "$INGESTION_DIR" -maxdepth 1 -type f -name "*.csv" -print -quit)" ]; do
     if [ $COUNT -ge $MAX_RETRIES ]; then
@@ -257,6 +266,7 @@ do
 	DCM=${DCM%$'\r'}
 	declare -p NAME CODE NUMBER_OF_PATIENTS NUMBER_OF_STUDIES DCM
 	CLINICAL_DATA_TEST_CSV="$SAMPLE_DIR/${CODE}_clinical_data_testing.csv"
+	CLINICAL_DATA_TEST_DIR="$SAMPLE_DIR/${CODE}_clinical_data_testing"
 	IMAGE_METADATA_TEST_CSV="$SAMPLE_DIR/${CODE}_DICOM_metadata_testing.csv"
 	IMAGING_TIMEPOINTS_TEST_CSV="$SAMPLE_DIR/${CODE}_imaging_timepoints_testing.csv"
 
@@ -265,7 +275,7 @@ do
 
 	echo "$CLINICAL_DATA_TEST_CSV"
 
-	if [ -f $CLINICAL_DATA_TEST_CSV ]; then
+	if [ -f $CLINICAL_DATA_TEST_CSV ] || [ -d $CLINICAL_DATA_TEST_DIR ]; then
 	  procesar_pipeline_clinical_data
 	  PIPELINES_RUN=$((PIPELINES_RUN+1))
 

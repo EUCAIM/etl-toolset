@@ -1,0 +1,11 @@
+﻿tumor_marker_test_id,patient_id,cancer_condition_id,procedure_id,tumor_marker_test_code,tumor_marker_test_category,tumor_marker_test_value_as_concept,tumor_marker_test_value_as_number,tumor_marker_test_value_unit,tumor_marker_test_date,tumor_marker_test_offset_from_diagnosis,tumor_marker_test_offset_unit
+1,90001,1,1,Total prostate specific antigen level,Laboratory,,8.2,nanogram per milliliter,2023-01-10,0,day
+2,90001,1,1,Total prostate specific antigen level,Laboratory,,6.1,nanogram per milliliter,,0,day
+3,90001,1,2,Total prostate specific antigen level,Laboratory,,8.0,nanogram per milliliter,2023-02-01,0,day
+4,90002,,4,Total prostate specific antigen level,Laboratory,,5.3,nanogram per milliliter,2022-05-03,0,day
+5,90002,,4,Total prostate specific antigen level,Laboratory,,4.8,nanogram per milliliter,,0,day
+6,90002,,5,Total prostate specific antigen level,Laboratory,,5.2,nanogram per milliliter,2022-06-08,0,day
+7,90003,,6,Total prostate specific antigen level,Laboratory,,3.4,nanogram per milliliter,2024-04-02,0,day
+8,90004,2,7,Total prostate specific antigen level,Laboratory,,12.0,nanogram per milliliter,2023-09-01,0,day
+9,90004,2,7,Total prostate specific antigen level,Laboratory,,9.0,nanogram per milliliter,,0,day
+10,90004,2,8,Total prostate specific antigen level,Laboratory,,11.8,nanogram per milliliter,2023-10-10,0,day

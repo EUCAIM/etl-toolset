@@ -1,0 +1,5 @@
+﻿patient_id,patient_birth_sex,patient_managing_organization_id,patient_diagnostic_category,patient_birth_date,patient_gender,patient_deceased,patient_cause_of_death,patient_date_of_last_contact
+90001,Male,Tenon Hospital,Patient with Cancer,1960-03-15,MALE,,,
+90002,Male,Pitié-Salpêtrière Hospital,Negative screening,1957-06-20,MALE,,,
+90003,Male,Tenon Hospital,Screening,1965-09-12,MALE,,,
+90004,Male,Pitié-Salpêtrière Hospital,Patient with Cancer,1955-12-01,MALE,,,

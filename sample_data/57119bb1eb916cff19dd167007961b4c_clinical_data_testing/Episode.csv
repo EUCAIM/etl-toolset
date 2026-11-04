@@ -1,0 +1,5 @@
+﻿episode_id,patient_id,episode_type_code,episode_number,episode_start_date,episode_end_date,start_offset_from_diagnosis,start_offset_unit,episode_parent_id,end_offset_from_diagnosis,end_offset_unit,episode_effective,episode_effective_unit
+1,90001,Diagnosis,1,2023-02-01,,0,day,,,,,
+2,90002,Diagnosis,1,2022-06-08,,0,day,,,,,
+3,90003,Diagnosis,1,,,0,day,,,,,
+4,90004,Diagnosis,1,2023-10-10,,0,day,,,,,

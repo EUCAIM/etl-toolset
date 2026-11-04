@@ -1,0 +1,9 @@
+﻿procedure_id,patient_id,procedure_code,procedure_category,procedure_date,procedure_offset_from_diagnosis,procedure_offset_unit
+1,90001,MRI of prostate,Imaging (Procedure),2023-01-10,0,day
+2,90001,MRI guided biopsy of prostate,Surgical Procedure,2023-02-01,0,day
+3,90001,Systematic Prostate Biopsy,Surgical Procedure,2023-02-01,0,day
+4,90002,MRI of prostate,Imaging (Procedure),2022-05-03,0,day
+5,90002,Systematic Prostate Biopsy,Surgical Procedure,2022-06-08,0,day
+6,90003,MRI of prostate,Imaging (Procedure),2024-04-02,0,day
+7,90004,MRI of prostate,Imaging (Procedure),2023-09-01,0,day
+8,90004,MRI guided biopsy of prostate,Surgical Procedure,2023-10-10,0,day

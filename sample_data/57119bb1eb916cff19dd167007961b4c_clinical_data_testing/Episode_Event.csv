@@ -1,0 +1,10 @@
+﻿episode_id,event_table_name,event_table_id
+1,Procedure,2
+1,Procedure,3
+1,Procedure,1
+1,CancerCondition,1
+2,Procedure,5
+2,Procedure,4
+4,Procedure,8
+4,Procedure,7
+4,CancerCondition,2

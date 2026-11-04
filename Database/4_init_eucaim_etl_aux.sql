@@ -1974,3 +1974,10 @@ VALUES ('Surgical specimen', 'snomed:39228008');
 
 INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
 VALUES ('Segmentectomy 4b', 'snomed:71273005');
+
+
+-------------------------------------------------------------------------------------------
+-- APHP PAIMRI (57119bb1eb916cff19dd167007961b4c, provisional code): prostate MRI. Delivered as one CSV per CDM entity
+-- already labelled with hyperontology terms, so it needs no lookup tables of its own.
+INSERT INTO eucaim_etl_aux.LookupHeaderRowsToRemove (originalValue, parsedValue)
+VALUES ('57119bb1eb916cff19dd167007961b4c', '0');
