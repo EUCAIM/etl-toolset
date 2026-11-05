@@ -2146,10 +2146,21 @@
                 },
                 "properties": {
                     "/BodyPartExamined_parsed": "",
+                    "/CTDIvol": "${field.value:matches('^\\s*[-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?\\s*$'):ifElse(${field.value:trim()}, '')}",
+                    "/Columns": "${field.value:matches('^\\s*[-+]?\\d+(\\.\\d*)?\\s*$'):ifElse(${field.value:replaceAll('^\\s*([-+]?\\d+)(\\.\\d*)?\\s*$', '$1')}, '')}",
                     "/DatasetID": "${datasetId}",
+                    "/EchoTime": "${field.value:matches('^\\s*[-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?\\s*$'):ifElse(${field.value:trim()}, '')}",
+                    "/Exposure": "${field.value:matches('^\\s*[-+]?\\d+(\\.\\d*)?\\s*$'):ifElse(${field.value:replaceAll('^\\s*([-+]?\\d+)(\\.\\d*)?\\s*$', '$1')}, '')}",
+                    "/ExposureTime": "${field.value:matches('^\\s*[-+]?\\d+(\\.\\d*)?\\s*$'):ifElse(${field.value:replaceAll('^\\s*([-+]?\\d+)(\\.\\d*)?\\s*$', '$1')}, '')}",
+                    "/KVP": "${field.value:matches('^\\s*[-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?\\s*$'):ifElse(${field.value:trim()}, '')}",
                     "/Manufacturer_parsed": "",
                     "/Modality_parsed": "",
-                    "/SeriesNumber": "${field.value:replaceAll('^\\s*(-?\\d+)(\\.\\d+)?\\s*$', '$1')}",
+                    "/NumberOfSeriesRelatedInstances": "${field.value:matches('^\\s*[-+]?\\d+(\\.\\d*)?\\s*$'):ifElse(${field.value:replaceAll('^\\s*([-+]?\\d+)(\\.\\d*)?\\s*$', '$1')}, '')}",
+                    "/NumberOfStudyRelatedSeries": "${field.value:matches('^\\s*[-+]?\\d+(\\.\\d*)?\\s*$'):ifElse(${field.value:replaceAll('^\\s*([-+]?\\d+)(\\.\\d*)?\\s*$', '$1')}, '')}",
+                    "/Rows": "${field.value:matches('^\\s*[-+]?\\d+(\\.\\d*)?\\s*$'):ifElse(${field.value:replaceAll('^\\s*([-+]?\\d+)(\\.\\d*)?\\s*$', '$1')}, '')}",
+                    "/SeriesNumber": "${field.value:matches('^\\s*[-+]?\\d+(\\.\\d*)?\\s*$'):ifElse(${field.value:replaceAll('^\\s*([-+]?\\d+)(\\.\\d*)?\\s*$', '$1')}, '')}",
+                    "/SliceThickness": "${field.value:matches('^\\s*[-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?\\s*$'):ifElse(${field.value:trim()}, '')}",
+                    "/XRayTubeCurrent": "${field.value:matches('^\\s*[-+]?\\d+(\\.\\d*)?\\s*$'):ifElse(${field.value:replaceAll('^\\s*([-+]?\\d+)(\\.\\d*)?\\s*$', '$1')}, '')}",
                     "Record Reader": "4bc6caeb-04a4-3ff5-a418-5c3e0930f65d",
                     "Record Writer": "9c609a6f-495b-3ea5-9381-a06b75643a88",
                     "Replacement Value Strategy": "literal-value"
@@ -2181,6 +2192,83 @@
                         "dynamic": true,
                         "identifiesControllerService": false,
                         "name": "/Modality_parsed",
+                        "sensitive": false
+                    },
+                    "/CTDIvol": {
+                        "displayName": "/CTDIvol",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/CTDIvol",
+                        "sensitive": false
+                    },
+                    "/Columns": {
+                        "displayName": "/Columns",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/Columns",
+                        "sensitive": false
+                    },
+                    "/EchoTime": {
+                        "displayName": "/EchoTime",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/EchoTime",
+                        "sensitive": false
+                    },
+                    "/Exposure": {
+                        "displayName": "/Exposure",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/Exposure",
+                        "sensitive": false
+                    },
+                    "/ExposureTime": {
+                        "displayName": "/ExposureTime",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/ExposureTime",
+                        "sensitive": false
+                    },
+                    "/KVP": {
+                        "displayName": "/KVP",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/KVP",
+                        "sensitive": false
+                    },
+                    "/NumberOfSeriesRelatedInstances": {
+                        "displayName": "/NumberOfSeriesRelatedInstances",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/NumberOfSeriesRelatedInstances",
+                        "sensitive": false
+                    },
+                    "/NumberOfStudyRelatedSeries": {
+                        "displayName": "/NumberOfStudyRelatedSeries",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/NumberOfStudyRelatedSeries",
+                        "sensitive": false
+                    },
+                    "/Rows": {
+                        "displayName": "/Rows",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/Rows",
+                        "sensitive": false
+                    },
+                    "/SliceThickness": {
+                        "displayName": "/SliceThickness",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/SliceThickness",
+                        "sensitive": false
+                    },
+                    "/XRayTubeCurrent": {
+                        "displayName": "/XRayTubeCurrent",
+                        "dynamic": true,
+                        "identifiesControllerService": false,
+                        "name": "/XRayTubeCurrent",
                         "sensitive": false
                     },
                     "/SeriesNumber": {
