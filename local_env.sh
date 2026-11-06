@@ -33,7 +33,7 @@
 ### ingestion database the export reads from, so nothing is lost. Set it to 0 to
 ### delete nothing. Defaults to 30.
 ###
-### logsRetentionDays="2"
+logsRetentionDays="2"
 ###
 ### Host folder that holds the output of the ETL (CDM bundle, ingestion export
 ### and logs). Optional: most nodes leave it alone and get ./output_data. Use an
