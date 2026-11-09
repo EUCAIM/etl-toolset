@@ -1915,6 +1915,26 @@ VALUES ('Abdomen', 'Abdomen');
 INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionTopography (originalValue, parsedValue)
 VALUES ('Skin', 'Skin structure');
 
+-- 'Lung' is only a synonym, and the codeable-concept lookup matches concept_name alone.
+-- Spleen and nasopharynx have no structure concept in the hyperontology: generalised on
+-- purpose to the closest parent that exists (the original text stays in the source).
+INSERT INTO eucaim_etl_aux.LookupPrimaryCancerConditionTopography (originalValue, parsedValue)
+VALUES ('Lung', 'Lung structure'),
+       ('Spleen', 'Structure of lymphatic system'),
+       ('Nasopharynx', 'Head and neck');
+
+-- Family history of cancer, the text after the comma of 'Father, lung cancer'. The lookup is
+-- case sensitive and these come in lower case.
+INSERT INTO eucaim_etl_aux.LookupFamilyMemberHistoryConditionCode (originalValue, parsedValue)
+VALUES ('lung cancer', 'Primary malignant neoplasm of lung'),
+       ('leukemia', 'Leukemia Finding'),
+       ('brain cancer', 'Malignant neoplasm of brain'),
+       ('intestinal cancer', 'Malignant tumor of intestine'),
+       ('NHL', 'Non-Hodgkin''s lymphoma (clinical)'),
+       ('prostate cancer', 'Carcinoma of prostate'),
+       ('breast cancer', 'Carcinoma of breast'),
+       ('ovarian cancer', 'Malignant neoplasm of ovary');
+
 INSERT INTO eucaim_etl_aux.LookupCancerStageCode (originalValue, parsedValue)
 VALUES ('Ann Arbor classification', 'snomed:4115000');
 
