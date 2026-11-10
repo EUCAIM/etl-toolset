@@ -23,7 +23,7 @@ These run automatically on every ingestion of a clinical dataset.
 
 ### 1.1 TDC data quality assessment
 
-The clinical data is split into one CSV per CDM entity (patient, condition, episode, procedure, and so on). Each file is sent to the [TDC (Tabular Data Curation) tool](https://github.com/vpz4/TDC) developed by FORTH (detailed documentation there). The ETL calls it with these fixed settings: modified z-score for outliers, Spearman for correlation, and no imputation.
+The clinical data is split into one CSV per CDM entity (patient, condition, episode, procedure, and so on). Each file is sent to the [TDC (Tabular Data Curation) tool](https://github.com/vpz4/TDC) developed by FORTH (detailed documentation there). The ETL calls it in the second pipeline of the clinical data ingestion.
 
 | Check | What it detects |
 | --- | --- |
