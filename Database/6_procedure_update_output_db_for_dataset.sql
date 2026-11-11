@@ -101,8 +101,8 @@ BEGIN
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
-	INSERT INTO eucaim_cdm_output.tumor_marker_test(tumor_marker_test_id, patient_id, tumor_marker_test_category, tumor_marker_test_code, tumor_marker_test_value_as_number, tumor_marker_test_value_as_concept, tumor_marker_test_value_unit, tumor_marker_test_date)
-	SELECT itmt.Identifier, ocp.patient_id, CategoryEUCAIM, TumorMarkerEUCAIM, ValueAsNumber, ValueAsConceptEUCAIM, ValueAsConceptUnitEUCAIM, eucaim_etl_aux.parse_flexible_date(DateOfMarker)
+	INSERT INTO eucaim_cdm_output.tumor_marker_test(tumor_marker_test_id, patient_id, tumor_marker_test_category, tumor_marker_test_code, tumor_marker_test_value_as_number, tumor_marker_test_value_as_concept, tumor_marker_test_value_unit, tumor_marker_test_date, cancer_condition_id, procedure_id)
+	SELECT itmt.Identifier, ocp.patient_id, CategoryEUCAIM, TumorMarkerEUCAIM, ValueAsNumber, ValueAsConceptEUCAIM, ValueAsConceptUnitEUCAIM, eucaim_etl_aux.parse_flexible_date(DateOfMarker), CancerConditionIdentifier, ProcedureIdentifier
 	FROM eucaim_cdm_ingestion.TumorMarkerTest itmt
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON itmt.PatientIdentifier = icp.Identifier
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
@@ -166,8 +166,8 @@ BEGIN
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
 	-- Update PrimaryCancerCondition
-	INSERT INTO eucaim_cdm_output.cancer_condition(cancer_condition_id, patient_id, cancer_condition_age_at_diagnosis, cancer_condition_age_unit, cancer_condition_asserted_date, cancer_condition_code, cancer_condition_histology_morphology_behavior, cancer_condition_type)
-	SELECT ipcc.Identifier, ocp.patient_id, ipcc.AgeOfDiagnosis, ipcc.AgeUnitEUCAIM, cast(ipcc.AssertedDate as date), ipcc.PrimaryCancerConditionEUCAIM, ipcc.HistologyMorphologyBehaviourEUCAIM, ipcc.PrimaryCancerConditionType
+	INSERT INTO eucaim_cdm_output.cancer_condition(cancer_condition_id, patient_id, cancer_condition_age_at_diagnosis, cancer_condition_age_unit, cancer_condition_asserted_date, cancer_condition_code, cancer_condition_histology_morphology_behavior, cancer_condition_type, procedure_id, cancer_condition_topography, cancer_condition_clinical_status)
+	SELECT ipcc.Identifier, ocp.patient_id, ipcc.AgeOfDiagnosis, ipcc.AgeUnitEUCAIM, cast(ipcc.AssertedDate as date), ipcc.PrimaryCancerConditionEUCAIM, ipcc.HistologyMorphologyBehaviourEUCAIM, ipcc.PrimaryCancerConditionType, ipcc.ProcedureIdentifier, ipcc.TopographyEUCAIM, ipcc.PrimaryCancerConditionClinicalStatusEUCAIM
 	FROM eucaim_cdm_ingestion.PrimaryCancerCondition ipcc
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
