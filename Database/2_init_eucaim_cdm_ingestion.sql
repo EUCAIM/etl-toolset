@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.PrimaryCancerCondition (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
     Identifier VARCHAR(150) PRIMARY KEY,
     PatientIdentifier VARCHAR(150) NOT NULL,
-    ProcedureIdentifier VARCHAR(150) NOT NULL,
+    ProcedureIdentifier VARCHAR(150),
     AgeOfDiagnosis DECIMAL(5,2),
     AgeUnitEUCAIM VARCHAR(50),
     AgeUnitOriginal VARCHAR(50),

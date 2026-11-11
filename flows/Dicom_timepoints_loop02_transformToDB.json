@@ -134,7 +134,7 @@
                     "version": "2.3.0"
                 },
                 "properties": {
-                    "Support Fragmented Transactions": "true",
+                    "Support Fragmented Transactions": "false",
                     "putsql-sql-statement": "CALL eucaim_etl_aux.insert_log_v001('${filename}', '${datasetId}', '${log_datasettype}', '${log_pipelinestage}', '${log_stepnumber}', '${log_stepname}', '${log_level}', '${log_status}' ,'${log_message}');",
                     "Transaction Timeout": null,
                     "Batch Size": "100",
@@ -1532,7 +1532,7 @@
                     "version": "2.3.0"
                 },
                 "properties": {
-                    "Support Fragmented Transactions": "true",
+                    "Support Fragmented Transactions": "false",
                     "putsql-sql-statement": "CALL eucaim_etl_aux.insert_log_v001('${filename}', '${datasetId}', '${log_datasettype}', '${log_pipelinestage}', '${log_stepnumber}', '${log_stepname}', '${log_level}', '${log_status}' ,'${log_message}');",
                     "Transaction Timeout": null,
                     "Batch Size": "100",
