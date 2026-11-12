@@ -93,18 +93,12 @@ BEGIN
 	JOIN eucaim_cdm_output.dataset od ON icp.DatasetIdentifier = od.dataset_id
     WHERE icp.DatasetIdentifier = p_dataset_id;
 
-	-- Update entities linked with CancerPatient directly: HealthStatus, TumorMarkerTest, FamilyMemberHistory, LabTestResult
+	-- Update entities linked with CancerPatient directly: HealthStatus, FamilyMemberHistory, LabTestResult
+	-- (TumorMarkerTest goes after Procedure, since it references both cancer_condition and procedure)
 	INSERT INTO eucaim_cdm_output.health_status_assessment(health_status_assessment_id, patient_id, health_status_assessment_code, health_status_assessment_value_as_number, health_status_assessment_value_as_concept, health_status_assessment_value_unit)
 	SELECT ihs.Identifier, ocp.patient_id, ihs.HealthStatusEUCAIM, ihs.ValueAsNumber, ihs.ValueAsConceptEUCAIM, ihs.ValueAsConceptUnitEUCAIM
 	FROM eucaim_cdm_ingestion.HealthStatus ihs
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ihs.PatientIdentifier = icp.Identifier
-	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
-	WHERE icp.DatasetIdentifier = p_dataset_id;
-
-	INSERT INTO eucaim_cdm_output.tumor_marker_test(tumor_marker_test_id, patient_id, tumor_marker_test_category, tumor_marker_test_code, tumor_marker_test_value_as_number, tumor_marker_test_value_as_concept, tumor_marker_test_value_unit, tumor_marker_test_date, cancer_condition_id, procedure_id)
-	SELECT itmt.Identifier, ocp.patient_id, CategoryEUCAIM, TumorMarkerEUCAIM, ValueAsNumber, ValueAsConceptEUCAIM, ValueAsConceptUnitEUCAIM, eucaim_etl_aux.parse_flexible_date(DateOfMarker), CancerConditionIdentifier, ProcedureIdentifier
-	FROM eucaim_cdm_ingestion.TumorMarkerTest itmt
-	JOIN eucaim_cdm_ingestion.CancerPatient icp ON itmt.PatientIdentifier = icp.Identifier
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
@@ -166,8 +160,10 @@ BEGIN
 	WHERE icp.DatasetIdentifier = p_dataset_id;
 
 	-- Update PrimaryCancerCondition
+	-- procedure_id is left NULL here: procedure rows are inserted below by joining to
+	-- cancer_condition, so they cannot exist yet. It is filled once they do.
 	INSERT INTO eucaim_cdm_output.cancer_condition(cancer_condition_id, patient_id, cancer_condition_age_at_diagnosis, cancer_condition_age_unit, cancer_condition_asserted_date, cancer_condition_code, cancer_condition_histology_morphology_behavior, cancer_condition_type, procedure_id, cancer_condition_topography, cancer_condition_clinical_status)
-	SELECT ipcc.Identifier, ocp.patient_id, ipcc.AgeOfDiagnosis, ipcc.AgeUnitEUCAIM, cast(ipcc.AssertedDate as date), ipcc.PrimaryCancerConditionEUCAIM, ipcc.HistologyMorphologyBehaviourEUCAIM, ipcc.PrimaryCancerConditionType, ipcc.ProcedureIdentifier, ipcc.TopographyEUCAIM, ipcc.PrimaryCancerConditionClinicalStatusEUCAIM
+	SELECT ipcc.Identifier, ocp.patient_id, ipcc.AgeOfDiagnosis, ipcc.AgeUnitEUCAIM, cast(ipcc.AssertedDate as date), ipcc.PrimaryCancerConditionEUCAIM, ipcc.HistologyMorphologyBehaviourEUCAIM, ipcc.PrimaryCancerConditionType, NULL, ipcc.TopographyEUCAIM, ipcc.PrimaryCancerConditionClinicalStatusEUCAIM
 	FROM eucaim_cdm_ingestion.PrimaryCancerCondition ipcc
 	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
 	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
@@ -238,8 +234,21 @@ BEGIN
 	WHERE bs.body_site_id = ot.tumor_id || '_bodysite';
 
 
-	-- The condition a procedure belongs to is only known in ingestion
-	-- (PrimaryCancerConditionIdentifier); the output procedure table does not keep it.
+	-- The procedure that confirms the condition, when the mapping declares it. An id that
+	-- did not make it to the output procedure table (e.g. an imaging procedure without
+	-- studies) is skipped rather than breaking the foreign key.
+	UPDATE eucaim_cdm_output.cancer_condition occ
+	SET procedure_id = ipcc.ProcedureIdentifier
+	FROM eucaim_cdm_ingestion.PrimaryCancerCondition ipcc
+	JOIN eucaim_cdm_ingestion.CancerPatient icp ON ipcc.PatientIdentifier = icp.Identifier
+	JOIN eucaim_cdm_output.procedure op ON op.procedure_id = ipcc.ProcedureIdentifier
+	WHERE occ.cancer_condition_id = ipcc.Identifier
+	  AND occ.patient_id = icp.Identifier
+	  AND icp.DatasetIdentifier = p_dataset_id;
+
+	-- Otherwise, the first procedure of the condition. The condition a procedure belongs
+	-- to is only known in ingestion (PrimaryCancerConditionIdentifier); the output
+	-- procedure table does not keep it.
 	UPDATE eucaim_cdm_output.cancer_condition occ
 	SET procedure_id = first_procedure.procedure_id
 	FROM (
@@ -259,8 +268,22 @@ BEGIN
 	) AS first_procedure,
 	eucaim_cdm_output.patient opa
 	WHERE occ.cancer_condition_id = first_procedure.cancer_condition_id
+	  AND occ.procedure_id IS NULL
 	  AND occ.patient_id = opa.patient_id
 	  AND opa.dataset_id = p_dataset_id;
+
+	-- TumorMarkerTest: both links are optional, and an id that is not in the output
+	-- (a condition of another patient, a treatment instead of a procedure...) is
+	-- dropped instead of aborting the whole dataset on the foreign key.
+	INSERT INTO eucaim_cdm_output.tumor_marker_test(tumor_marker_test_id, patient_id, tumor_marker_test_category, tumor_marker_test_code, tumor_marker_test_value_as_number, tumor_marker_test_value_as_concept, tumor_marker_test_value_unit, tumor_marker_test_date, cancer_condition_id, procedure_id)
+	SELECT itmt.Identifier, ocp.patient_id, CategoryEUCAIM, TumorMarkerEUCAIM, ValueAsNumber, ValueAsConceptEUCAIM, ValueAsConceptUnitEUCAIM, eucaim_etl_aux.parse_flexible_date(DateOfMarker), occ.cancer_condition_id, op.procedure_id
+	FROM eucaim_cdm_ingestion.TumorMarkerTest itmt
+	JOIN eucaim_cdm_ingestion.CancerPatient icp ON itmt.PatientIdentifier = icp.Identifier
+	JOIN eucaim_cdm_output.patient ocp ON icp.Identifier = ocp.patient_id
+	LEFT JOIN eucaim_cdm_output.cancer_condition occ ON occ.cancer_condition_id = itmt.CancerConditionIdentifier
+	                                               AND occ.patient_id = ocp.patient_id
+	LEFT JOIN eucaim_cdm_output.procedure op ON op.procedure_id = itmt.ProcedureIdentifier
+	WHERE icp.DatasetIdentifier = p_dataset_id;
 
 	-- Tumor  is attached to the procedure that first documents its cancer condition (the one chosen just above).
 	UPDATE eucaim_cdm_output.tumor ot
