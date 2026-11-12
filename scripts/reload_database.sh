@@ -17,6 +17,8 @@
 ###   schema       2, 3, 3z + Database/upgrade/   brings the ingestion and output schemas up
 ###                                               to this version (see below). Implies
 ###                                               `procedures`, which must match them.
+###                                               `procedures` implies it too: they would
+###                                               fail on the schemas of an earlier version.
 ###
 ### schema: a database created by an earlier version keeps the ingestion and output tables
 ### of that version, and the procedures of this one then fail on them ("table ... not
@@ -47,6 +49,7 @@
 ###   scripts/reload_database.sh aux                  # only the lookup tables
 ###   scripts/reload_database.sh ontology             # only the concept tables
 ###   scripts/reload_database.sh schema               # only the schemas (+ procedures)
+###   scripts/reload_database.sh procedures           # only the procedures (+ schema)
 ###   scripts/reload_database.sh all                  # every group
 ###   scripts/reload_database.sh --backup aux         # dump the schemas first
 ###   scripts/reload_database.sh --dry-run all        # list the files, apply nothing
@@ -78,6 +81,7 @@ has_group() { local g; for g in "${GROUPS_WANTED[@]}"; do [ "$g" = "$1" ] && ret
 
 ### the procedures of this version are written against its schemas, and the other way round
 if has_group schema && ! has_group procedures; then GROUPS_WANTED+=(procedures); fi
+if has_group procedures && ! has_group schema; then GROUPS_WANTED+=(schema); fi
 
 ### files in the order initdb.d would run them (alphabetical), restricted to the groups asked
 FILES=()
