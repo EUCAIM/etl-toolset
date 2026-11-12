@@ -275,6 +275,61 @@ enable_service() {
     return 1
 }
 
+### Value of the SHARED_DB_PASSWORD parameter, which every connection pool uses.
+###
+### It is sensitive, and NiFi never exports the value of a sensitive parameter,
+### so every flow file holds it empty. Nor can it be given as ${SHARED_DB_PASSWORD}
+### like the rest of SHARED_DB_*: sensitive values do not evaluate Expression
+### Language. It is set here from the environment once the first flow has
+### created the parameter context, before its connection pool gets enabled. A
+### local node does not need it (nifi-postgres trusts every connection), the
+### reference node does.
+DB_PASSWORD_DONE=""
+
+set_db_password() {
+    local context contextId version body request requestId deadline state
+    [ -n "$DB_PASSWORD_DONE" ] && return 0
+    if [ -z "$SHARED_DB_PASSWORD" ]; then
+        DB_PASSWORD_DONE=skipped
+        return 0
+    fi
+    context=$(curl -s -k -H "Authorization: Bearer $token" https://nifi:8443/nifi-api/flow/parameter-contexts \
+        | jq -c '.parameterContexts[]? | select(.component.name=="ETL_v03_parameters")')
+    if [ -z "$context" ] || [ "$(echo "$context" | jq '[.component.parameters[].parameter.name] | index("SHARED_DB_PASSWORD") != null')" != true ]; then
+        return 0
+    fi
+    contextId=$(echo "$context" | jq -r '.id')
+    version=$(echo "$context" | jq '.revision.version')
+    body=$(jq -n --arg id "$contextId" --argjson v "$version" --arg pw "$SHARED_DB_PASSWORD" \
+        '{revision:{version:$v},id:$id,component:{id:$id,parameters:[{parameter:{name:"SHARED_DB_PASSWORD",sensitive:true,value:$pw}}]}}')
+    ### parameter changes are applied by NiFi asynchronously, through an update request
+    request=$(curl -s -k -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $token" \
+        -d "$body" "https://nifi:8443/nifi-api/parameter-contexts/$contextId/update-requests")
+    requestId=$(echo "$request" | jq -r '.request.requestId // empty')
+    if [ -z "$requestId" ]; then
+        echo "ERROR: could not set SHARED_DB_PASSWORD. NiFi answered: $(echo "$request" | head -c 300)"
+        DB_PASSWORD_DONE=failed
+        return 1
+    fi
+    deadline=$((SECONDS + 60))
+    while true; do
+        state=$(curl -s -k -H "Authorization: Bearer $token" \
+            "https://nifi:8443/nifi-api/parameter-contexts/$contextId/update-requests/$requestId" \
+            | jq -r '"\(.request.complete) \(.request.failureReason // "")"')
+        [[ "$state" == true* || $SECONDS -ge $deadline ]] && break
+        sleep 1
+    done
+    curl -s -k -X DELETE -H "Authorization: Bearer $token" \
+        "https://nifi:8443/nifi-api/parameter-contexts/$contextId/update-requests/$requestId" > /dev/null
+    if [ "$state" = "true " ]; then
+        echo "SHARED_DB_PASSWORD set in ETL_v03_parameters"
+        DB_PASSWORD_DONE=yes
+    else
+        echo "ERROR: could not set SHARED_DB_PASSWORD (${state#* })"
+        DB_PASSWORD_DONE=failed
+    fi
+}
+
 #Add flows to registry
 FOLDER="/flows"
 index=0
@@ -309,6 +364,9 @@ for file in "$FOLDER"/*.json; do
     
     
     processGroupID=$(echo "$processGroup" | jq -r '.id')
+
+    # before any connection pool is enabled
+    set_db_password
 
     # Get all controller services in this process group
     SERVICES=$(curl -s -k -H "Authorization: Bearer $token" \
@@ -407,6 +465,13 @@ else
             echo "       It did not start. NiFi answered: $(echo "$started" | head -c 300)"
         fi
     fi
+fi
+
+if [ "$DB_PASSWORD_DONE" = failed ]; then
+    echo "ERROR: SHARED_DB_PASSWORD is not set in NiFi, the flows cannot log in to a database that checks it."
+    touch /tmp/init_failed
+    echo "****eucaim startup script completed with errors ****"
+    exit 1
 fi
 
 if [ -n "$FAILED_SERVICES" ]; then

@@ -1228,7 +1228,7 @@
                 "instanceIdentifier": "60e2e36e-7d2b-3feb-9cfe-a4bf2340b91f",
                 "name": "DBConnectionPool",
                 "properties": {
-                    "Database Connection URL": "jdbc:postgresql://#{SHARED_DB_HOST}:5432/#{SHARED_DB_NAME}",
+                    "Database Connection URL": "jdbc:postgresql://#{SHARED_DB_HOST}:#{SHARED_DB_PORT}/#{SHARED_DB_NAME}",
                     "Database Driver Class Name": "org.postgresql.Driver",
                     "Database User": "#{SHARED_DB_USERNAME}",
                     "database-driver-locations": "#{db_driver_filepath}",
@@ -5358,6 +5358,13 @@
                     "provided": false,
                     "sensitive": false,
                     "value": "${SHARED_DB_NAME}"
+                },
+                {
+                    "description": "",
+                    "name": "SHARED_DB_PORT",
+                    "provided": false,
+                    "sensitive": false,
+                    "value": "${SHARED_DB_PORT}"
                 }
             ]
         }

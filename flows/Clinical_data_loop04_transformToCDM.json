@@ -5407,7 +5407,7 @@
                 "instanceIdentifier": "92ba91a0-314c-381a-4870-e8feb15af6d8",
                 "name": "StagingDBCPConnectionPool",
                 "properties": {
-                    "Database Connection URL": "jdbc:postgresql://#{SHARED_DB_HOST}:5432/#{SHARED_DB_NAME}",
+                    "Database Connection URL": "jdbc:postgresql://#{SHARED_DB_HOST}:#{SHARED_DB_PORT}/#{SHARED_DB_NAME}",
                     "Database Driver Class Name": "org.postgresql.Driver",
                     "Database User": "#{SHARED_DB_USERNAME}",
                     "database-driver-locations": "#{db_driver_filepath}",
@@ -17237,6 +17237,13 @@
                     "provided": false,
                     "sensitive": false,
                     "value": "${SHARED_DB_NAME}"
+                },
+                {
+                    "description": "",
+                    "name": "SHARED_DB_PORT",
+                    "provided": false,
+                    "sensitive": false,
+                    "value": "${SHARED_DB_PORT}"
                 }
             ]
         }

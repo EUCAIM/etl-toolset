@@ -67,6 +67,13 @@ jobs:
 
           echo "Init complete ✅"
 
+      # after the launch, so the mappings just downloaded from etl-mappings are
+      # checked too. A flow exported from a NiFi holding an older version brings
+      # back the nifi-postgres connection, which works here and fails on the
+      # reference node, where the database is not ours
+      - name: Check every flow connects through SHARED_DB_*
+        run: python3 scripts/parametrize_db_connection.py --check flows/*.json
+
       - name: Run tests
         run: ./scripts/run_test.sh
 

@@ -2273,9 +2273,10 @@
                     "Max Total Connections": "8",
                     "dbcp-max-conn-lifetime": "-1",
                     "Validation-query": null,
-                    "Database Connection URL": "jdbc:postgresql://nifi-postgres:5432/eucaim-etl-db",
+                    "Database Connection URL": "jdbc:postgresql://#{SHARED_DB_HOST}:#{SHARED_DB_PORT}/#{SHARED_DB_NAME}",
                     "dbcp-time-between-eviction-runs": "-1",
-                    "Database User": "postgres",
+                    "Database User": "#{SHARED_DB_USERNAME}",
+                    "Password": "#{SHARED_DB_PASSWORD}",
                     "kerberos-user-service": null,
                     "dbcp-soft-min-evictable-idle-time": "-1",
                     "database-driver-locations": "#{db_driver_filepath}",
@@ -3039,6 +3040,40 @@
                     "sensitive": false,
                     "provided": false,
                     "value": "${ETL_HOME}/TDC_Output"
+                },
+                {
+                    "name": "SHARED_DB_HOST",
+                    "description": "",
+                    "sensitive": false,
+                    "provided": false,
+                    "value": "${SHARED_DB_HOST}"
+                },
+                {
+                    "name": "SHARED_DB_PORT",
+                    "description": "",
+                    "sensitive": false,
+                    "provided": false,
+                    "value": "${SHARED_DB_PORT}"
+                },
+                {
+                    "name": "SHARED_DB_NAME",
+                    "description": "",
+                    "sensitive": false,
+                    "provided": false,
+                    "value": "${SHARED_DB_NAME}"
+                },
+                {
+                    "name": "SHARED_DB_USERNAME",
+                    "description": "",
+                    "sensitive": false,
+                    "provided": false,
+                    "value": "${SHARED_DB_USERNAME}"
+                },
+                {
+                    "name": "SHARED_DB_PASSWORD",
+                    "description": "",
+                    "sensitive": true,
+                    "provided": false
                 }
             ],
             "inheritedParameterContexts": [],
