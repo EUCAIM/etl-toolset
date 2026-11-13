@@ -16,6 +16,9 @@ RUN python -m pip install --upgrade pip setuptools wheel \
  && pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+# the reference node runs this image as a non root user, which must be able
+# to write the uploaded files and the results
+RUN chmod o+rw /app /app/hosted /app/results
 ENV FLASK_APP=app.py
 # Without this the per-stage timings data_curator prints stay buffered and only
 # surface once the process exits, which hides progress on long curations.
