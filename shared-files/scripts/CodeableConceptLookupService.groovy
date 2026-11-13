@@ -12,6 +12,25 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 
    DBCPService dbcpService
     ComponentLog log
+    ControllerServiceInitializationContext initContext = null
+
+    // NiFi re-evaluates this script on every validation pass (BaseScriptedLookupService.customValidate
+    // always calls setup()), which builds a brand new instance of this class and calls initialize() on
+    // it, but never onEnabled() again. The DBCPService injected when the service was enabled was
+    // therefore lost on the first validation that ran after the enabling, and from then on every lookup
+    // failed with "DBCPService not initialized". The service resolved in onEnabled is published in a
+    // JVM-wide registry keyed by the component id, so a reloaded instance recovers it in initialize().
+    static final String DBCP_CACHE_PREFIX = "eucaim.nifi.dbcpService."
+
+    private static void cacheDbcpService(String componentId, DBCPService service) {
+        if (componentId && service != null) {
+            System.getProperties().put(DBCP_CACHE_PREFIX + componentId, service)
+        }
+    }
+
+    private static DBCPService cachedDbcpService(String componentId) {
+        componentId ? (DBCPService) System.getProperties().get(DBCP_CACHE_PREFIX + componentId) : null
+    }
 
     static final PropertyDescriptor DBCP_SERVICE = new PropertyDescriptor.Builder()
             .name(dbcpServiceName)
@@ -23,16 +42,21 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
     void onEnabled(final ConfigurationContext context) {
         dbcpService = context.getProperty(DBCP_SERVICE)
                              .asControllerService(DBCPService)
+        cacheDbcpService(initContext?.identifier, dbcpService)
 
         log.info("DBCPService initialized: ${dbcpService != null}")
     }
 
     @Override
     Optional<Map<String, Object>> lookup(Map<String, Object> coordinates) {
-        log.info("CodeableConceptsLookupService.lookup")
-        log.info("CodeableConceptsLookupService.lookup - coordinates values: ${coordinates}")
+        log.debug("CodeableConceptsLookupService.lookup - coordinates values: ${coordinates}")
 
-         if (dbcpService == null) {
+        if (dbcpService == null) {
+            // onEnabled ran on an instance that a later script reload has replaced
+            dbcpService = cachedDbcpService(initContext?.identifier)
+        }
+
+        if (dbcpService == null) {
             log.error("CodeableConceptsLookupService.lookup - DBCPService not initialized.")
             return Optional.empty()
         }
@@ -42,37 +66,72 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 
         Connection conn = dbcpService.getConnection()
         if (conn == null) {
+            // used to be Optional.empty()['lookup_batch'], which throws instead
+            // of returning, hiding the real cause behind a Groovy error
             log.error("CodeableConceptsLookupService.lookup - Connection not initialized.")
-            return Optional.empty()['lookup_batch']
+            return Optional.empty()
         }
 
         try {
             input.each { property, value ->
                 if (!value) {
                     result["${property}"] = null
-                    log.info("CodeableConceptsLookupService.lookup - Checked null value ")
+                    log.debug("CodeableConceptsLookupService.lookup - null value for property '${property}'")
+                } else if (value.startsWith("omop:")) {
+                    // concept with omop ID
+                    def omopId = value.toString().substring("omop:".length()).trim()
+                    def code = lookupOmopConceptCode(conn, omopId, "${property}")
+                    if (code != null) {
+                        result["${property}"] = code
+                    } else {
+    
+                        log.warn("CodeableConceptsLookupService.lookup - NO OMOP MATCH for property '${property}': " +
+                            "OMOP concept id '${omopId}' is not in concept_external_mapping. " +
+                            "Stored as 'omop_id:${omopId}'. Add the mapping or correct the value.")
+                        result["${property}"] = "omop_id:" + omopId
+                    }
+                } else if (value.startsWith("code:")){
+                    // concept with omop ID
+                    result["${property}"] = "omop_id:" + value.toString().substring("code:".length())
+                } else if (value.toString() ==~ /^[A-Za-z][A-Za-z0-9_-]*:[^\s]+$/) {
+                    // pattern for a different coding system i.e. snomed:1234
+                    result["${property}"] = value.toString().trim()
+                    log.debug("CodeableConceptsLookupService.lookup - property '${property}' value '${value}' is already a qualified code")
+                } else if (isConceptCode(conn, value.toString())) {
+                    // already an EUCAIM concept_code, as the lookup tables that run before this
+                    // service emit (LookupImagingModality: 'CT' -> 'IMG1000042'). Searched by
+                    // name it matched nothing and was stored as NOT FOUND
+                    result["${property}"] = value.toString().trim()
+                    log.debug("CodeableConceptsLookupService.lookup - property '${property}' value '${value}' is already a concept_code")
                 } else {
                     def sql = """
                     SELECT c.concept_code
                     FROM eucaim_hyperontology_codes.concept c
-                    WHERE c.concept_name = ?
+                    WHERE lower(c.concept_name) = lower(?)
+                    ORDER BY c.concept_id
                     """
-
-                    log.info(sql)
 
                     def pstmt = conn.prepareStatement(sql)
                     pstmt.setString(1, value.toString())
                     def rs = pstmt.executeQuery()
 
-                    log.info("CodeableConceptsLookupService.lookup - Executed query with value: " + value.toString())
+                    log.debug("CodeableConceptsLookupService.lookup - property '${property}', value '${value}'")
 
                     if (rs.next()) {
-                        log.info("CodeableConceptsLookupService.lookup - Parsing one result")
                         def code = rs.getString("concept_code")
                         result["${property}"] = code
+                        if (rs.next()) {
+                            log.warn("CodeableConceptsLookupService.lookup - AMBIGUOUS term " +
+                                "'${value}' for property '${property}': it resolves to more than " +
+                                "one concept_code. Using '${code}', the first one loaded. " +
+                                "Disambiguate it in eucaim_hyperontology_codes.concept.")
+                        }
                     } else {
+                        log.warn("CodeableConceptsLookupService.lookup - NO MATCH for property " +
+                            "'${property}' with value '${value}'. It is stored as NOT FOUND. " +
+                            "Add the term to eucaim_hyperontology_codes.concept or correct the mapping.")
                         result["${property}"] = "NOT FOUND"
-                    }   
+                    }
                 rs.close()
                 pstmt.close()
                 }
@@ -80,17 +139,57 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
                 
             }
         } catch (Exception e) {
-            log.error("CodeableConceptsLookupService.lookup - Lookup error: {}", [e.message])
+            log.error("CodeableConceptsLookupService.lookup - ${e.class.simpleName}: ${e.message}. " +
+                "Coordinates were: ${coordinates}", e)
             return Optional.empty()
         } finally {
             if (conn != null) conn.close()
         }
 
-        log.info("CodeableConceptsLookupService.lookup - result values: ${result}")
+        log.debug("CodeableConceptsLookupService.lookup - result values: ${result}")
 
         return result.isEmpty() ? Optional.empty() : Optional.of(result)
     }
     
+    private String lookupOmopConceptCode(Connection conn, String omopId, String property) {
+        def sql = """
+        SELECT c.concept_code
+        FROM eucaim_hyperontology_codes.concept_external_mapping m
+        JOIN eucaim_hyperontology_codes.concept c ON c.concept_id = m.concept_id
+        WHERE m.external_vocabulary = 'OMOP_CONCEPT_ID'
+          AND m.external_code = ?
+        ORDER BY c.concept_id
+        """
+        def pstmt = conn.prepareStatement(sql)
+        try {
+            pstmt.setString(1, omopId)
+            def rs = pstmt.executeQuery()
+            try {
+                if (!rs.next()) return null
+                def code = rs.getString("concept_code")
+                if (rs.next()) {
+                    log.warn("CodeableConceptsLookupService.lookup - AMBIGUOUS OMOP id '${omopId}' for property " +
+                        "'${property}': it maps to more than one EUCAIM concept. Using " +
+                        "'${code}', the first one loaded. Disambiguate it in " +
+                        "eucaim_hyperontology_codes.concept_external_mapping.")
+                }
+                return code
+            } finally { rs.close() }
+        } finally { pstmt.close() }
+    }
+
+    // exact, case-insensitive match against concept_code
+    private static boolean isConceptCode(Connection conn, String value) {
+        def pstmt = conn.prepareStatement("SELECT 1 FROM eucaim_hyperontology_codes.concept c WHERE upper(c.concept_code) = upper(?) LIMIT 1")
+        try {
+            pstmt.setString(1, value.trim())
+            def rs = pstmt.executeQuery()
+            try { return rs.next() } finally { rs.close() }
+        } finally {
+            pstmt.close()
+        }
+    }
+
     Set<String> getRequiredKeys() {
         return java.util.Collections.emptySet();
     }
@@ -102,7 +201,10 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
 
     @Override
     void initialize(ControllerServiceInitializationContext ctx) {
-        log.info("CodeableConceptsLookupService.initialize")
+        initContext = ctx
+        // this instance is brand new, so take back the service the component already resolved
+        dbcpService = cachedDbcpService(ctx?.identifier)
+        log.info("CodeableConceptsLookupService.initialize - dbcpService recovered from a previous enable: ${dbcpService != null}")
     }
 
     @Override

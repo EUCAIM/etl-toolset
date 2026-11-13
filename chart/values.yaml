@@ -20,24 +20,33 @@ nifi:
     username: eucaim
     password: ""   # leave empty to generate a random one
   localIp: "127.0.0.1"
+  # true pulls the mapping of every dataset in datasetsList from
+  # github.com/EUCAIM/etl-mappings on each start. false uses the ones in the shared folder
+  downloadFlows: "false"
+sharedDb:
+  # host, user and password come from the shared-sql-db-auth secret
+  port: "5432"
 nifiRegistry:
   image:
     repository: harbor.eucaim-node.i3m.upv.es:5000/dockerhub/apache/nifi-registry
-    tag: latest
+    tag: "2.3.0"
     pullPolicy: IfNotPresent
   service:
     port: 18080
 postgresql:
+  # the flows use the database of the project (shared-sql-db-auth), this one is
+  # only deployed when explicitly enabled
+  enabled: false
   image:
     repository: harbor.eucaim-node.i3m.upv.es:5000/library/etl/postgres-etl
-    tag: "15-3"
+    tag: "15-4"
   user: postgres
   password: postgres
   database: eucaim-etl-db
 tdc:
   image: 
     repository: harbor.eucaim-node.i3m.upv.es:5000/library/etl/tdc-app
-    tag: "1.0-slim"
+    tag: "1.1-slim"
     pullPolicy: IfNotPresent
   service:
     port: 5000

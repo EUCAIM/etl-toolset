@@ -1,3 +1,4 @@
+{{- if .Values.postgresql.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,6 +35,7 @@ spec:
             - name: POSTGRES_USER
               value: {{ .Values.postgresql.user | quote }}
             - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgresql.password | quote }}
             - name:  POSTGRES_HOST_AUTH_METHOD
               value: "trust"
             - name:  PGDATA
@@ -62,3 +64,4 @@ spec:
             mkdir -p $PGDATA
             && docker-entrypoint.sh postgres
 
+{{- end }}

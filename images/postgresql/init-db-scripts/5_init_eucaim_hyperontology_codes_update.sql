@@ -6084,14 +6084,6 @@ INSERT INTO eucaim_hyperontology_codes.concept VALUES (nextval('eucaim_hyperonto
 
 INSERT INTO eucaim_hyperontology_codes.concept VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1000174', 'https://cancerimage.eu/ontology/EUCAIM#COM1000174', 'nanomole per liter', 'Unit', 'None', 'EUCAIM', 'Class', 'S');
 
-INSERT INTO eucaim_hyperontology_codes.concept VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1000175', 'https://cancerimage.eu/ontology/EUCAIM#COM1000175', 'Gender', 'Observation', 'None', 'EUCAIM', 'Class', 'S');
-
-INSERT INTO eucaim_hyperontology_codes.concept VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1000176', 'https://cancerimage.eu/ontology/EUCAIM#COM1000176', 'MALE', 'Gender', 'None', 'EUCAIM', 'Class', 'S');
-
-INSERT INTO eucaim_hyperontology_codes.concept VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1000178', 'https://cancerimage.eu/ontology/EUCAIM#COM1000178', 'FEMALE', 'Gender', 'None', 'EUCAIM', 'Class', 'S');
-
-INSERT INTO eucaim_hyperontology_codes.concept VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1000179', 'https://cancerimage.eu/ontology/EUCAIM#COM1000179', 'Transgender', 'Observation', 'None', 'EUCAIM', 'Class', 'S');
-
 INSERT INTO eucaim_hyperontology_codes.concept VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1000181', 'https://cancerimage.eu/ontology/EUCAIM#COM1000181', 'Finding value', 'Meas Value', 'None', 'EUCAIM', 'Class', 'S');
 
 INSERT INTO eucaim_hyperontology_codes.concept VALUES (nextval('eucaim_hyperontology_codes.eucaim_concept_id_seq'), 'COM1000182', 'https://cancerimage.eu/ontology/EUCAIM#COM1000182', 'Finding status values', 'Meas Value', 'None', 'EUCAIM', 'Class', 'S');

@@ -68,6 +68,24 @@ spec:
                   key: password
             - name: SHARED_DB_NAME
               value: "project-{{ .Values.projectCode }}--{{ .Values.subprojectCode }}"
+            - name: SHARED_DB_PORT
+              value: {{ .Values.sharedDb.port | quote }}
+            # read by init.sh, which is the same file the docker-compose distribution runs
+            - name: NIFI_HOST
+              value: "{{ include "nifi.name" . }}-nifi"
+            - name: REGISTRY_HOST
+              value: "{{ include "nifi.name" . }}-registry"
+            - name: FLOWS_DIR
+              value: "/opt/nifi/flows"
+            - name: DATASETS_LIST
+              value: "{{ .Values.datasetsList }}"
+            - name: DOWNLOAD_FLOWS
+              value: {{ .Values.nifi.downloadFlows | quote }}
+            # init.sh installs jq with pip, through the package proxy of the platform
+            - name: PIP_INDEX_URL
+              value: "http://devpi-service.package-repos-proxy:3141/root/pypi/+simple/"
+            - name: PIP_TRUSTED_HOST
+              value: "devpi-service.package-repos-proxy"
           command: 
           - "sh"
           - "-c"
@@ -77,11 +95,17 @@ spec:
             && mkdir -p $ETL_HOME/nifi_data/nifi_flowfile_repository
             && mkdir -p $ETL_HOME/nifi_data/nifi_content_repository
             && mkdir -p $ETL_HOME/nifi_data/nifi_provenance_repository
-            && mkdir -p $ETL_HOME/input_data
-            && mkdir -p $ETL_HOME/output_data
+            && mkdir -p $ETL_HOME/input_data/clinical_data
+            && mkdir -p $ETL_HOME/input_data/image_metadata
+            && mkdir -p $ETL_HOME/input_data/image_timepoints
+            && mkdir -p $ETL_HOME/output_data/ingestion
+            && mkdir -p $ETL_HOME/output_data/mapping_logs
+            && mkdir -p $ETL_HOME/output_data/etl_process_logs
+            && mkdir -p $ETL_HOME/output_data/cdm
             && mkdir -p $ETL_HOME/staging_data/curated_as_csv/clinical_data
             && mkdir -p $ETL_HOME/staging_data/input_as_csv/clinical_data
             && mkdir -p $ETL_HOME/staging_data/input_as_csv/image_metadata
+            && mkdir -p $ETL_HOME/staging_data/input_as_csv/image_timepoints
             && mkdir -p $ETL_HOME/TDC_Output
             && ln -s $ETL_HOME/nifi_data/nifi_data                  /opt/nifi/nifi-current/data
             && ln -s $ETL_HOME/nifi_data/nifi_database_repository   /opt/nifi/nifi-current/database_repository
@@ -91,5 +115,6 @@ spec:
             && ln -s $ETL_RESOURCES/flows         /opt/nifi/flows
             && ln -s $ETL_RESOURCES/truststore.jks        /opt/nifi/truststore.jks
             && ln -s $ETL_RESOURCES/keystore.jks          /opt/nifi/keystore.jks
+            && cp $ETL_RESOURCES/logback.xml /opt/nifi/nifi-current/conf/logback.xml
             && (/bin/bash $ETL_RESOURCES/init.sh & exec /opt/nifi/scripts/start.sh )
             

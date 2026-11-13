@@ -1,4 +1,6 @@
 import org.apache.nifi.controller.ControllerServiceInitializationContext
+import org.apache.nifi.annotation.lifecycle.OnEnabled
+import org.apache.nifi.controller.ConfigurationContext
 import org.apache.nifi.reporting.InitializationException
 import org.apache.nifi.dbcp.DBCPService
 import java.sql.*
@@ -17,14 +19,37 @@ class ImagingIdentifierLookupService implements LookupService<String> {
 
     DBCPService dbcpService
     ComponentLog log = null
+    ControllerServiceInitializationContext initContext = null
+
+    // NiFi re-evaluates this script on every validation pass (BaseScriptedLookupService.customValidate
+    // always calls setup()), which builds a brand new instance of this class and calls initialize() on
+    // it, but never onEnabled() again. The DBCPService injected when the service was enabled was
+    // therefore lost on the first validation that ran after the enabling, and from then on every lookup
+    // failed with "DBCPService not initialized". The service resolved in onEnabled is published in a
+    // JVM-wide registry keyed by the component id, so a reloaded instance recovers it in initialize().
+    static final String DBCP_CACHE_PREFIX = "eucaim.nifi.dbcpService."
+
+    private static void cacheDbcpService(String componentId, DBCPService service) {
+        if (componentId && service != null) {
+            System.getProperties().put(DBCP_CACHE_PREFIX + componentId, service)
+        }
+    }
+
+    private static DBCPService cachedDbcpService(String componentId) {
+        componentId ? (DBCPService) System.getProperties().get(DBCP_CACHE_PREFIX + componentId) : null
+    }
 
     @Override
     Optional<Map<String, String>> lookup(Map<String, String> coordinates) {
-        log.info("SearchImagingIdentifier.lookup")
-        log.info("SearchImagingIdentifier.lookup - coordinates values: ${coordinates}")
+        log.debug("SearchImagingIdentifier.lookup - coordinates values: ${coordinates}")
 
-         if (dbcpService == null) {
-            log.error("CodeableConceptsLookupService.lookup - DBCPService not initialized.")
+        if (dbcpService == null) {
+            // onEnabled ran on an instance that a later script reload has replaced
+            dbcpService = cachedDbcpService(initContext?.identifier)
+        }
+
+        if (dbcpService == null) {
+            log.error("SearchImagingIdentifier.lookup - DBCPService not initialized.")
             return Optional.empty()
         }
 
@@ -34,7 +59,7 @@ class ImagingIdentifierLookupService implements LookupService<String> {
         Connection conn = dbcpService.getConnection()
         if (conn == null) {
             log.error("SearchImagingIdentifier.lookup - Connection not initialized.")
-            return Optional.empty()['lookup_batch']
+            return Optional.empty()
         }
 
         try {
@@ -42,12 +67,22 @@ class ImagingIdentifierLookupService implements LookupService<String> {
             def studyUID = input.StudyUID
             def patientID = input.PatientID
             def datasetID = input.DatasetID
-            def imagingTimepoint = Integer.parseInt(input.ImagingTimepoint)
 
-            log.info("studyUID: " + studyUID)
-            log.info("patientID: " + patientID)
-            log.info("datasetID: " + datasetID)
-            log.info("imagingTimepoint: " + imagingTimepoint)
+            // a study with no timepoint has nothing to look up: parseInt(null) used to throw and
+            // was reported as a lookup failure
+            if (input.ImagingTimepoint == null || input.ImagingTimepoint.toString().trim().isEmpty()
+                    || input.ImagingTimepoint.toString().trim() == "null") {
+                log.warn("SearchImagingIdentifier.lookup - the source gives no ImagingTimepoint for " +
+                    "datasetID='${datasetID}', patientID='${patientID}' (studyUID='${studyUID}'). " +
+                    "The timepoint is stored as NOT FOUND. Check the imaging timepoints file for this study.")
+                result["imagingIdentifier"] = "NOT FOUND"
+                return Optional.of(result)
+            }
+
+            def imagingTimepoint = Integer.parseInt(input.ImagingTimepoint.toString().trim())
+
+            log.debug("SearchImagingIdentifier.lookup - studyUID=${studyUID}, patientID=${patientID}, " +
+                "datasetID=${datasetID}, imagingTimepoint=${imagingTimepoint}")
 
             def sql = """
                     SELECT  i.procedureidentifier 
@@ -57,8 +92,6 @@ class ImagingIdentifierLookupService implements LookupService<String> {
                     WHERE lower(cp.DatasetIdentifier) = ? and pcc.Patientidentifier = ? and i.ImagingTimepoint = ?; 
                 """
 
-            log.info(sql)
-
             def pstmt = conn.prepareStatement(sql)
             pstmt.setString(1, datasetID.toString())
             pstmt.setString(2, patientID.toString())
@@ -66,10 +99,13 @@ class ImagingIdentifierLookupService implements LookupService<String> {
             def rs = pstmt.executeQuery()
 
             if (rs.next()) {
-                log.info("SearchImagingIdentifier.lookup - Parsing result")
                 def identifier = rs.getString("procedureidentifier")
                 result["imagingIdentifier"] = identifier
             } else {
+                log.warn("SearchImagingIdentifier.lookup - NO MATCH for datasetID='${datasetID}', " +
+                    "patientID='${patientID}', imagingTimepoint=${imagingTimepoint} " +
+                    "(studyUID='${studyUID}'). The timepoint is stored as NOT FOUND. Check that the " +
+                    "clinical data and the DICOM metadata for this patient were ingested first.")
                 result["imagingIdentifier"] = "NOT FOUND"
             }
 
@@ -77,13 +113,16 @@ class ImagingIdentifierLookupService implements LookupService<String> {
             pstmt.close()
 
         } catch (Exception e) {
-            log.error("SearchImagingIdentifier.lookup - Lookup error: {}", [e.message])
-            return Optional.empty()
+            // a lookup error and a genuinely absent record both used to end up as
+            // "NOT FOUND" at WARN, which made them impossible to tell apart
+            log.error("SearchImagingIdentifier.lookup - ${e.class.simpleName}: ${e.message}. " +
+                "This is a lookup FAILURE, not an absent record. Coordinates were: ${coordinates}", e)
+            result["imagingIdentifier"] = "NOT FOUND"
         } finally {
             if (conn != null) conn.close()
         }
 
-        log.info("SearchImagingIdentifier.lookup - result values: ${result}")
+        log.debug("SearchImagingIdentifier.lookup - result values: ${result}")
 
         return result.isEmpty() ? Optional.empty() : Optional.of(result)
     }
@@ -99,7 +138,10 @@ class ImagingIdentifierLookupService implements LookupService<String> {
 
     @Override
     void initialize(ControllerServiceInitializationContext ctx) {
-        log.info("SearchImagingIdentifier.initialize")
+        initContext = ctx
+        // this instance is brand new, so take back the service the component already resolved
+        dbcpService = cachedDbcpService(ctx?.identifier)
+        log.info("SearchImagingIdentifier.initialize - dbcpService recovered from a previous enable: ${dbcpService != null}")
     }
 
     @Override
@@ -126,10 +168,12 @@ class ImagingIdentifierLookupService implements LookupService<String> {
        ID
     }
 
-    def onEnabled(configurationContext) {
+    @OnEnabled
+    void onEnabled(final ConfigurationContext configurationContext) {
         log.info("SearchImagingIdentifier.onEnabled")
 
         dbcpService = configurationContext.getProperty(DBCP_SERVICE)?.asControllerService(DBCPService)
+        cacheDbcpService(initContext?.identifier, dbcpService)
 
         if (dbcpService == null) {
          log.error("SearchImagingIdentifier.onEnabled - Could not obtain dbcpService in onEnabled.")

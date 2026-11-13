@@ -1,6 +1,6 @@
 -- Step 2 Eucaim CDM Schema definition: ingestion
 
-CREATE SCHEMA eucaim_cdm_ingestion;
+CREATE SCHEMA IF NOT EXISTS eucaim_cdm_ingestion;
 
 -------------------------------------------------------------------------------------------
 -- Log and control
@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MappedCodeableConceptsResults (
     originalValue VARCHAR(150),
     parsedValue VARCHAR(150),
     codeInEUCAIM VARCHAR(50),
-    codeCandidatesInEUCAIM VARCHAR(50),
     mappingTimestamp VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
 );
@@ -48,7 +47,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Dataset (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
     Identifier VARCHAR(150) PRIMARY KEY,
     Title VARCHAR(150) NOT NULL,
-    Description VARCHAR(500),
+    Description VARCHAR(1500),
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -79,7 +78,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HealthStatus (
     PatientIdentifier VARCHAR(150) NOT NULL,
     HealthStatusEUCAIM VARCHAR(50),
     HealthStatusOriginal VARCHAR(50),
-    ValueAsNumber DECIMAL(5,2),
+    ValueAsNumber DECIMAL(12,3),
     ValueAsConcept INTEGER,
     ValueAsConceptEUCAIM VARCHAR(50),
     ValueAsConceptOriginal VARCHAR(50),
@@ -94,11 +93,13 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorMarkerTest (
     Id INTEGER GENERATED ALWAYS AS IDENTITY ,
     Identifier VARCHAR(150) PRIMARY KEY,
     PatientIdentifier VARCHAR(150) NOT NULL,
+    CancerConditionIdentifier VARCHAR(150),
+    ProcedureIdentifier VARCHAR(150),
     CategoryEUCAIM VARCHAR(50),
     CategoryOriginal VARCHAR(50),
     TumorMarkerEUCAIM VARCHAR(50),
     TumorMarkerOriginal VARCHAR(50),
-    ValueAsNumber DECIMAL(5,2),
+    ValueAsNumber DECIMAL(12,3),
     ValueAsConceptEUCAIM VARCHAR(50),
     ValueAsConceptOriginal VARCHAR(50),
     ValueAsConceptUnitEUCAIM VARCHAR(50),
@@ -132,7 +133,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.RadiotherapyCourseSummary (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
     TreatmentIdentifier VARCHAR(150) PRIMARY KEY,
     PatientIdentifier VARCHAR(150) NOT NULL,
-    OffsetFromDiagnosis DECIMAL(5,2),
+    OffsetFromDiagnosis DECIMAL(8,2),
     OffsetUnitEUCAIM VARCHAR(50),
     OffsetUnitOriginal VARCHAR(50),
     PerformedDate VARCHAR(15),
@@ -147,7 +148,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.SurgicalProcedure (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
     TreatmentIdentifier VARCHAR(150) PRIMARY KEY,
     PatientIdentifier VARCHAR(150) NOT NULL,
-    OffsetFromDiagnosis DECIMAL(5,2),
+    OffsetFromDiagnosis DECIMAL(8,2),
     OffsetUnitEUCAIM VARCHAR(50),
     OffsetUnitOriginal VARCHAR(50),
     PerformedDate VARCHAR(15),
@@ -163,11 +164,12 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedMedication (
     TreatmentIdentifier VARCHAR(150) PRIMARY KEY,
     PatientIdentifier VARCHAR(150) NOT NULL,
     DateOfMedication DATE,
-    OffsetFromDiagnosis DECIMAL(5,2),
+    OffsetFromDiagnosis DECIMAL(8,2),
     OffsetUnitEUCAIM VARCHAR(50),
     OffsetUnitOriginal VARCHAR(50),
     MedicationCodeEUCAIM VARCHAR(50),
     MedicationCodeOriginal VARCHAR(50),
+    MeditationId INTEGER,
     Episode INTEGER,
     EpisodeStartDate VARCHAR(15),
     processed BOOLEAN DEFAULT FALSE
@@ -180,14 +182,18 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.PrimaryCancerCondition (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
     Identifier VARCHAR(150) PRIMARY KEY,
     PatientIdentifier VARCHAR(150) NOT NULL,
+    ProcedureIdentifier VARCHAR(150),
     AgeOfDiagnosis DECIMAL(5,2),
     AgeUnitEUCAIM VARCHAR(50),
     AgeUnitOriginal VARCHAR(50),
     AssertedDate DATE,
     PrimaryCancerConditionEUCAIM VARCHAR(50),
     PrimaryCancerConditionOriginal VARCHAR(50),
+    PrimaryCancerConditionType VARCHAR(50),
     HistologyMorphologyBehaviourEUCAIM VARCHAR(50),
     HistologyMorphologyBehaviourOriginal VARCHAR(50),
+    PrimaryCancerConditionClinicalStatusEUCAIM VARCHAR(50),
+    TopographyEUCAIM VARCHAR(50),
     EpisodeNumber INTEGER,
     EpisodeStartDate VARCHAR(15),
     ConfirmedByProcedure VARCHAR(150),
@@ -198,11 +204,10 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.HistologicGrade (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
 	Identifier VARCHAR(150) PRIMARY KEY,
 	PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
-    CategoryEUCAIM VARCHAR(50),
+    ScoringSystemEUCAIM VARCHAR(50),
     CategoryOriginal VARCHAR(50),
     GradeEUCAIM VARCHAR(50),
     GradeOriginal VARCHAR(50),
-    Value INTEGER,
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -221,7 +226,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.CancerRelatedProcedure (
     Id INTEGER GENERATED ALWAYS AS IDENTITY,
     ProcedureIdentifier VARCHAR(150) PRIMARY KEY,
     PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
-    OffsetFromDiagnosis DECIMAL(5,2),
+    OffsetFromDiagnosis DECIMAL(8,2),
     OffsetUnitEUCAIM VARCHAR(50),
     OffsetUnitOriginal VARCHAR(50),
     PerformedDate VARCHAR(15),
@@ -239,7 +244,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImagingProcedure (
     ProcedureIdentifier VARCHAR(150) PRIMARY KEY,
     PrimaryCancerConditionIdentifier VARCHAR(150) NOT NULL,
     Patientidentifier VARCHAR(150) NOT NULL,
-    OffsetFromDiagnosis DECIMAL(5,2),
+    OffsetFromDiagnosis DECIMAL(8,2),
     OffsetUnitEUCAIM VARCHAR(50),
     OffsetUnitOriginal VARCHAR(50),
     PerformedDate VARCHAR(15),
@@ -260,11 +265,11 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.Tumor (
 	isIndex BOOLEAN,
 	morphologyOriginal VARCHAR(150),
 	morphologyEUCAIM VARCHAR(150),
-	volume DECIMAL(5,2),
+	volume DECIMAL(8,2),
 	sizeMethodEUCAIM VARCHAR (50),
     sizeMethodOriginal VARCHAR (50),
-	sizeMaximumDimension DECIMAL(5,2),
-	sizeOtherDimension DECIMAL(5,2),
+	sizeMaximumDimension DECIMAL(8,2),
+	sizeOtherDimension DECIMAL(8,2),
 	sizeDimensionUnit VARCHAR (15),
     BodySiteEUCAIM VARCHAR(50),
     BodySiteOriginal VARCHAR(50),
@@ -285,15 +290,36 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.LabTestResult (
     PatientIdentifier VARCHAR(150) NOT NULL,
     codeOriginal VARCHAR(150),
     codeEUCAIM VARCHAR(150),
-    ValueAsNumber DECIMAL(5,2),
+    -- Se ensancha igual que en el esquema de salida: con DECIMAL(5,2) un PSA por
+    -- encima de 999,99 ng/mL desbordaba ya en la ingesta, antes de llegar a la salida.
+    ValueAsNumber DECIMAL(12,3),
     ValueAsConceptEUCAIM VARCHAR(50),
     ValueAsConceptOriginal VARCHAR(50),
     ValueUnitEUCAIM VARCHAR(50),
     ValueUnitOriginal VARCHAR(50),
     DateOfTestResult VARCHAR(15),
-    OffsetFromDiagnosis DECIMAL(5,2),
+    OffsetFromDiagnosis DECIMAL(8,2),
     OffsetUnitEUCAIM VARCHAR(50),
     OffsetUnitOriginal VARCHAR(50),
+    processed BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.MedicalHistory (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
+    Identifier VARCHAR(150) PRIMARY KEY,
+    PatientIdentifier VARCHAR(150) NOT NULL,
+    codeOriginal VARCHAR(150),
+    codeEUCAIM VARCHAR(150),
+    MedicalHistoryCategoryEUCAIM VARCHAR(50),
+    MedicalHistoryCategoryOriginal VARCHAR(50),
+    MedicalHistoryPresent boolean,
+    MedicalHistoryOnsetAge DECIMAL(5,1),
+    MedicalHistoryOnsetAgeUnitOriginal VARCHAR(50),
+    MedicalHistoryOnsetAgeUnitEUCAIM VARCHAR(50),
+    MedicalHistoryValueAsConceptOriginal VARCHAR(100),
+    MedicalHistoryValueAsConceptEUCAIM VARCHAR(100),
+    MedicalHistoryValueAsNumber DECIMAL(12,3),
+    MedicalHistoryValueUnit VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -308,7 +334,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.RiskAssessment (
 	codeEUCAIM VARCHAR(150),
 	valueUnit VARCHAR (15),
     valueAsConcept VARCHAR(50),
-    ValueAsNumber Integer,
+    ValueAsNumber DECIMAL(12,3),
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -320,7 +346,7 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.TumorObservation (
 	codeEUCAIM VARCHAR(150),
 	valueUnit VARCHAR (15),
     valueAsConcept VARCHAR(50),
-    ValueAsNumber Integer,
+    ValueAsNumber DECIMAL(12,3),
     processed BOOLEAN DEFAULT FALSE	  
 );
 
@@ -350,10 +376,14 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageStudy (
     ImagingTimepoint INTEGER,
     PatientIdentifier VARCHAR(150),
     DatasetIdentifier VARCHAR(150),
-    OffsetFromDiagnosis DECIMAL(5,2),
+    OffsetFromDiagnosis DECIMAL(8,2),
     OffsetUnitEUCAIM  VARCHAR(20),
     OffsetUnitOriginal  VARCHAR(20),
     ImagingProcedureIdentifier VARCHAR(250),
+    AcquisitionDate VARCHAR(20),
+    NumberOfSeries INTEGER,
+    NumberOfInstances INTEGER,
+    AccessURI VARCHAR(150),
     ImageStudyCategoryCode VARCHAR(70),
     processed BOOLEAN DEFAULT FALSE
 
@@ -367,6 +397,28 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageSeries (
     ImageSeriesNumber INTEGER,
     Description VARCHAR(170),
 	Manufacturer VARCHAR(70),
+    BodyPart VARCHAR(100),
+    Laterality VARCHAR(50),
+    AcquisitionDate VARCHAR(50),
+    Modality VARCHAR(50),
+    -- NumberOfSeriesRelatedInstances del extractor. Es un tag POR SERIE
+    NumberOfInstances INTEGER,
+    processed BOOLEAN DEFAULT FALSE
+);
+
+
+CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.SegmentationSeries (
+    Id INTEGER GENERATED ALWAYS AS IDENTITY,
+    SegmentationSeriesUID VARCHAR(70) PRIMARY KEY,
+    ImageStudyUID VARCHAR(70),
+    SourceSeriesUID VARCHAR(70),
+    AlgorithmType VARCHAR(50),
+    SeriesNumber INTEGER,
+    Description VARCHAR(170),
+    Manufacturer VARCHAR(70),
+    SoftwareVersions VARCHAR(70),
+    AcquisitionDate VARCHAR(50),
+    Modality VARCHAR(50),
     processed BOOLEAN DEFAULT FALSE
 );
 
@@ -380,14 +432,16 @@ CREATE TABLE IF NOT EXISTS eucaim_cdm_ingestion.ImageTags (
     XRayTubeCurrent INTEGER,
     Exposure INTEGER,
     ExposureTime INTEGER,
-    SpiralPitchFactor DECIMAL(6,4),
+    SpiralPitchFactor DECIMAL(7,4),
     FilterType VARCHAR(30),
     ConvolutionKernel VARCHAR(30),
-    SliceThickness DECIMAL(5,2),
+    SliceThickness DECIMAL(10,4),
+    EchoTime DECIMAL(10,5),
+    CTDIvol DECIMAL(10,4),
     ImageRows INTEGER,
     ImageColumns INTEGER,
-    PixelRowSpacing DECIMAL(6,4),
-    PixelColSpacing DECIMAL(6,4),
+    PixelRowSpacing DECIMAL(10,4),
+    PixelColSpacing DECIMAL(10,4),
     processed BOOLEAN DEFAULT FALSE, 
     PRIMARY KEY (ImageStudyUID, ImageSeriesUID)
 );
