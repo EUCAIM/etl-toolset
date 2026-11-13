@@ -6,31 +6,50 @@ if [ -f /tmp/init_done ]; then
     rm /tmp/init_done
 fi
 
+### Where this script runs. The defaults are the docker-compose deployment; the
+### helm chart of the reference node (branch Reference_Node) sets its own values,
+### so both run this same file.
+###   NIFI_HOST       host of the NiFi API
+###   REGISTRY_HOST   host of the NiFi Registry API
+###   FLOWS_DIR       folder holding the flow files to load
+###   ETL_RESOURCES   folder holding scripts/ and the JDBC driver (also used by the flows)
+NIFI_HOST="${NIFI_HOST:-nifi}"
+REGISTRY_HOST="${REGISTRY_HOST:-nifi_registry}"
+FLOWS_DIR="${FLOWS_DIR:-/flows}"
+### the helm chart hands the dataset list over as DATASETS_LIST, the name the
+### platform already uses for the desktop
+DATASETSLIST="${DATASETSLIST:-$DATASETS_LIST}"
+
 #install jq to parse json
 pip install jq --break-system-packages
 
-#Wait for NiFi to start
-registryIp=$(getent hosts nifi_registry | awk '{ print $1 }')
+#Wait for the Registry and NiFi to start. docker-compose already orders them,
+#Kubernetes starts every pod at once
+while ! curl -sf http://${REGISTRY_HOST}:18080/nifi-registry-api/buckets > /dev/null; do
+    echo "still waiting for the registry to start"
+    sleep 5
+done
+registryIp=$(getent hosts "$REGISTRY_HOST" | awk '{ print $1 }')
 
 #sleep 60
-while ! curl -sfk https://nifi:8443/nifi > /dev/null; do
+while ! curl -sfk https://${NIFI_HOST}:8443/nifi > /dev/null; do
     echo "still waiting for nifi to start"
     sleep 5
 done
 echo "** Applying changes ** "
-bucketDelete=$(curl -X GET http://nifi_registry:18080/nifi-registry-api/buckets)
+bucketDelete=$(curl -X GET http://${REGISTRY_HOST}:18080/nifi-registry-api/buckets)
 
 bucketToDelete=$(echo "$bucketDelete" | jq -r '.[0].identifier')
 echo "Old bucket found! Need to delete $bucketToDelete"
-deleting=$(curl -X DELETE http://nifi_registry:18080/nifi-registry-api/buckets/$bucketToDelete?version=0)
+deleting=$(curl -X DELETE http://${REGISTRY_HOST}:18080/nifi-registry-api/buckets/$bucketToDelete?version=0)
 
 
 
-bucketCreate=$(curl -X POST -d '{"name":"ETL3","description":"","allowPublicRead":false,"revision":{"version":0}}' -H 'Content-Type: application/json'  http://nifi_registry:18080/nifi-registry-api/buckets)
+bucketCreate=$(curl -X POST -d '{"name":"ETL3","description":"","allowPublicRead":false,"revision":{"version":0}}' -H 'Content-Type: application/json'  http://${REGISTRY_HOST}:18080/nifi-registry-api/buckets)
 bucketHref=$(echo "$bucketCreate" | jq -r '.link.href')
 
 # Get the token
-token=$(curl -X POST -k -H 'Content-Type: application/x-www-form-urlencoded' -d "username=$SINGLE_USER_CREDENTIALS_USERNAME&password=$SINGLE_USER_CREDENTIALS_PASSWORD" https://nifi:8443/nifi-api/access/token)
+token=$(curl -X POST -k -H 'Content-Type: application/x-www-form-urlencoded' -d "username=$SINGLE_USER_CREDENTIALS_USERNAME&password=$SINGLE_USER_CREDENTIALS_PASSWORD" https://${NIFI_HOST}:8443/nifi-api/access/token)
 # Add NiFi Registry client
 registry=$(curl -X POST -k \
     -H "Content-Type: application/json" \
@@ -55,7 +74,7 @@ registry=$(curl -X POST -k \
       }
     }
     }" \
-https://nifi:8443/nifi-api/controller/registry-clients)
+https://${NIFI_HOST}:8443/nifi-api/controller/registry-clients)
 
 
 # Download flows
@@ -82,7 +101,7 @@ esac
 IFS=',' read -r -a DATASETS <<< "$DATASETSLIST"
 
 if [ "$DOWNLOAD_FLOWS" != true ]; then
-    echo "Flow download disabled (DOWNLOAD_FLOWS=false): using the mappings already in /flows"
+    echo "Flow download disabled (DOWNLOAD_FLOWS=false): using the mappings already in ${FLOWS_DIR}"
 else
 
     # Authenticate when a token is available: unauthenticated calls to the GitHub
@@ -131,9 +150,9 @@ else
 			if [[ "$BASENAME" == "${DATASET}"* ]]; then
 				echo "Downloading: $FILE"
 
-				if ! curl -sSL --fail -o "/flows/${BASENAME}" \
+				if ! curl -sSL --fail -o "${FLOWS_DIR}/${BASENAME}" \
 				  "https://raw.githubusercontent.com/${OWNER}/${REPO}/${DEFAULT_BRANCH}/${FILE}"; then
-					echo "ERROR: could not download ${BASENAME} into /flows"
+					echo "ERROR: could not download ${BASENAME} into ${FLOWS_DIR}"
 				fi
 
 				break
@@ -150,7 +169,7 @@ echo "Download flows ended"
 if [ -n "$DATASETSLIST" ]; then
     MISSING=""
     for DATASET in "${DATASETS[@]}"; do
-        if ! ls /flows/"${DATASET}"* >/dev/null 2>&1; then
+        if ! ls "${FLOWS_DIR}"/"${DATASET}"* >/dev/null 2>&1; then
             MISSING="${MISSING} ${DATASET}"
         fi
     done
@@ -163,8 +182,8 @@ if [ -n "$DATASETSLIST" ]; then
             echo "       The download is disabled (DOWNLOAD_FLOWS=false), so every dataset"
             echo "       in datasetsList must already have its mapping file in ./flows."
         fi
-        echo "       Files currently in /flows:"
-        ls -1 /flows | sed 's/^/         /'
+        echo "       Files currently in ${FLOWS_DIR}:"
+        ls -1 "${FLOWS_DIR}" | sed 's/^/         /'
         touch /tmp/init_failed
         exit 1
     fi
@@ -192,7 +211,7 @@ SCRIPTED_SERVICE_RETRIES=3
 FAILED_SERVICES=""
 
 get_service() {
-    curl -s -k -H "Authorization: Bearer $token" "https://nifi:8443/nifi-api/controller-services/$1"
+    curl -s -k -H "Authorization: Bearer $token" "https://${NIFI_HOST}:8443/nifi-api/controller-services/$1"
 }
 
 set_service_state() {
@@ -201,7 +220,7 @@ set_service_state() {
     curl -s -X PUT -H "Content-Type: application/json" \
         -H "Authorization: Bearer $token" -k \
         -d "{\"revision\":{\"version\":$revision},\"disconnectedNodeAcknowledged\":false,\"state\":\"$2\",\"uiOnly\":false}" \
-        "https://nifi:8443/nifi-api/controller-services/$1/run-status" > /dev/null
+        "https://${NIFI_HOST}:8443/nifi-api/controller-services/$1/run-status" > /dev/null
 }
 
 set_service_property() {
@@ -211,7 +230,7 @@ set_service_property() {
         '{revision:{version:$v},disconnectedNodeAcknowledged:false,component:{id:$id,properties:{($name):$value}}}')
     curl -s -X PUT -H "Content-Type: application/json" \
         -H "Authorization: Bearer $token" -k -d "$body" \
-        "https://nifi:8443/nifi-api/controller-services/$1" > /dev/null
+        "https://${NIFI_HOST}:8443/nifi-api/controller-services/$1" > /dev/null
 }
 
 ### waits until the service reaches the given run status (and VALID, unless the
@@ -293,7 +312,7 @@ set_db_password() {
         DB_PASSWORD_DONE=skipped
         return 0
     fi
-    context=$(curl -s -k -H "Authorization: Bearer $token" https://nifi:8443/nifi-api/flow/parameter-contexts \
+    context=$(curl -s -k -H "Authorization: Bearer $token" https://${NIFI_HOST}:8443/nifi-api/flow/parameter-contexts \
         | jq -c '.parameterContexts[]? | select(.component.name=="ETL_v03_parameters")')
     if [ -z "$context" ] || [ "$(echo "$context" | jq '[.component.parameters[].parameter.name] | index("SHARED_DB_PASSWORD") != null')" != true ]; then
         return 0
@@ -304,7 +323,7 @@ set_db_password() {
         '{revision:{version:$v},id:$id,component:{id:$id,parameters:[{parameter:{name:"SHARED_DB_PASSWORD",sensitive:true,value:$pw}}]}}')
     ### parameter changes are applied by NiFi asynchronously, through an update request
     request=$(curl -s -k -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $token" \
-        -d "$body" "https://nifi:8443/nifi-api/parameter-contexts/$contextId/update-requests")
+        -d "$body" "https://${NIFI_HOST}:8443/nifi-api/parameter-contexts/$contextId/update-requests")
     requestId=$(echo "$request" | jq -r '.request.requestId // empty')
     if [ -z "$requestId" ]; then
         echo "ERROR: could not set SHARED_DB_PASSWORD. NiFi answered: $(echo "$request" | head -c 300)"
@@ -314,13 +333,13 @@ set_db_password() {
     deadline=$((SECONDS + 60))
     while true; do
         state=$(curl -s -k -H "Authorization: Bearer $token" \
-            "https://nifi:8443/nifi-api/parameter-contexts/$contextId/update-requests/$requestId" \
+            "https://${NIFI_HOST}:8443/nifi-api/parameter-contexts/$contextId/update-requests/$requestId" \
             | jq -r '"\(.request.complete) \(.request.failureReason // "")"')
         [[ "$state" == true* || $SECONDS -ge $deadline ]] && break
         sleep 1
     done
     curl -s -k -X DELETE -H "Authorization: Bearer $token" \
-        "https://nifi:8443/nifi-api/parameter-contexts/$contextId/update-requests/$requestId" > /dev/null
+        "https://${NIFI_HOST}:8443/nifi-api/parameter-contexts/$contextId/update-requests/$requestId" > /dev/null
     if [ "$state" = "true " ]; then
         echo "SHARED_DB_PASSWORD set in ETL_v03_parameters"
         DB_PASSWORD_DONE=yes
@@ -331,13 +350,26 @@ set_db_password() {
 }
 
 #Add flows to registry
-FOLDER="/flows"
+FOLDER="${FLOWS_DIR}"
 index=0
 for file in "$FOLDER"/*.json; do
     filename=$(basename "$file")
-    flow=$(curl -X POST -d "{\"name\":\"$filename\",\"description\":\"\"}"  -H 'Content-Type: application/json'  http://nifi_registry:18080/nifi-registry-api/$bucketHref/flows )
+    ### a dataset mapping (named <dataset id>_...) not in DATASETSLIST is left out:
+    ### the reference node keeps every mapping in one shared folder, and each
+    ### loaded one costs a connection pool. The common pipelines (Clinical_data_*,
+    ### Dicom_*) always load, and so does everything when DATASETSLIST is empty.
+    case "$filename" in
+        Clinical_data_*|Dicom_*) ;;
+        *)
+            if [ -n "$DATASETSLIST" ] && [[ ",${DATASETSLIST// /}," != *",${filename%%_*},"* ]]; then
+                echo "Skipping ${filename}: its dataset is not in DATASETSLIST"
+                continue
+            fi
+            ;;
+    esac
+    flow=$(curl -X POST -d "{\"name\":\"$filename\",\"description\":\"\"}"  -H 'Content-Type: application/json'  http://${REGISTRY_HOST}:18080/nifi-registry-api/$bucketHref/flows )
     hrefFlow=$(echo "$flow" | jq -r '.link.href')
-    ret=$(curl -X POST -d @$file  -H 'Content-Type: application/json' http://nifi_registry:18080/nifi-registry-api/$hrefFlow/versions/import)
+    ret=$(curl -X POST -d @$file  -H 'Content-Type: application/json' http://${REGISTRY_HOST}:18080/nifi-registry-api/$hrefFlow/versions/import)
     #Import flow to nifi
     registryID=$(echo "$registry" | jq -r '.id')
     bucketID=$(echo "$ret" | jq -r '.bucket.identifier')
@@ -360,7 +392,7 @@ for file in "$FOLDER"/*.json; do
             \"version\": \"1\"
         }
     }
-    }" -H 'Content-Type: application/json' -H "Authorization: Bearer $token" https://nifi:8443/nifi-api/process-groups/root/process-groups?parameterContextHandlingStrategy=KEEP_EXISTING)
+    }" -H 'Content-Type: application/json' -H "Authorization: Bearer $token" https://${NIFI_HOST}:8443/nifi-api/process-groups/root/process-groups?parameterContextHandlingStrategy=KEEP_EXISTING)
     
     
     processGroupID=$(echo "$processGroup" | jq -r '.id')
@@ -370,7 +402,7 @@ for file in "$FOLDER"/*.json; do
 
     # Get all controller services in this process group
     SERVICES=$(curl -s -k -H "Authorization: Bearer $token" \
-    "https://nifi:8443/nifi-api/flow/process-groups/$processGroupID/controller-services")
+    "https://${NIFI_HOST}:8443/nifi-api/flow/process-groups/$processGroupID/controller-services")
     
        
 
@@ -385,10 +417,10 @@ for file in "$FOLDER"/*.json; do
     done
 
 
-    enableProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\"}" https://nifi:8443/nifi-api/flow/process-groups/$processGroupID)
-    enableServices=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\"}" https://nifi:8443/nifi-api/flow/process-groups/$processGroupID/controller-services)
-    startProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"RUNNING\"}" https://nifi:8443/nifi-api/flow/process-groups/$processGroupID)
-    transmittingProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"disconnectedNodeAcknowledged\":false,\"state\":\"TRANSMITTING\"}" https://nifi:8443/nifi-api/flow/process-groups/$processGroupID/run-status)
+    enableProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\"}" https://${NIFI_HOST}:8443/nifi-api/flow/process-groups/$processGroupID)
+    enableServices=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"ENABLED\"}" https://${NIFI_HOST}:8443/nifi-api/flow/process-groups/$processGroupID/controller-services)
+    startProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"id\":\"$processGroupID\",\"disconnectedNodeAcknowledged\":false,\"state\":\"RUNNING\"}" https://${NIFI_HOST}:8443/nifi-api/flow/process-groups/$processGroupID)
+    transmittingProcessGroup=$(curl -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $token" -k -d "{\"disconnectedNodeAcknowledged\":false,\"state\":\"TRANSMITTING\"}" https://${NIFI_HOST}:8443/nifi-api/flow/process-groups/$processGroupID/run-status)
 
 
     echo "**** Flow insertion outcome ->  $transmittingProcessGroup"
@@ -404,13 +436,14 @@ done
 ### which is not a mounted volume, so it has to be recreated on every start just
 ### like the bucket and the registry client above.
 REPORTING_TASK_NAME="ProvenanceToProcessLog"
-### literal, not ${ETL_RESOURCES}: whether that property resolves Expression
-### Language in a reporting task has not been confirmed, and the path is fixed
-### by the volume in docker-compose anyway
-ETL_FILES="/mnt/persistent-home/ETL-files"
+### expanded here by the shell, not left as ${ETL_RESOURCES} for NiFi: whether
+### that property resolves Expression Language in a reporting task has not been
+### confirmed
+ETL_FILES="${ETL_RESOURCES:-/mnt/persistent-home/ETL-files}"
+ETL_FILES="${ETL_FILES%/}"
 
 existing=$(curl -s -k -H "Authorization: Bearer $token" \
-    https://nifi:8443/nifi-api/flow/controller/reporting-tasks \
+    https://${NIFI_HOST}:8443/nifi-api/flow/controller/reporting-tasks \
     | jq -r --arg n "$REPORTING_TASK_NAME" \
       '.reportingTasks[]? | select(.component.name==$n) | .id')
 
@@ -425,7 +458,7 @@ else
             \"type\": \"org.apache.nifi.reporting.script.ScriptedReportingTask\",
             \"bundle\": {\"group\": \"org.apache.nifi\", \"artifact\": \"nifi-scripting-nar\", \"version\": \"2.3.0\"},
             \"name\": \"${REPORTING_TASK_NAME}\"
-        }}" https://nifi:8443/nifi-api/controller/reporting-tasks)
+        }}" https://${NIFI_HOST}:8443/nifi-api/controller/reporting-tasks)
 
     taskID=$(echo "$created" | jq -r '.id')
     taskVersion=$(echo "$created" | jq -r '.revision.version')
@@ -449,7 +482,7 @@ else
                     \"Script File\": \"${ETL_FILES}/scripts/ProvenanceToProcessLog.groovy\",
                     \"Module Directory\": \"${ETL_FILES}/postgresql-42.7.4.jar\"
                 }
-            }}" https://nifi:8443/nifi-api/reporting-tasks/${taskID})
+            }}" https://${NIFI_HOST}:8443/nifi-api/reporting-tasks/${taskID})
 
         newVersion=$(echo "$configured" | jq -r '.revision.version')
         started=$(curl -s -X PUT -k -H 'Content-Type: application/json' \
@@ -457,7 +490,7 @@ else
             \"revision\": {\"clientId\": \"1\", \"version\": ${newVersion}},
             \"disconnectedNodeAcknowledged\": false,
             \"state\": \"RUNNING\"
-            }" https://nifi:8443/nifi-api/reporting-tasks/${taskID}/run-status)
+            }" https://${NIFI_HOST}:8443/nifi-api/reporting-tasks/${taskID}/run-status)
 
         state=$(echo "$started" | jq -r '.component.state // .status.runStatus // "UNKNOWN"')
         echo "Reporting task ${REPORTING_TASK_NAME} created and set to ${state}"
