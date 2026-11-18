@@ -228,78 +228,6 @@
                 "destination": {
                     "comments": "",
                     "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "4c10c303-32c5-3c9a-9967-384a8efc9b75",
-                    "instanceIdentifier": "78e783ce-12b5-33a0-4506-d6c3a41a7e96",
-                    "name": "LoadNewEpisode",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "4bb65046-d407-3cf0-bf62-0b7a58eecca8",
-                "instanceIdentifier": "449dff94-5c7c-3ae6-843e-ff48177a2439",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "abaa77fe-4663-3fcb-bea7-c055444c0449",
-                    "instanceIdentifier": "66d78e4d-edd4-39b2-f730-5d56e8a05528",
-                    "name": "PrepareUpdateForProcessedPatients",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "87e27361-019e-1000-1520-910a4d2d7527",
-                    "instanceIdentifier": "fd094e1e-56ed-3aad-7e69-f71dca6ed2a4",
-                    "name": "LoadNewHistologicGrade",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "a92ff06e-36e7-3698-8d53-7e68c6882577",
-                "instanceIdentifier": "8f3ccabd-29c8-3ee1-f486-21b9e71ea8fd",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "19440114-cc7d-3cda-9c5b-bb9a13da8615",
-                    "instanceIdentifier": "5ca91a47-1068-3fbf-9752-58767f371a04",
-                    "name": "PrepareUpdateForProcessedPrimaryCancerCondition",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
                     "id": "22fb13da-019c-1000-d52c-47c452621f98",
                     "instanceIdentifier": "c1aad761-16af-3f1a-3756-b2908a9349d8",
                     "name": "ConvertLabTestResultDatatoCDM",
@@ -324,42 +252,6 @@
                     "id": "22fb13d9-019c-1000-f9c6-34a3779316d8",
                     "instanceIdentifier": "08095b15-1a54-3a9c-a210-8856900a0eab",
                     "name": "LoadNewLabTestResult",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "7fd157a4-0198-1000-b53d-4b7111c52546",
-                    "instanceIdentifier": "165caaf3-a360-3dca-cb73-1353548f5558",
-                    "name": "LoadNewSurgery",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "2b7dacc5-e550-3ebe-9d82-3ee9013366a0",
-                "instanceIdentifier": "3717c096-4221-344a-838e-77725603afba",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "abaa77fe-4663-3fcb-bea7-c055444c0449",
-                    "instanceIdentifier": "66d78e4d-edd4-39b2-f730-5d56e8a05528",
-                    "name": "PrepareUpdateForProcessedPatients",
                     "type": "PROCESSOR"
                 },
                 "zIndex": 0
@@ -480,42 +372,6 @@
                 "destination": {
                     "comments": "",
                     "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "b52f2663-5d10-3d37-97ab-daf205a50630",
-                    "instanceIdentifier": "c880742d-c448-39d7-290c-e09895cee2f3",
-                    "name": "LoadNewPrimaryCancerCondition",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "06b491a8-1179-35fd-b847-241ec554420b",
-                "instanceIdentifier": "8648d6ab-5219-35ca-9154-499277cded17",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "abaa77fe-4663-3fcb-bea7-c055444c0449",
-                    "instanceIdentifier": "66d78e4d-edd4-39b2-f730-5d56e8a05528",
-                    "name": "PrepareUpdateForProcessedPatients",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
                     "id": "7fd51a19-0198-1000-ebed-48e423318372",
                     "instanceIdentifier": "6703af75-0a50-3621-2086-820247e5c987",
                     "name": "PrepareUpdateForProcessedSurgeryProceduresStatus",
@@ -576,42 +432,6 @@
                     "id": "f60970c7-0198-1000-637d-c2fc3c7cef54",
                     "instanceIdentifier": "16124c2b-2bce-3052-c7ee-2d3bfe9cad5b",
                     "name": "DatasetOutputFile",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "41f5b23d-0198-1000-c3ca-7df8fa44676f",
-                    "instanceIdentifier": "a821ea36-42b6-3d9b-774d-27e8fa936600",
-                    "name": "LoadNewImagingProcedure",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "324fd4a1-e221-3d46-8fd0-4fab39fcd9dd",
-                "instanceIdentifier": "1e8358a0-e65d-36f3-238e-d79a1577fc0c",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "19440114-cc7d-3cda-9c5b-bb9a13da8615",
-                    "instanceIdentifier": "5ca91a47-1068-3fbf-9752-58767f371a04",
-                    "name": "PrepareUpdateForProcessedPrimaryCancerCondition",
                     "type": "PROCESSOR"
                 },
                 "zIndex": 0
@@ -833,47 +653,6 @@
                     "id": "87e2735d-019e-1000-20ac-2dbd1b487163",
                     "instanceIdentifier": "1584e3de-d61a-36c3-2d52-ec1b4e000c2d",
                     "name": "GenerateJSONforIDs",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [
-                    {
-                        "x": -1074.3372802734375,
-                        "y": 894.9303588867188
-                    }
-                ],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "22fb13d9-019c-1000-f9c6-34a3779316d8",
-                    "instanceIdentifier": "08095b15-1a54-3a9c-a210-8856900a0eab",
-                    "name": "LoadNewLabTestResult",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "3cce0ade-7f98-382b-89ce-6d9d33bf9e59",
-                "instanceIdentifier": "a2911c9a-f33e-39a6-81cb-81af5e55bea6",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "abaa77fe-4663-3fcb-bea7-c055444c0449",
-                    "instanceIdentifier": "66d78e4d-edd4-39b2-f730-5d56e8a05528",
-                    "name": "PrepareUpdateForProcessedPatients",
                     "type": "PROCESSOR"
                 },
                 "zIndex": 0
@@ -1282,42 +1061,6 @@
                 "destination": {
                     "comments": "",
                     "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "e3f62b00-019a-1000-d6c9-137922d82344",
-                    "instanceIdentifier": "696d824a-f29e-382c-dd63-73c7934fec4e",
-                    "name": "LoadNewCancerStage",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "724846ef-611b-3fde-bf02-2cca8c7508f4",
-                "instanceIdentifier": "71d0dda9-7ce1-3cb7-b5df-e41cfcdb5ce2",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "19440114-cc7d-3cda-9c5b-bb9a13da8615",
-                    "instanceIdentifier": "5ca91a47-1068-3fbf-9752-58767f371a04",
-                    "name": "PrepareUpdateForProcessedPrimaryCancerCondition",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
                     "id": "3dfa1051-78c6-3a36-b4b5-aa62d35ae3b6",
                     "instanceIdentifier": "cfddb761-a8ea-3a8b-17a3-a6e131b17c13",
                     "name": "GenerateJSONforIDs",
@@ -1450,42 +1193,6 @@
                     "id": "7fd3ee14-0198-1000-97f3-eee72b2efa13",
                     "instanceIdentifier": "df33e679-67d1-3e70-aaed-475bd77eb21a",
                     "name": "ExtractIdentifier",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "146f9896-bf20-3fed-8882-c211117f77c4",
-                    "instanceIdentifier": "4b99c94a-8bd1-32f0-bb92-1f7cdad3b49b",
-                    "name": "LoadNewPatients",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "16392c69-ffd4-3d1f-ae3a-33f1943e6cbc",
-                "instanceIdentifier": "7baf9428-8077-343d-b947-ed2b7ac72cc1",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "f60bfe98-0198-1000-306b-f71fc166fe72",
-                    "instanceIdentifier": "de2bf2e5-9012-3f3a-36ea-518f604183f5",
-                    "name": "PrepareUpdateForProcessedDatasetsStatus",
                     "type": "PROCESSOR"
                 },
                 "zIndex": 0
@@ -1846,42 +1553,6 @@
                     "id": "87e27361-019e-1000-1520-910a4d2d7527",
                     "instanceIdentifier": "fd094e1e-56ed-3aad-7e69-f71dca6ed2a4",
                     "name": "LoadNewHistologicGrade",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "41f83b42-0198-1000-b9ed-985e5cec3ada",
-                    "instanceIdentifier": "4bff9873-7bcb-3430-0beb-d96517d7aae5",
-                    "name": "LoadNewRadiotherapyTreatment",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "012947eb-b5e6-32da-88e0-6fb5bd07c6d6",
-                "instanceIdentifier": "531d2bdd-4623-3780-fb51-5bf5f12bad36",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "abaa77fe-4663-3fcb-bea7-c055444c0449",
-                    "instanceIdentifier": "66d78e4d-edd4-39b2-f730-5d56e8a05528",
-                    "name": "PrepareUpdateForProcessedPatients",
                     "type": "PROCESSOR"
                 },
                 "zIndex": 0
@@ -2938,42 +2609,6 @@
                 "destination": {
                     "comments": "",
                     "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "ec54207a-0197-1000-8f04-25a1fe269e64",
-                    "instanceIdentifier": "5388437f-16df-38bc-12eb-9a03948e8e8c",
-                    "name": "LoadNewHealthStatus",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "057daf23-0948-3773-89b7-e578c71b80af",
-                "instanceIdentifier": "5a4fceb0-151f-30b1-6e91-cdecda597747",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "abaa77fe-4663-3fcb-bea7-c055444c0449",
-                    "instanceIdentifier": "66d78e4d-edd4-39b2-f730-5d56e8a05528",
-                    "name": "PrepareUpdateForProcessedPatients",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
                     "id": "f608b4ea-0198-1000-3dc6-961d8a94f0a1",
                     "instanceIdentifier": "a8ae2866-c8e5-328d-9ded-5da782705c1d",
                     "name": "ConvertDatasetDatatoCDM",
@@ -3447,42 +3082,6 @@
                 "destination": {
                     "comments": "",
                     "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "763b0f5f-6c65-3a10-8825-661228d4b9da",
-                    "instanceIdentifier": "84b0c7a6-1f6c-3781-6085-9de21656f0ac",
-                    "name": "LoadNewCancerProcedure",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "c860a317-be66-343b-ab5a-5df16e8420f8",
-                "instanceIdentifier": "f807904b-d604-367f-178e-0489b4c6a06c",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "19440114-cc7d-3cda-9c5b-bb9a13da8615",
-                    "instanceIdentifier": "5ca91a47-1068-3fbf-9752-58767f371a04",
-                    "name": "PrepareUpdateForProcessedPrimaryCancerCondition",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
                     "id": "ba71a456-82e4-348d-8189-a55020ba9ae4",
                     "instanceIdentifier": "8f9a5cef-2438-3aec-78a6-c9d84b3fafbe",
                     "name": "GenerateJSONforIDs",
@@ -3687,47 +3286,6 @@
                     "id": "22fb13dd-019c-1000-4cf2-5e26ccc4cfe2",
                     "instanceIdentifier": "41fcedf9-3f15-399a-233f-f88d34be1cb9",
                     "name": "PrepareUpdateForProcessedLabTestResultStatus",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [
-                    {
-                        "x": -1026.8326416015625,
-                        "y": 821.7540893554688
-                    }
-                ],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "e3f643cd-019a-1000-5b2a-58da604d0900",
-                    "instanceIdentifier": "0ff61185-687f-3636-91aa-038a8273bb2b",
-                    "name": "LoadNewMedicationAdministration",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "2984d47a-ee3d-3a6c-9b2d-e8bf33575872",
-                "instanceIdentifier": "38c32932-1e85-3618-0a01-19516b15dbaf",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "abaa77fe-4663-3fcb-bea7-c055444c0449",
-                    "instanceIdentifier": "66d78e4d-edd4-39b2-f730-5d56e8a05528",
-                    "name": "PrepareUpdateForProcessedPatients",
                     "type": "PROCESSOR"
                 },
                 "zIndex": 0
@@ -4016,42 +3574,6 @@
                     "id": "87e2735f-019e-1000-3ff2-4be14ab8b10c",
                     "instanceIdentifier": "f6a0f257-a9ce-310f-a8f6-e1b1eb96f2fb",
                     "name": "HistologicGradeOutputFile",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "0e964f50-0198-1000-7530-cb7dc3e293ee",
-                    "instanceIdentifier": "332d1977-98f0-347f-e498-a9dfd2259122",
-                    "name": "LoadNewTumorMarkerTests",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "93c466f8-b829-3019-939c-91c150b8d6e5",
-                "instanceIdentifier": "61428ee7-187a-3d8f-4ea9-d526ce0b1ebf",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "abaa77fe-4663-3fcb-bea7-c055444c0449",
-                    "instanceIdentifier": "66d78e4d-edd4-39b2-f730-5d56e8a05528",
-                    "name": "PrepareUpdateForProcessedPatients",
                     "type": "PROCESSOR"
                 },
                 "zIndex": 0
@@ -4484,47 +4006,6 @@
                     "id": "e3f643cc-019a-1000-f1a1-9ce45838cde1",
                     "instanceIdentifier": "dcee59a7-9c30-3ec8-42e0-4d850c3be8a5",
                     "name": "ConvertMedicationAdministrationDatatoCDM",
-                    "type": "PROCESSOR"
-                },
-                "zIndex": 0
-            },
-            {
-                "backPressureDataSizeThreshold": "1 GB",
-                "backPressureObjectThreshold": 10000,
-                "bends": [
-                    {
-                        "x": -471.2003173828125,
-                        "y": 1605.6597900390625
-                    }
-                ],
-                "componentType": "CONNECTION",
-                "destination": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "e3f6a9c3-019a-1000-145f-82dd96d52b44",
-                    "instanceIdentifier": "08bf2c45-3e69-3cc8-6711-130e4dfaf824",
-                    "name": "LoadNewTumor",
-                    "type": "PROCESSOR"
-                },
-                "flowFileExpiration": "0 sec",
-                "groupIdentifier": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                "identifier": "ec30320a-5498-3805-96df-58ee01f5d88a",
-                "instanceIdentifier": "aed3e58f-12ea-3659-8a80-ff65a2566f81",
-                "labelIndex": 0,
-                "loadBalanceCompression": "DO_NOT_COMPRESS",
-                "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
-                "name": "",
-                "partitioningAttribute": "",
-                "prioritizers": [],
-                "selectedRelationships": [
-                    "success"
-                ],
-                "source": {
-                    "comments": "",
-                    "groupId": "a81dd944-ef86-3dcc-a3c8-9b7db26e4b8d",
-                    "id": "19440114-cc7d-3cda-9c5b-bb9a13da8615",
-                    "instanceIdentifier": "5ca91a47-1068-3fbf-9752-58767f371a04",
-                    "name": "PrepareUpdateForProcessedPrimaryCancerCondition",
                     "type": "PROCESSOR"
                 },
                 "zIndex": 0
@@ -6151,7 +5632,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -6872,7 +6353,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -7025,7 +6506,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -7458,7 +6939,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -7722,7 +7203,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -10064,7 +9545,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -10481,7 +9962,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -12251,7 +11732,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -12404,7 +11885,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -14123,7 +13604,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -14535,7 +14016,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -15932,7 +15413,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -16150,7 +15631,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
@@ -16917,7 +16398,7 @@
                 "retryCount": 10,
                 "runDurationMillis": 0,
                 "scheduledState": "ENABLED",
-                "schedulingPeriod": "0 sec",
+                "schedulingPeriod": "20 sec",
                 "schedulingStrategy": "TIMER_DRIVEN",
                 "style": {
                     "background-color": "#bf88dd"
