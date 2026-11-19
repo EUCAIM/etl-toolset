@@ -32,6 +32,16 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
         componentId ? (DBCPService) System.getProperties().get(DBCP_CACHE_PREFIX + componentId) : null
     }
 
+    // Source value -> what it resolved to. A file brings the same handful of values on every
+    // record (KI: under ten distinct ones over 15000 records), and each one used to cost one or
+    // two queries per record, so the lookup took minutes per file. Bounded so that a free text
+    // column cannot grow it without limit; past the bound values are still resolved, just not
+    // remembered. Emptied when the service is enabled, so a change to the concept tables is
+    // picked up by disabling and enabling the service. A NO MATCH or AMBIGUOUS warning is now
+    // logged once per value instead of once per record.
+    static final int MAX_RESOLVED = 10000
+    final java.util.concurrent.ConcurrentHashMap<String, String> resolved = new java.util.concurrent.ConcurrentHashMap<>()
+
     static final PropertyDescriptor DBCP_SERVICE = new PropertyDescriptor.Builder()
             .name(dbcpServiceName)
             .identifiesControllerService(DBCPService)
@@ -43,6 +53,7 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
         dbcpService = context.getProperty(DBCP_SERVICE)
                              .asControllerService(DBCPService)
         cacheDbcpService(initContext?.identifier, dbcpService)
+        resolved.clear()
 
         log.info("DBCPService initialized: ${dbcpService != null}")
     }
@@ -64,79 +75,34 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
         def input = coordinates.get("lookup_batch").toMap()
         def result = [:]
 
-        Connection conn = dbcpService.getConnection()
-        if (conn == null) {
-            // used to be Optional.empty()['lookup_batch'], which throws instead
-            // of returning, hiding the real cause behind a Groovy error
-            log.error("CodeableConceptsLookupService.lookup - Connection not initialized.")
-            return Optional.empty()
-        }
+        // taken only when some value is not cached yet, which after the first
+        // records of a file is almost never
+        Connection conn = null
 
         try {
             input.each { property, value ->
                 if (!value) {
                     result["${property}"] = null
                     log.debug("CodeableConceptsLookupService.lookup - null value for property '${property}'")
-                } else if (value.startsWith("omop:")) {
-                    // concept with omop ID
-                    def omopId = value.toString().substring("omop:".length()).trim()
-                    def code = lookupOmopConceptCode(conn, omopId, "${property}")
-                    if (code != null) {
-                        result["${property}"] = code
-                    } else {
-    
-                        log.warn("CodeableConceptsLookupService.lookup - NO OMOP MATCH for property '${property}': " +
-                            "OMOP concept id '${omopId}' is not in concept_external_mapping. " +
-                            "Stored as 'omop_id:${omopId}'. Add the mapping or correct the value.")
-                        result["${property}"] = "omop_id:" + omopId
-                    }
-                } else if (value.startsWith("code:")){
-                    // concept with omop ID
-                    result["${property}"] = "omop_id:" + value.toString().substring("code:".length())
-                } else if (value.toString() ==~ /^[A-Za-z][A-Za-z0-9_-]*:[^\s]+$/) {
-                    // pattern for a different coding system i.e. snomed:1234
-                    result["${property}"] = value.toString().trim()
-                    log.debug("CodeableConceptsLookupService.lookup - property '${property}' value '${value}' is already a qualified code")
-                } else if (isConceptCode(conn, value.toString())) {
-                    // already an EUCAIM concept_code, as the lookup tables that run before this
-                    // service emit (LookupImagingModality: 'CT' -> 'IMG1000042'). Searched by
-                    // name it matched nothing and was stored as NOT FOUND
-                    result["${property}"] = value.toString().trim()
-                    log.debug("CodeableConceptsLookupService.lookup - property '${property}' value '${value}' is already a concept_code")
-                } else {
-                    def sql = """
-                    SELECT c.concept_code
-                    FROM eucaim_hyperontology_codes.concept c
-                    WHERE lower(c.concept_name) = lower(?)
-                    ORDER BY c.concept_id
-                    """
-
-                    def pstmt = conn.prepareStatement(sql)
-                    pstmt.setString(1, value.toString())
-                    def rs = pstmt.executeQuery()
-
-                    log.debug("CodeableConceptsLookupService.lookup - property '${property}', value '${value}'")
-
-                    if (rs.next()) {
-                        def code = rs.getString("concept_code")
-                        result["${property}"] = code
-                        if (rs.next()) {
-                            log.warn("CodeableConceptsLookupService.lookup - AMBIGUOUS term " +
-                                "'${value}' for property '${property}': it resolves to more than " +
-                                "one concept_code. Using '${code}', the first one loaded. " +
-                                "Disambiguate it in eucaim_hyperontology_codes.concept.")
-                        }
-                    } else {
-                        log.warn("CodeableConceptsLookupService.lookup - NO MATCH for property " +
-                            "'${property}' with value '${value}'. It is stored as NOT FOUND. " +
-                            "Add the term to eucaim_hyperontology_codes.concept or correct the mapping.")
-                        result["${property}"] = "NOT FOUND"
-                    }
-                rs.close()
-                pstmt.close()
+                    return
                 }
-
-                
+                def key = value.toString()
+                def code = resolved.get(key)
+                if (code == null) {
+                    if (conn == null) {
+                        conn = dbcpService.getConnection()
+                        if (conn == null) {
+                            // used to be Optional.empty()['lookup_batch'], which throws instead
+                            // of returning, hiding the real cause behind a Groovy error
+                            throw new IllegalStateException("Connection not initialized")
+                        }
+                    }
+                    code = resolve(conn, "${property}", key)
+                    if (resolved.size() < MAX_RESOLVED) {
+                        resolved.put(key, code)
+                    }
+                }
+                result["${property}"] = code
             }
         } catch (Exception e) {
             log.error("CodeableConceptsLookupService.lookup - ${e.class.simpleName}: ${e.message}. " +
@@ -151,6 +117,68 @@ class CodeableConceptsLookupService implements LookupService<Map<String, Object>
         return result.isEmpty() ? Optional.empty() : Optional.of(result)
     }
     
+    // What one source value resolves to. Its result depends only on the value, never on the
+    // property it came in, so it is remembered in resolved and asked to the database once.
+    private String resolve(Connection conn, String property, String value) {
+        if (value.startsWith("omop:")) {
+            // concept with omop ID
+            def omopId = value.substring("omop:".length()).trim()
+            def code = lookupOmopConceptCode(conn, omopId, property)
+            if (code != null) {
+                return code
+            }
+            log.warn("CodeableConceptsLookupService.lookup - NO OMOP MATCH for property '${property}': " +
+                "OMOP concept id '${omopId}' is not in concept_external_mapping. " +
+                "Stored as 'omop_id:${omopId}'. Add the mapping or correct the value.")
+            return "omop_id:" + omopId
+        }
+        if (value.startsWith("code:")) {
+            // concept with omop ID
+            return "omop_id:" + value.substring("code:".length())
+        }
+        if (value ==~ /^[A-Za-z][A-Za-z0-9_-]*:[^\s]+$/) {
+            // pattern for a different coding system i.e. snomed:1234
+            log.debug("CodeableConceptsLookupService.lookup - property '${property}' value '${value}' is already a qualified code")
+            return value.trim()
+        }
+        if (isConceptCode(conn, value)) {
+            // already an EUCAIM concept_code, as the lookup tables that run before this
+            // service emit (LookupImagingModality: 'CT' -> 'IMG1000042'). Searched by
+            // name it matched nothing and was stored as NOT FOUND
+            log.debug("CodeableConceptsLookupService.lookup - property '${property}' value '${value}' is already a concept_code")
+            return value.trim()
+        }
+
+        def sql = """
+        SELECT c.concept_code
+        FROM eucaim_hyperontology_codes.concept c
+        WHERE lower(c.concept_name) = lower(?)
+        ORDER BY c.concept_id
+        """
+        def pstmt = conn.prepareStatement(sql)
+        try {
+            pstmt.setString(1, value)
+            def rs = pstmt.executeQuery()
+            try {
+                log.debug("CodeableConceptsLookupService.lookup - property '${property}', value '${value}'")
+                if (!rs.next()) {
+                    log.warn("CodeableConceptsLookupService.lookup - NO MATCH for property " +
+                        "'${property}' with value '${value}'. It is stored as NOT FOUND. " +
+                        "Add the term to eucaim_hyperontology_codes.concept or correct the mapping.")
+                    return "NOT FOUND"
+                }
+                def code = rs.getString("concept_code")
+                if (rs.next()) {
+                    log.warn("CodeableConceptsLookupService.lookup - AMBIGUOUS term " +
+                        "'${value}' for property '${property}': it resolves to more than " +
+                        "one concept_code. Using '${code}', the first one loaded. " +
+                        "Disambiguate it in eucaim_hyperontology_codes.concept.")
+                }
+                return code
+            } finally { rs.close() }
+        } finally { pstmt.close() }
+    }
+
     private String lookupOmopConceptCode(Connection conn, String omopId, String property) {
         def sql = """
         SELECT c.concept_code

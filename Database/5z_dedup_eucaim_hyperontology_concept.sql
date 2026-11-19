@@ -65,6 +65,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS concept_code_name_uq
 CREATE UNIQUE INDEX IF NOT EXISTS concept_synonym_uq
     ON eucaim_hyperontology_codes.concept_synonym (concept_id, lower(synonym));
 
+-- CodeableConceptLookupService pregunta si un valor ya es un concept_code con
+-- upper(concept_code) = upper(?), y sin este índice cada pregunta recorría la tabla entera.
+CREATE INDEX IF NOT EXISTS concept_code_upper_idx
+    ON eucaim_hyperontology_codes.concept (upper(concept_code));
+
 -- 4. Aviso sobre lo que queda: ambigüedad real (un nombre, varios códigos) y las
 --    filas-sinónimo pendientes de mover a concept_synonym.
 DO $$
