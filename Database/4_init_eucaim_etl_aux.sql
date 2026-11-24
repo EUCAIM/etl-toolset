@@ -166,6 +166,11 @@ INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValu
 
 VALUES ('MRI', 'Magnetic resonance imaging');
 
+-- NHRF imaging acquisition (NHRF001, NHRF002, NHRF003); parsedValue is the EUCAIM concept_code
+INSERT INTO eucaim_etl_aux.LookupImagingProcedureCode (originalValue, parsedValue)
+
+VALUES ('Ultrasound', 'IMG1000040');
+
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupHistologyMorphologyCode;
 
@@ -216,6 +221,34 @@ VALUES ('temporal (2)', 'Temporal brain region');
 INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
 VALUES ('Unknown', 'Unknown');
 
+-- NHRF FINAL HISTOLOGY (NHRF001, NHRF002, NHRF003); parsedValue is the EUCAIM concept_code
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+
+VALUES ('Sarcoma', 'CLIN1041458');
+
+-- approximate concept accepted by the user (2026-11-18): DCIS of breast
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+
+VALUES ('DCIS', 'CLIN1002303');
+
+-- approximate concept accepted by the user: infiltrating duct carcinoma of breast
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+
+VALUES ('IDC-NST', 'CLIN1007973');
+
+-- approximate concept accepted by the user: infiltrating lobular carcinoma of breast
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+
+VALUES ('ILC-NST', 'CLIN1007972');
+
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+
+VALUES ('Mucinous carcinoma of the breasτ and IDC-NST', 'CLIN1060860');
+
+INSERT INTO eucaim_etl_aux.LookupHistologyMorphologyCode (originalValue, parsedValue)
+
+VALUES ('DCIS & IDC-NST', 'CLIN1002303');
+
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupPatientDiagnosticCategory;
 
@@ -237,6 +270,11 @@ VALUES ('Patient with Cancer', 'Patient with Cancer');
 INSERT INTO eucaim_etl_aux.LookupPatientDiagnosticCategory (originalValue, parsedValue)
 
 VALUES ('Primary Cancer', 'Primary Cancer Condition');
+
+-- NHRF Population (NHRF001, NHRF002, NHRF003); parsedValue is the EUCAIM concept_code
+INSERT INTO eucaim_etl_aux.LookupPatientDiagnosticCategory (originalValue, parsedValue)
+
+VALUES ('Patient with lesion not being a malignant tumor', 'COM1001086');
 
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupSurgicalProcedureCode;
@@ -281,6 +319,12 @@ VALUES ('Gross-total resection', 'Gross Total Resection');
 
 INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
 VALUES ('Unknown', 'Unknown');
+
+-- NHRF KIND OF SURGERY (NHRF001, NHRF002, NHRF003); only one value has a concept; parsedValue is the EUCAIM concept_code
+-- approximate concept accepted by the user: generic Biopsy (the site, endometrium, is lost)
+INSERT INTO eucaim_etl_aux.LookupSurgicalProcedureCode (originalValue, parsedValue)
+
+VALUES ('ENDOMETRIAL BIOPSY', 'CLIN1001712');
 
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupSurgicalProcedureBodySite;
@@ -327,6 +371,16 @@ VALUES ('breast', 'Breast');
 INSERT INTO eucaim_etl_aux.LookupTumorOrganCode (originalValue, parsedValue)
 
 VALUES ('Thyroid BED', 'Head and neck');
+
+-- NHRF Topography (NHRF001, NHRF002, NHRF003; the flow lowercases the value before this lookup); parsedValue is the EUCAIM concept_code
+-- approximate concept accepted by the user: the organ Uterus (the region, endometrium C54.1, has no concept)
+INSERT INTO eucaim_etl_aux.LookupTumorOrganCode (originalValue, parsedValue)
+
+VALUES ('endometrium', 'BP1000085');
+
+INSERT INTO eucaim_etl_aux.LookupTumorOrganCode (originalValue, parsedValue)
+
+VALUES ('ovary', 'BP1000274');
 
 
 DROP TABLE IF EXISTS eucaim_etl_aux.LookupTumorSizeDimensionUnit;
