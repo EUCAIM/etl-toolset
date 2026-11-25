@@ -5,8 +5,8 @@
 #
 # Groups: aux (4_init_eucaim_etl_aux), procedures (6, 7, 7a, 7b, 7c), ontology (1, 5_patch,
 # 5_update, 5z), schema (2, 3, 3z and Database\upgrade: brings the ingestion and output
-# schemas of a database created by an earlier version up to this one, and implies
-# procedures). Default is "aux procedures schema". Everything selected goes in ONE
+# schemas of a database created by an earlier version up to this one; it and procedures
+# imply each other). Default is "aux procedures schema". Everything selected goes in ONE
 # transaction; with schema, the datasets of a rebuilt output are then transformed and
 # exported again one by one, and those that fail stay in public.schema_upgrade_pending.
 # Rows added by hand to a Lookup* table or to the concept tables are lost: -Backup dumps the
@@ -16,6 +16,7 @@
 #   .\scripts\reload_database.ps1                       # aux + procedures + schema
 #   .\scripts\reload_database.ps1 aux                   # only the lookup tables
 #   .\scripts\reload_database.ps1 schema                # only the schemas (+ procedures)
+#   .\scripts\reload_database.ps1 procedures            # only the procedures (+ schema)
 #   .\scripts\reload_database.ps1 all -Backup           # every group, dump first
 #   .\scripts\reload_database.ps1 all -DryRun           # list the files, apply nothing
 
@@ -39,6 +40,7 @@ foreach ($g in $Groups) {
 if ($Wanted.Count -eq 0) { $Wanted = @("aux", "procedures", "schema") }
 # the procedures of this version are written against its schemas, and the other way round
 if (($Wanted -contains "schema") -and -not ($Wanted -contains "procedures")) { $Wanted += "procedures" }
+if (($Wanted -contains "procedures") -and -not ($Wanted -contains "schema")) { $Wanted += "schema" }
 
 # the order the first-time initialisation uses (alphabetical), restricted to the groups asked
 $Files = @()

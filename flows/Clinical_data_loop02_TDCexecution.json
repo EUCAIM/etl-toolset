@@ -1331,9 +1331,10 @@
                 "instanceIdentifier": "e176267c-65a1-349c-74b5-2f25d16d7e6d",
                 "name": "DBCPConnectionPool",
                 "properties": {
-                    "Database Connection URL": "jdbc:postgresql://nifi-postgres:5432/eucaim-etl-db",
+                    "Database Connection URL": "jdbc:postgresql://#{SHARED_DB_HOST}:#{SHARED_DB_PORT}/#{SHARED_DB_NAME}",
                     "Database Driver Class Name": "org.postgresql.Driver",
-                    "Database User": "postgres",
+                    "Database User": "#{SHARED_DB_USERNAME}",
+                    "Password": "#{SHARED_DB_PASSWORD}",
                     "database-driver-locations": "#{db_driver_filepath}",
                     "dbcp-max-conn-lifetime": "-1",
                     "dbcp-max-idle-conns": "8",
@@ -2424,7 +2425,7 @@
                     "Obtain Generated Keys": "false",
                     "putsql-sql-statement": "CALL eucaim_etl_aux.insert_log_v001(?,?,?,?,?,?,?,?,?);",
                     "rollback-on-failure": "false",
-                    "Support Fragmented Transactions": "true",
+                    "Support Fragmented Transactions": "false",
                     "Transaction Timeout": null
                 },
                 "propertyDescriptors": {
@@ -2531,7 +2532,7 @@
                     "Obtain Generated Keys": "false",
                     "putsql-sql-statement": "CALL eucaim_etl_aux.insert_log_v001(?,?,?,?,?,?,?,?,?);",
                     "rollback-on-failure": "false",
-                    "Support Fragmented Transactions": "true",
+                    "Support Fragmented Transactions": "false",
                     "Transaction Timeout": null
                 },
                 "propertyDescriptors": {
@@ -4027,6 +4028,13 @@
                     "provided": false,
                     "sensitive": false,
                     "value": "${SHARED_DB_NAME}"
+                },
+                {
+                    "description": "",
+                    "name": "SHARED_DB_PORT",
+                    "provided": false,
+                    "sensitive": false,
+                    "value": "${SHARED_DB_PORT}"
                 }
             ]
         }
